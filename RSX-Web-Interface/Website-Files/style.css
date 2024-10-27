@@ -65,6 +65,7 @@ body{
 .referenceImage{
     aspect-ratio: 16/9;
     width: 100%;
+    pointer-events: all;
 }
 
 .hintText, .hintTextKey{

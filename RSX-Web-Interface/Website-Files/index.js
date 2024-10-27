@@ -1,9 +1,12 @@
 import createHTMLChildElement from './modules/createElement.js';
 
+// START SETUP CODE
+
 let referenceOpen = false;
 let graphRange;
 createPage();
 addTextToBoxes();
+console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;')
 
 // END SETUP CODE
 
@@ -25,7 +28,7 @@ function createBoxStructure(parent){
     let secondRowFirstColumn = createColumn(document.querySelector('#dashRow2-Column1'), 4,  2, 100, true, null);
     let thirdRow = createRow(parent, 3, 1, 15, true, null);
 
-    console.log(topRow, secondRow);
+    //console.log(topRow, secondRow);
 }
 
 // This creates a row with a cusotmizable amount of columns
@@ -42,9 +45,9 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
     let boxWidth;
 
     if (autoColumnSizing){
-        console.log('test')
+        //console.log('test')
         boxWidth = (100/numOfColumns);
-        console.log(boxWidth)
+        //console.log(boxWidth)
     }
 
     let row = createHTMLChildElement(parent, 'div', `dashRow`, null, `dashRow${rowNumber}`);
@@ -80,7 +83,7 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     let boxHeight;
 
     if (autoRowSizing){
-        console.log('test')
+        //console.log('test')
         boxHeight = (100/numOfRows);
     }
 
@@ -131,20 +134,31 @@ function createConenctionStatusSection(){
 
 }
 
+// Adds all the titles to their respective boxes, reference their input for which box you will be working on.
 function addTextToBoxes(){
     let computerDataSection = document.getElementById('dashRow1-Column1');
+
     let settingsSection = document.getElementById('dashRow1-Column2');
+
     let realTimeSection = document.getElementById('dashColumn4-Row1');
+
     let featuresSection = document.getElementById('dashColumn4-Row2');
+
     let logSection = document.getElementById('dashRow2-Column2');
+
     let connectionStatusSection = document.getElementById('dashRow3-Column1');
+
 
     createHTMLChildElement(computerDataSection, 'div', 'boxTitle', 'Computer Data', 'cdsText');
 
     createHTMLChildElement(settingsSection, 'div', 'boxTitle', 'Sett.', 'ssText');
+
     createHTMLChildElement(realTimeSection, 'div', 'boxTitle', 'Real-Time Data', 'rtText');
+
     createHTMLChildElement(featuresSection, 'div', 'boxTitle', 'Features', 'edsText');
+
     createHTMLChildElement(logSection, 'div', 'boxTitle', 'Log', 'lsText');
+
     createHTMLChildElement(connectionStatusSection, 'div', 'boxTitle', 'Connection Status', 'cssText');
 
 }
@@ -153,6 +167,7 @@ function addTextToBoxes(){
 
 // DO NOT DELETE THESE FUNCTIONS. USE THESE FUNCTIONS TO HELP BUILD YOUR FUNCTIONS IF NEEDED.
 
+// Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function will ruin.
 function ifElementExists(element, func) {
     if (element) {
         //console.log('work');
@@ -164,6 +179,7 @@ function ifElementExists(element, func) {
     }
 }
 
+// This functions deletes all the child DOM elements of the specified 'element'
 function cleanElement(element){
     if(element && element.hasChildNodes()){
         element.replaceChildren();
@@ -172,7 +188,7 @@ function cleanElement(element){
     }
 }
 
-
+// Returns any desired value based on some criteria
 function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
     if (criteria) {
         return trueVal;
@@ -181,31 +197,34 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
     }
 }
 
-function adjustTitle(){
-    let windowWidth = window.innerWidth;
-    let title = document.querySelector('.title');
-    let subtitle = document.querySelector('.subtitle');
-    // console.log('adjusting title');
-    // console.log(document.querySelector('title'))
-    if (windowWidth <= 1000) {
-        title.style.opacity = 0;
-        subtitle.style.opacity = 0;
-        setTimeout(() => {
-            title.innerText = "";
-            subtitle.innerText = "";
-        }, 500)
-    } else if (windowWidth <= 1200){
-        title.style.opacity = 1;
-        subtitle.style.opacity = 1;
-        title.innerText = "RSX '24 Dashboard";
-        subtitle.innerText = "COC";
-    } else {
-        title.innerText = "RockSatX 2024 Dashboard";
-        subtitle.innerText = "College of the Canyons";
-    }
-}
+// THIS FUNCTION WILL COME IN HANDY LATER, DONT WORRY ABOUT THIS FOR NOW
+
+// function adjustPage(){
+
+//     let windowWidth = window.innerWidth;
+//     // console.log('adjusting page');
+//     if (windowWidth <= 1000) {
+
+//         // code for smallest page size
+//         setTimeout(() => {}, 500);
+
+//     } else if (windowWidth <= 1200){
+
+//         // code for medium page size
+//         setTimeout(() => {}, 500);
+
+//     } else {
+
+//         // code for largest page size
+//         setTimeout(() => {}, 500);
+
+//     }
+// }
 
 let keysActive = {}
+
+// THESE FUNCTIONS HANDLE THE OPENING AND CLOSING OF THE REFERENCE OVERLAY. DON'T CHANGE THESE, BUT THEY MAY BE A HELPFUL REFERENCE FOR THE OTHER COMPONENTS ON THE PAGE. 
+// Use 'Shift + F' to open and close the reference. You may also click outside the image to close it
 
 window.addEventListener('keydown', (target) => {
 
@@ -214,34 +233,72 @@ window.addEventListener('keydown', (target) => {
     if (keysActive['Shift'] == true && target.key == 'R'){
 
         let referenceContainer = document.getElementById('reference');
-        let referenceImage = document.querySelector('.referenceContent')
+        let referenceImage = document.querySelector('.referenceContent');
         let pageContainer = document.querySelector('.hero');
 
-        console.log('w');
 
         if(!referenceOpen){
 
+            openReference();
+
+            referenceImage.addEventListener('mouseover', focusPage);
+
+            referenceImage.addEventListener('mouseout', focusReference);
+
+            window.addEventListener('click', (target) => {
+
+                if (target.target.id != 'referenceImage' && referenceOpen){
+
+                    console.log('clicked outside.');
+                    referenceOpen = !referenceOpen;
+                    closeReference();
+                    //console.log(target);
+
+                } else { 
+
+                    console.log('clicked inside');
+
+                }
+            })
+
+        } else {
+
+            closeReference();
+
+            referenceImage.removeEventListener('mouseover', focusPage);
+
+            referenceImage.removeEventListener('mouseout', focusReference);
+        }
+        
+        function focusPage(){
+            if(referenceOpen){
+                referenceImage.style.opacity = 0.4;
+                pageContainer.style.filter = 'blur(0px)';
+            }
+        }
+
+        function focusReference(){
+            if(referenceOpen){
+                referenceImage.style.opacity = 1;
+                pageContainer.style.filter = 'blur(2px)';
+            }
+        }
+
+        function openReference(){
             console.log('opening reference');
             referenceContainer.style.opacity = 1;
             pageContainer.style.filter = 'blur(2px)';
+        }
 
-            referenceImage.addEventListener('mouseover', () => {
-                referenceImage.style.opacity = 0.4;
-                pageContainer.style.filter = 'blur(0px)';
-            });
-
-            referenceImage.addEventListener('mouseout', () => {
-                referenceImage.style.opacity = 1;
-                pageContainer.style.filter = 'blur(2px)';
-            });
-
-        } else {
+        function closeReference(){
             console.log('closing reference');
             referenceContainer.style.opacity = 0;
             pageContainer.style.filter = 'blur(0px)';
         }
         
+        
         referenceOpen = !referenceOpen;
+        //console.log('reference:', referenceOpen);
     }
     
 });
