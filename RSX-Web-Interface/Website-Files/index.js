@@ -1,27 +1,33 @@
 import createHTMLChildElement from './modules/createElement.js';
+import Graph from 'lineChart.js';
 
 // START SETUP CODE
 
 let referenceOpen = false;
 let graphRange;
 createPage();
-addTextToBoxes();
-console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;')
 
 // END SETUP CODE
 
 
 // DO NOT DELETE THIS FUNCTION
-
+// CHighest level function that calls other functions to organize and arrange the interface.
 function createPage() {
     let parentContainer = document.querySelector('.boxContainer');
     createBoxStructure(parentContainer);
+
+    addTextToBoxes(['dashColumn4-Row1', 'dashColumn4-Row2', 'dashRow2-Column2'], ['Real-Time Data', 'Features', 'Log']);
+
+    document.getElementById('dashRow2-Column1').classList.remove('box');
+    createContentSpace();
+
+    console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
     //setCurrentBoxes(CSSClasses);
 }
 
 
 // DO NOT DELETE THIS FUNCTION
-
+// Creates the row and column organization
 function createBoxStructure(parent){
     let topRow = createRow(parent, 1, 2, 15, false, [95, 5]);
     let secondRow = createRow(parent, 2, 2, 70, false, [75, 25]);
@@ -55,7 +61,7 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
 
     for(let i = 1; i <= numOfColumns; i++){
 
-        let currentColumn = createHTMLChildElement(row, 'div', [`dashRow${rowNumber}-Column`, 'columnInRow'], null, `dashRow${rowNumber}-Column${i}`);
+        let currentColumn = createHTMLChildElement(row, 'div', [`dashRow${rowNumber}-Column`, 'columnInRow', 'box'], null, `dashRow${rowNumber}-Column${i}`);
 
         if (!autoColumnSizing){
             boxWidth = columnWidths[i-1];
@@ -92,7 +98,7 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
 
     for(let i = 1; i <= numOfRows; i++){
 
-        let currentRow = createHTMLChildElement(column, 'div', [`dashColumn${columnNumber}-Row`, 'rowInColumn'], null, `dashColumn${columnNumber}-Row${i}`);
+        let currentRow = createHTMLChildElement(column, 'div', [`dashColumn${columnNumber}-Row`, 'rowInColumn', 'box'], null, `dashColumn${columnNumber}-Row${i}`);
 
         if (!autoRowSizing){
             boxHeight = rowHeights[i-1];
@@ -104,7 +110,19 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
+// OPEN THE FUNCTION AND REMOVE SPECIFIED LINES WHEN READY
+// This creates the space for you to make your component (The grey area upon first opening up the template.)
+function createContentSpace(){
+    document.querySelectorAll('.box').forEach((box, i) => {
+        let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
 
+        // Remove this guide text once you begin working on your component. 
+        // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
+        let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
+    })
+    // This is to remove the unnecassry components from this box. All you need is the settings icon.
+    cleanElement(document.getElementById('dashRow1-Column2'));
+}
 
 
 
@@ -135,31 +153,18 @@ function createConenctionStatusSection(){
 }
 
 // Adds all the titles to their respective boxes, reference their input for which box you will be working on.
-function addTextToBoxes(){
-    let computerDataSection = document.getElementById('dashRow1-Column1');
+function addTextToBoxes(boxesArray, titlesArray){
 
-    let settingsSection = document.getElementById('dashRow1-Column2');
+    for(let i = 0; i <= titlesArray.length; i++){
+        
+        let currentSection = document.getElementById(boxesArray[i]);
+        let currentTitle = titlesArray[i]
 
-    let realTimeSection = document.getElementById('dashColumn4-Row1');
-
-    let featuresSection = document.getElementById('dashColumn4-Row2');
-
-    let logSection = document.getElementById('dashRow2-Column2');
-
-    let connectionStatusSection = document.getElementById('dashRow3-Column1');
-
-
-    createHTMLChildElement(computerDataSection, 'div', 'boxTitle', 'Computer Data', 'cdsText');
-
-    createHTMLChildElement(settingsSection, 'div', 'boxTitle', 'Sett.', 'ssText');
-
-    createHTMLChildElement(realTimeSection, 'div', 'boxTitle', 'Real-Time Data', 'rtText');
-
-    createHTMLChildElement(featuresSection, 'div', 'boxTitle', 'Features', 'edsText');
-
-    createHTMLChildElement(logSection, 'div', 'boxTitle', 'Log', 'lsText');
-
-    createHTMLChildElement(connectionStatusSection, 'div', 'boxTitle', 'Connection Status', 'cssText');
+        if(currentSection && currentTitle){
+            let titleContainer = createHTMLChildElement(currentSection, 'div', 'boxTitleContainer', null , `${currentTitle.substring(0, 3)}TextContainer`);
+            let titleElem = createHTMLChildElement(titleContainer, 'div', 'boxTitle', currentTitle, `${currentTitle.substring(0, 3)}Text`);
+        }
+    }
 
 }
 
