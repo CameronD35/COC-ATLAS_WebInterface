@@ -26,11 +26,35 @@
         </div>
     </div>
 
+
+    <!--Settings panel https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog-->
+    <dialog id="settingsDialog">
+        <div>
+            <!--Settings header-->
+            <h1>
+                Settings
+            </h1>
+
+            <!--Close settings button-->
+            <button autofocus id="closeSettingsButton">Close</button>
+        </div>
+    </dialog>
+
+    
     <div class="hero" id="hero">
-        <div class="boxContainer"></div>
+        <div class="boxContainer">
+            
+            <!--Settings button-->
+            <button id="settingsButton">
+                Open Settings
+            </button>
+
+        </div>
     </div>
+
     <script src="https://unpkg.com/axios@0.19.0/dist/axios.js"></script>
     <script src="Website-Files/index.js" type="module"></script>
+    <script src="Website-Files/settingsPanel.js" type="text/javascript"></script>
     </div>
 </body>
 </html>
