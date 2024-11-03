@@ -15,10 +15,9 @@ let clickDetectEventExists = false;
 let settings = { 
     "Test": "checkbox"
 };
-constructSettings();
-
 
 createPage();
+
 
 // END SETUP CODE
 
@@ -36,7 +35,7 @@ function createPage() {
 
     console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
 
-    createSettingsSection(document.getElementById('dashRow1-Column2'));
+    createSettingsSection(document.getElementById('dashRow1-Column2'), createHTMLChildElement(document.body, 'div', 'testOverlay'));
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -166,14 +165,23 @@ function createComputerDataSection(){
 
 }
 
-function createSettingsSection(parent){
+function createSettingsSection(parent, settingsUIContainer){
+    
     parent.classList.add('settings')
-    let settingsIcon = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
-    settingsIcon.src = './Image-Assets/SettingsIcon.webp';
+    let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
+    settingsButton.src = './Image-Assets/SettingsIcon.webp';
+    
 
-    let dialog = document.getElementById("settingsDialog");
-    let closeButton = dialog.querySelector("#closeSettingsButton");
-    let settingsButton = document.getElementById("settingsIcon");
+    let dialog = createHTMLChildElement(settingsUIContainer, 'dialog', 'settingsDialog', null, 'settingsDialog');
+    let settingsTitleContainer = createHTMLChildElement(dialog, 'div', 'settingsTitleContainer', null, 'settingsTitleContainer');
+    let settingsTitle = createHTMLChildElement(settingsTitleContainer, 'span', 'settingsTitle', 'Settings', 'settingsTitle');
+
+    let settingsContentContainer = createHTMLChildElement(dialog, 'span', 'settingsContentContainer', null, 'settingsContentContainer');
+
+    let closeSettingsContainer = createHTMLChildElement(dialog, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
+    let closeButton = createHTMLChildElement(closeSettingsContainer, 'button', 'closeSettingsButton', 'Close', 'closeSettingsButton');
+
+    constructSettings();
 
     // Listen for user clicking the button.
     settingsButton.addEventListener("click", settingsButtonClicked);
@@ -201,50 +209,58 @@ function createSettingsSection(parent){
         alert(setting + " changed");
     }
     
-}
 
-/** Change the settings panel's HTML */
-function constructSettings() 
-{
-
-    let dialog = document.getElementById("settingsDialog");
-    let closeButton = dialog.querySelector("#closeSettingsButton");
-    let settingsButton = document.getElementById("settingsIcon");
-
-    // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
-    for (let key in settings)
+    /** Change the settings panel's HTML */
+    function constructSettings() 
     {
-        if (settings.hasOwnProperty(key)) 
+
+
+        // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
+        for (let key in settings)
         {
-            // value is the type of input
-            var value = settings[key];
-            switch (value) {
-                case "checkbox":
-                case "number":
-                    constructInput(key, value);
-                    break;
-                default:
-                    break;
-            } 
+            if (settings.hasOwnProperty(key)) 
+            {
+                // value is the type of input
+                var value = settings[key];
+                switch (value) {
+                    case "checkbox":
+                    case "number":
+                        constructInput(key, value);
+                        break;
+                    default:
+                        break;
+                } 
+            }
         }
-    }
 
-    /** Create an input element. 
-     * @param{name} - The name of the setting.
-     * @param{type} - The type of the input element. 
-    */
-    function constructInput(name, type)
-    {
-        closeButton.insertAdjacentHTML(
-            "beforebegin",
-            "      <div>" + 
-            `\n        <input type=\"${type}\" id=\"${name}\" onchange=\"settingChanged('${name}')\" />` +
-            `\n        <label for=\"${name}\">${name}</label>` +
-            "\n    </div>"
-        );
-    }
+        /** Create an input element. 
+         * @param{name} - The name of the setting.
+         * @param{type} - The type of the input element. 
+        */
+        function constructInput(name, type)
+        {
+            let inputContainer = createHTMLChildElement(settingsContentContainer, 'div', 'inputContainer', null, 'inputContainer')
+            let closeInput = createHTMLChildElement(inputContainer, 'input', `${name}Input`, null, `${name}Input`);
+            closeInput.type = `${type}`
 
+            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${name}Label`, `${name}`, `${name}Label`);
+            closeInputLabel.for = `${name}`
+
+            //let closeInteract = createHTMLChildElement(inputContainer, 'button', 'closeSettingsButton', 'Close', 'closeSettingsButton');
+
+
+            // closeButton.insertAdjacentHTML(
+            //     "beforebegin",
+            //     "      <div>" + 
+            //     `\n        <input type=\"${type}\" id=\"${name}\" onchange=\"settingChanged('${name}')\" />` +
+            //     `\n        <label for=\"${name}\">${name}</label>` +
+            //     "\n    </div>"
+            // );
+        }
+
+    }
 }
+
 
 function createRealTimeDataSection(){
 

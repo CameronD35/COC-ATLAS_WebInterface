@@ -224,6 +224,32 @@ body{
     max-height: 70%;
 }
 
+.settingsDialog{
+    width: 200px;
+    height: 200px;
+}
+
+.testOverlay{
+    position: fixed;
+    width: 100%;
+    height: 100%;
+    z-index: 1;
+    top: 0;
+    left: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.settingsContentContainer{
+    width: 100%;
+    height: 20%;
+}
+
+.settingsTitle{
+    color: var(--secondaryColor);
+}
+
 
 /* REAL-TIME DATA */
 
