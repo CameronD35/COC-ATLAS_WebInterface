@@ -1,9 +1,9 @@
 let dialog = document.getElementById("settingsDialog");
 let closeButton = dialog.querySelector("#closeSettingsButton");
-let settingsButton = document.getElementById("settingsButton");
+let settingsButton = document.getElementById("settingsIcon");
 
 // Listen for user clicking the button.
-settingsButton.addEventListener("click", settingsButtonClicked);
+//settingsButton.addEventListener("click", settingsButtonClicked);
 
 /** The list of settings.
  * Key - The string name of the setting

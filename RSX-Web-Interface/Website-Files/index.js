@@ -6,6 +6,18 @@ import createHTMLChildElement from './modules/createElement.js';
 let referenceOpen = false;
 let graphRange;
 let clickDetectEventExists = false;
+
+
+/** The list of settings.
+     * Key - The string name of the setting
+     * Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
+     */
+let settings = { 
+    "Test": "checkbox"
+};
+constructSettings();
+
+
 createPage();
 
 // END SETUP CODE
@@ -76,24 +88,6 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
     return row;
 }
 
-function createOverlay(func){
-    let overlayContainer = document.getElementById('overlay');
-    func(overlayContainer);
-}
-
-function createReference(container){
-    let referenceTitle = createHTMLChildElement(container, 'span', 'referenceTitle', 'REFERENCE', 'referenceTitle');
-    let referenceContent = createHTMLChildElement(container, 'div', 'referenceContent', null, 'referenceContent');
-    let referenceImage = createHTMLChildElement(referenceContent, 'img', 'referenceImage', null, 'referenceImage');
-    referenceImage.src = 'Image-Assets/RSX25WebInterfaceConcept.webp';
-
-    let hintContainer = createHTMLChildElement(container, 'div', 'hintContainer', null, 'hintContainer');
-    let hintKey = createHTMLChildElement(hintContainer, 'span', 'hintTextKey', 'Shift + R', 'hintTextKey');
-    let hintText = createHTMLChildElement(hintContainer, 'div', 'hintText', 'to close', 'hintText');
-
-    return referenceContent;
-}
-
 // This creates a column with a cusotmizable amount of rows
 // int columnNumber: The associated value of the column. (ex: if the column is the 3rd column on the page, it should be 3)
 // int numOfRows: The number of rows (boxes) that will be inside of this column
@@ -131,6 +125,24 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
+function createOverlay(func){
+    let overlayContainer = document.getElementById('overlay');
+    func(overlayContainer);
+}
+
+function createReference(container){
+    let referenceTitle = createHTMLChildElement(container, 'span', 'referenceTitle', 'REFERENCE', 'referenceTitle');
+    let referenceContent = createHTMLChildElement(container, 'div', 'referenceContent', null, 'referenceContent');
+    let referenceImage = createHTMLChildElement(referenceContent, 'img', 'referenceImage', null, 'referenceImage');
+    referenceImage.src = 'Image-Assets/RSX25WebInterfaceConcept.webp';
+
+    let hintContainer = createHTMLChildElement(container, 'div', 'hintContainer', null, 'hintContainer');
+    let hintKey = createHTMLChildElement(hintContainer, 'span', 'hintTextKey', 'Shift + R', 'hintTextKey');
+    let hintText = createHTMLChildElement(hintContainer, 'div', 'hintText', 'to close', 'hintText');
+
+    return referenceContent;
+}
+
 // OPEN THE FUNCTION AND REMOVE SPECIFIED LINES WHEN READY
 // This creates the space for you to make your component (The grey area upon first opening up the template.)
 function createContentSpace(){
@@ -158,7 +170,80 @@ function createSettingsSection(parent){
     parent.classList.add('settings')
     let settingsIcon = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
     settingsIcon.src = './Image-Assets/SettingsIcon.webp';
+
+    let dialog = document.getElementById("settingsDialog");
+    let closeButton = dialog.querySelector("#closeSettingsButton");
+    let settingsButton = document.getElementById("settingsIcon");
+
+    // Listen for user clicking the button.
+    settingsButton.addEventListener("click", settingsButtonClicked);
+
+
+    /** Open settings when button clicked. */
+    function settingsButtonClicked(event)
+    {  
+        closeButton.addEventListener("click", closeSettingsButtonClicked);
+        dialog.showModal();
+    }
+
+    /** When the close button on the settings panel is clicked. */
+    function closeSettingsButtonClicked(event)
+    {
+        // Unhook
+        closeButton.removeEventListener("click", closeSettingsButtonClicked);
+        dialog.close();
+    }
+
+    /** A callback for when any setting has changed.
+        @param{setting} - The name of the setting that was changed. */
+    function settingChanged(setting) 
+    {
+        alert(setting + " changed");
+    }
     
+}
+
+/** Change the settings panel's HTML */
+function constructSettings() 
+{
+
+    let dialog = document.getElementById("settingsDialog");
+    let closeButton = dialog.querySelector("#closeSettingsButton");
+    let settingsButton = document.getElementById("settingsIcon");
+
+    // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
+    for (let key in settings)
+    {
+        if (settings.hasOwnProperty(key)) 
+        {
+            // value is the type of input
+            var value = settings[key];
+            switch (value) {
+                case "checkbox":
+                case "number":
+                    constructInput(key, value);
+                    break;
+                default:
+                    break;
+            } 
+        }
+    }
+
+    /** Create an input element. 
+     * @param{name} - The name of the setting.
+     * @param{type} - The type of the input element. 
+    */
+    function constructInput(name, type)
+    {
+        closeButton.insertAdjacentHTML(
+            "beforebegin",
+            "      <div>" + 
+            `\n        <input type=\"${type}\" id=\"${name}\" onchange=\"settingChanged('${name}')\" />` +
+            `\n        <label for=\"${name}\">${name}</label>` +
+            "\n    </div>"
+        );
+    }
+
 }
 
 function createRealTimeDataSection(){
