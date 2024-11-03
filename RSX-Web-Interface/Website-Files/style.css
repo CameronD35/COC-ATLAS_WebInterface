@@ -45,9 +45,16 @@ body{
     justify-content: center;
     align-items: center;
     transition: 0.6s;
+
+}
+
+.overlayContentContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     color: white;
     font-size: 40px;
-
 }
 
 .referenceContent{

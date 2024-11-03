@@ -6,6 +6,7 @@ import createHTMLChildElement from './modules/createElement.js';
 let referenceOpen = false;
 let graphRange;
 let clickDetectEventExists = false;
+let overlayOccupied = false;
 
 
 /** The list of settings.
@@ -35,7 +36,8 @@ function createPage() {
 
     console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
 
-    createSettingsSection(document.getElementById('dashRow1-Column2'), createHTMLChildElement(document.body, 'div', 'testOverlay'));
+    createSettingsBox(document.getElementById('dashRow1-Column2'));
+    createSettingsSection(document.getElementById('overlayContentContainer'));
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -125,11 +127,72 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
 }
 
 function createOverlay(func){
-    let overlayContainer = document.getElementById('overlay');
-    func(overlayContainer);
+    let overlay = document.getElementById('overlay');
+    let overlayContentContainer = document.getElementById('overlayContentContainer');
+    func(overlayContentContainer);
 }
 
+function showOverlay(functionToCreateContent) {
+    let pageContainer = document.querySelector('.hero');
+    let overlay = document.getElementById('overlay');
+    let overlayContentContainer = document.getElementById('overlayContentContainer');
+    overlay.style.opacity = 1;
+    overlay.style.width = '100vw';
+    overlayOccupied = true;
+
+    console.log('showing overlay');
+    createOverlay(functionToCreateContent);
+    pageContainer.style.filter = 'blur(2px)';
+
+    window.addEventListener('click', readForClick);
+
+}
+
+function readForClick(event) {
+    console.log(event)
+    let target = event.target
+        clickDetectEventExists = true;
+
+        if (target.id != overlayContentContainer.id && overlayOccupied){
+
+            console.log('clicked outside.');
+            overlayOccupied = false;
+            referenceOpen = false;
+            console.log('reference:', referenceOpen);
+            hideOverlay();
+            overlay.style.width = 0;
+            //console.log(target);
+
+        } else { 
+
+            console.log('clicked inside');
+
+        }
+}
+
+function hideOverlay(functionToDeleteContent){
+    let pageContainer = document.querySelector('.hero');
+    let overlay = document.getElementById('overlay');
+    let overlayContentContainer = document.getElementById('overlayContentContainer');
+
+    overlay.style.opacity = 0;
+    overlay.style.width = 0;
+
+    console.log('hiding overlay');
+    window.removeEventListener('click', readForClick);
+
+    setTimeout(() => {
+        cleanElement(overlayContentContainer);
+    }, 500);
+    overlayOccupied = false;
+    pageContainer.style.filter = 'blur(0px)';
+}
+
+
 function createReference(container){
+
+    let pageContainer = document.querySelector('.hero');
+
     let referenceTitle = createHTMLChildElement(container, 'span', 'referenceTitle', 'REFERENCE', 'referenceTitle');
     let referenceContent = createHTMLChildElement(container, 'div', 'referenceContent', null, 'referenceContent');
     let referenceImage = createHTMLChildElement(referenceContent, 'img', 'referenceImage', null, 'referenceImage');
@@ -139,6 +202,24 @@ function createReference(container){
     let hintKey = createHTMLChildElement(hintContainer, 'span', 'hintTextKey', 'Shift + R', 'hintTextKey');
     let hintText = createHTMLChildElement(hintContainer, 'div', 'hintText', 'to close', 'hintText');
 
+    referenceContent.addEventListener('mouseover', focusPage);
+
+    referenceContent.addEventListener('mouseout', focusReference);
+
+    function focusPage(){
+        if(referenceOpen){
+            container.style.opacity = 0.4;
+            pageContainer.style.filter = 'blur(0px)';
+        }
+    }
+
+    function focusReference(){
+        if(referenceOpen){
+            container.style.opacity = 1;
+            pageContainer.style.filter = 'blur(2px)';
+        }
+    }
+
     return referenceContent;
 }
 
@@ -147,7 +228,7 @@ function createReference(container){
 function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
-        createHTMLChildElement();
+        //createHTMLChildElement();
 
         // Remove this guide text once you begin working on your component. 
         // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
@@ -165,11 +246,25 @@ function createComputerDataSection(){
 
 }
 
-function createSettingsSection(parent, settingsUIContainer){
-    
+function createSettingsBox(parent){
     parent.classList.add('settings')
     let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
     settingsButton.src = './Image-Assets/SettingsIcon.webp';
+
+    settingsButton.addEventListener("click", settingsButtonClicked);
+
+
+    /** Open settings when button clicked. */
+    function settingsButtonClicked(event)
+    {  
+        showOverlay(createSettingsSection);
+        //closeButton.addEventListener("click", closeSettingsButtonClicked);
+        dialog.show();
+    }
+}
+
+function createSettingsSection(settingsUIContainer){
+    
     
 
     let dialog = createHTMLChildElement(settingsUIContainer, 'dialog', 'settingsDialog', null, 'settingsDialog');
@@ -184,15 +279,6 @@ function createSettingsSection(parent, settingsUIContainer){
     constructSettings();
 
     // Listen for user clicking the button.
-    settingsButton.addEventListener("click", settingsButtonClicked);
-
-
-    /** Open settings when button clicked. */
-    function settingsButtonClicked(event)
-    {  
-        closeButton.addEventListener("click", closeSettingsButtonClicked);
-        dialog.showModal();
-    }
 
     /** When the close button on the settings panel is clicked. */
     function closeSettingsButtonClicked(event)
@@ -362,77 +448,20 @@ window.addEventListener('keydown', (target) => {
     keysActive[target.key] = true;
 
     if (keysActive['Shift'] == true && target.key == 'R'){
-
-        let referenceContainer = document.getElementById('overlay');
-        let pageContainer = document.querySelector('.hero');
-        let referenceImage;
+        console.log('clicked!')
 
 
-        if(!referenceOpen){
-            overlay.style.opacity = 1;
-            referenceContainer.style.width = '100vw';
-            openReference();
+        if(!overlayOccupied){
+            showOverlay(createReference);
+        }
+
+        //     referenceContainer.addEventListener('mouseover', focusPage);
+
+        //     referenceContainer.addEventListener('mouseout', focusReference);
             
-            referenceImage = document.querySelector('.referenceContent');
-
-            referenceImage.addEventListener('mouseover', focusPage);
-
-            referenceImage.addEventListener('mouseout', focusReference);
-            
-            if(!clickDetectEventExists){
-                window.addEventListener('click', (target) => {
-
-                    clickDetectEventExists = true;
-
-                    if (target.target.id != 'referenceImage' && referenceOpen){
-    
-                        console.log('clicked outside.');
-                        referenceOpen = !referenceOpen;
-                        console.log('reference:', referenceOpen);
-                        closeReference();
-                        referenceContainer.style.width = 0;
-                        //console.log(target);
-    
-                    } else { 
-    
-                        console.log('clicked inside');
-    
-                    }
-                });
-            }
-
-        } else {       
-            closeReference();
-            referenceContainer.style.width = 0;
-        }
-        
-        function focusPage(){
-            if(referenceOpen){
-                overlay.style.opacity = 0.4;
-                pageContainer.style.filter = 'blur(0px)';
-            }
-        }
-
-        function focusReference(){
-            if(referenceOpen){
-                overlay.style.opacity = 1;
-                pageContainer.style.filter = 'blur(2px)';
-            }
-        }
-
-        function openReference(){
-            console.log('opening reference');
-            createOverlay(createReference);
-            pageContainer.style.filter = 'blur(2px)';
-        }
-
-        function closeReference(){
-            console.log('closing reference');
-            overlay.style.opacity = 0;
-            setTimeout(() => {
-                cleanElement(overlay);
-            }, 500)
-            pageContainer.style.filter = 'blur(0px)';
+        else if (overlayOccupied){
+            console.log('make sure to close settings before attempting to open reference');       
+            hideOverlay();
         }
         
         
