@@ -214,6 +214,15 @@ body{
 
 /* SETTINGS */
 
+.settings{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.settingsIcon{
+    max-width: 80%;
+    max-height: 80%;
+}
 
 
 /* REAL-TIME DATA */

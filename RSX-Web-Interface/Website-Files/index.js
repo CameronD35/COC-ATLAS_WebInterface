@@ -23,6 +23,8 @@ function createPage() {
     createContentSpace();
 
     console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
+
+    createSettingsSection(document.getElementById('dashRow1-Column2'));
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -30,7 +32,7 @@ function createPage() {
 // DO NOT DELETE THIS FUNCTION
 // Creates the row and column organization
 function createBoxStructure(parent){
-    let topRow = createRow(parent, 1, 2, 15, false, [95, 5]);
+    let topRow = createRow(parent, 1, 2, 15, false, [90, 10]);
     let secondRow = createRow(parent, 2, 2, 70, false, [75, 25]);
     let secondRowFirstColumn = createColumn(document.querySelector('#dashRow2-Column1'), 4,  2, 100, true, null);
     let thirdRow = createRow(parent, 3, 1, 15, true, null);
@@ -152,8 +154,11 @@ function createComputerDataSection(){
 
 }
 
-function createSettingsSection(){
-
+function createSettingsSection(parent){
+    parent.classList.add('settings')
+    let settingsIcon = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
+    settingsIcon.src = './Image-Assets/SettingsIcon.webp';
+    
 }
 
 function createRealTimeDataSection(){
