@@ -1,17 +1,18 @@
 import createHTMLChildElement from './modules/createElement.js';
-import Graph from 'lineChart.js';
+//import Graph from '/modules/lineChart.js';
 
 // START SETUP CODE
 
 let referenceOpen = false;
 let graphRange;
+let clickDetectEventExists = false;
 createPage();
 
 // END SETUP CODE
 
 
 // DO NOT DELETE THIS FUNCTION
-// CHighest level function that calls other functions to organize and arrange the interface.
+// Highest level function that calls other functions to organize and arrange the interface.
 function createPage() {
     let parentContainer = document.querySelector('.boxContainer');
     createBoxStructure(parentContainer);
@@ -73,6 +74,24 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
     return row;
 }
 
+function createOverlay(func){
+    let overlayContainer = document.getElementById('overlay');
+    func(overlayContainer);
+}
+
+function createReference(container){
+    let referenceTitle = createHTMLChildElement(container, 'span', 'referenceTitle', 'REFERENCE', 'referenceTitle');
+    let referenceContent = createHTMLChildElement(container, 'div', 'referenceContent', null, 'referenceContent');
+    let referenceImage = createHTMLChildElement(referenceContent, 'img', 'referenceImage', null, 'referenceImage');
+    referenceImage.src = 'Image-Assets/RSX25WebInterfaceConcept.webp';
+
+    let hintContainer = createHTMLChildElement(container, 'div', 'hintContainer', null, 'hintContainer');
+    let hintKey = createHTMLChildElement(hintContainer, 'span', 'hintTextKey', 'Shift + R', 'hintTextKey');
+    let hintText = createHTMLChildElement(hintContainer, 'div', 'hintText', 'to close', 'hintText');
+
+    return referenceContent;
+}
+
 // This creates a column with a cusotmizable amount of rows
 // int columnNumber: The associated value of the column. (ex: if the column is the 3rd column on the page, it should be 3)
 // int numOfRows: The number of rows (boxes) that will be inside of this column
@@ -115,6 +134,7 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
 function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
+        createHTMLChildElement();
 
         // Remove this guide text once you begin working on your component. 
         // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
@@ -226,7 +246,7 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     }
 // }
 
-let keysActive = {}
+let keysActive = {};
 
 // THESE FUNCTIONS HANDLE THE OPENING AND CLOSING OF THE REFERENCE OVERLAY. DON'T CHANGE THESE, BUT THEY MAY BE A HELPFUL REFERENCE FOR THE OTHER COMPONENTS ON THE PAGE. 
 // Use 'Shift + F' to open and close the reference. You may also click outside the image to close it
@@ -237,73 +257,81 @@ window.addEventListener('keydown', (target) => {
 
     if (keysActive['Shift'] == true && target.key == 'R'){
 
-        let referenceContainer = document.getElementById('reference');
-        let referenceImage = document.querySelector('.referenceContent');
+        let referenceContainer = document.getElementById('overlay');
         let pageContainer = document.querySelector('.hero');
+        let referenceImage;
 
 
         if(!referenceOpen){
-
+            overlay.style.opacity = 1;
+            referenceContainer.style.width = '100vw';
             openReference();
+            
+            referenceImage = document.querySelector('.referenceContent');
 
             referenceImage.addEventListener('mouseover', focusPage);
 
             referenceImage.addEventListener('mouseout', focusReference);
+            
+            if(!clickDetectEventExists){
+                window.addEventListener('click', (target) => {
 
-            window.addEventListener('click', (target) => {
+                    clickDetectEventExists = true;
 
-                if (target.target.id != 'referenceImage' && referenceOpen){
+                    if (target.target.id != 'referenceImage' && referenceOpen){
+    
+                        console.log('clicked outside.');
+                        referenceOpen = !referenceOpen;
+                        console.log('reference:', referenceOpen);
+                        closeReference();
+                        referenceContainer.style.width = 0;
+                        //console.log(target);
+    
+                    } else { 
+    
+                        console.log('clicked inside');
+    
+                    }
+                });
+            }
 
-                    console.log('clicked outside.');
-                    referenceOpen = !referenceOpen;
-                    closeReference();
-                    //console.log(target);
-
-                } else { 
-
-                    console.log('clicked inside');
-
-                }
-            })
-
-        } else {
-
+        } else {       
             closeReference();
-
-            referenceImage.removeEventListener('mouseover', focusPage);
-
-            referenceImage.removeEventListener('mouseout', focusReference);
+            referenceContainer.style.width = 0;
         }
         
         function focusPage(){
             if(referenceOpen){
-                referenceImage.style.opacity = 0.4;
+                overlay.style.opacity = 0.4;
                 pageContainer.style.filter = 'blur(0px)';
             }
         }
 
         function focusReference(){
             if(referenceOpen){
-                referenceImage.style.opacity = 1;
+                overlay.style.opacity = 1;
                 pageContainer.style.filter = 'blur(2px)';
             }
         }
 
         function openReference(){
             console.log('opening reference');
-            referenceContainer.style.opacity = 1;
+            createOverlay(createReference);
             pageContainer.style.filter = 'blur(2px)';
         }
 
         function closeReference(){
             console.log('closing reference');
-            referenceContainer.style.opacity = 0;
+            overlay.style.opacity = 0;
+            setTimeout(() => {
+                cleanElement(overlay);
+            }, 500)
             pageContainer.style.filter = 'blur(0px)';
         }
         
         
         referenceOpen = !referenceOpen;
-        //console.log('reference:', referenceOpen);
+        console.log('reference:', referenceOpen);
     }
     
 });
