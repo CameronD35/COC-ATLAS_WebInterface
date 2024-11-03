@@ -37,7 +37,6 @@ function createPage() {
     console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
 
     createSettingsBox(document.getElementById('dashRow1-Column2'));
-    createSettingsSection(document.getElementById('overlayContentContainer'));
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -126,66 +125,73 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
-function createOverlay(func){
-    let overlay = document.getElementById('overlay');
-    let overlayContentContainer = document.getElementById('overlayContentContainer');
-    func(overlayContentContainer);
-}
+// function createOverlay(func){
+//     let pageContainer = document.querySelector('.hero');
+//     let overlay = document.getElementById('overlay');
+//     let overlayContentContainer = document.getElementById('overlayContentContainer');
+//     pageContainer.style.filter = 'blur(2px)';
+//     overlay.style.opacity = 1;
+//     overlay.style.width = '100vw';
+//     func(overlayContentContainer);
+// }
 
 function showOverlay(functionToCreateContent) {
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
     let overlayContentContainer = document.getElementById('overlayContentContainer');
-    overlay.style.opacity = 1;
+    pageContainer.style.filter = 'blur(2px)';
     overlay.style.width = '100vw';
+    setTimeout(() => {
+        overlay.style.opacity = 1;
+    }, 50)
     overlayOccupied = true;
 
     console.log('showing overlay');
-    createOverlay(functionToCreateContent);
-    pageContainer.style.filter = 'blur(2px)';
-
-    window.addEventListener('click', readForClick);
+    functionToCreateContent(overlayContentContainer);
+    setTimeout(() => {
+        window.addEventListener('click', readForClick);
+    }, 5)
 
 }
 
 function readForClick(event) {
     console.log(event)
-    let target = event.target
-        clickDetectEventExists = true;
+    let target = event.target;
+    let didClickInside = document.getElementById('overlayContentContainer').contains(target);
 
-        if (target.id != overlayContentContainer.id && overlayOccupied){
+    if (!didClickInside && overlayOccupied){
 
-            console.log('clicked outside.');
-            overlayOccupied = false;
-            referenceOpen = false;
-            console.log('reference:', referenceOpen);
-            hideOverlay();
-            overlay.style.width = 0;
-            //console.log(target);
+        console.log('clicked outside.', target.id);
+        overlayOccupied = false;
+        referenceOpen = false;
+        console.log('reference:', referenceOpen);
+        hideOverlay();
+        overlay.style.width = 0;
+        //console.log(target);
 
-        } else { 
+    } else { 
 
-            console.log('clicked inside');
+        console.log('clicked inside');
 
-        }
+    }
 }
 
 function hideOverlay(functionToDeleteContent){
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
     let overlayContentContainer = document.getElementById('overlayContentContainer');
+    window.removeEventListener('click', readForClick);
 
     overlay.style.opacity = 0;
     overlay.style.width = 0;
 
     console.log('hiding overlay');
-    window.removeEventListener('click', readForClick);
 
     setTimeout(() => {
         cleanElement(overlayContentContainer);
-    }, 500);
+    }, 450);
     overlayOccupied = false;
-    pageContainer.style.filter = 'blur(0px)';
+    pageContainer.style.filter = '';
 }
 
 
@@ -247,7 +253,7 @@ function createComputerDataSection(){
 }
 
 function createSettingsBox(parent){
-    parent.classList.add('settings')
+    parent.classList.add('settings');
     let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
     settingsButton.src = './Image-Assets/SettingsIcon.webp';
 
@@ -255,28 +261,32 @@ function createSettingsBox(parent){
 
 
     /** Open settings when button clicked. */
-    function settingsButtonClicked(event)
+    function settingsButtonClicked()
     {  
         showOverlay(createSettingsSection);
         //closeButton.addEventListener("click", closeSettingsButtonClicked);
-        dialog.show();
+        document.getElementById('settingsDialog').show();
     }
 }
 
-function createSettingsSection(settingsUIContainer){
+function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
     
     
 
     let dialog = createHTMLChildElement(settingsUIContainer, 'dialog', 'settingsDialog', null, 'settingsDialog');
-    let settingsTitleContainer = createHTMLChildElement(dialog, 'div', 'settingsTitleContainer', null, 'settingsTitleContainer');
-    let settingsTitle = createHTMLChildElement(settingsTitleContainer, 'span', 'settingsTitle', 'Settings', 'settingsTitle');
+    let settingsControlContainer = createHTMLChildElement(dialog, 'div', 'settingsControlContainer', null, 'settingsControlContainer');
+    let settingsTitle = createHTMLChildElement(settingsControlContainer, 'span', 'settingsTitle', 'Settings', 'settingsTitle');
+    let closeSettingsContainer = createHTMLChildElement(settingsControlContainer, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
+    let closeButton = createHTMLChildElement(closeSettingsContainer, 'span', 'closeSettingsButton', 'Close', 'closeSettingsButton');
 
-    let settingsContentContainer = createHTMLChildElement(dialog, 'span', 'settingsContentContainer', null, 'settingsContentContainer');
+    let settingsContentContainer = createHTMLChildElement(dialog, 'div', 'settingsContentContainer', null, 'settingsContentContainer');
 
-    let closeSettingsContainer = createHTMLChildElement(dialog, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
-    let closeButton = createHTMLChildElement(closeSettingsContainer, 'button', 'closeSettingsButton', 'Close', 'closeSettingsButton');
+    let inputContainer = createHTMLChildElement(settingsContentContainer, 'div', 'inputContainer', null, 'inputContainer');
+
 
     constructSettings();
+
+    closeButton.addEventListener('click', closeSettingsButtonClicked)
 
     // Listen for user clicking the button.
 
@@ -285,15 +295,15 @@ function createSettingsSection(settingsUIContainer){
     {
         // Unhook
         closeButton.removeEventListener("click", closeSettingsButtonClicked);
-        dialog.close();
+        hideOverlay();
     }
 
     /** A callback for when any setting has changed.
         @param{setting} - The name of the setting that was changed. */
-    function settingChanged(setting) 
-    {
-        alert(setting + " changed");
-    }
+    // function settingChanged(setting) 
+    // {
+    //     alert(setting + " changed");
+    // }
     
 
     /** Change the settings panel's HTML */
@@ -325,26 +335,16 @@ function createSettingsSection(settingsUIContainer){
         */
         function constructInput(name, type)
         {
-            let inputContainer = createHTMLChildElement(settingsContentContainer, 'div', 'inputContainer', null, 'inputContainer')
-            let closeInput = createHTMLChildElement(inputContainer, 'input', `${name}Input`, null, `${name}Input`);
+            let closeInput = createHTMLChildElement(inputContainer, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
 
-            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${name}Label`, `${name}`, `${name}Label`);
+            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${type}Label`, `${name}`, `${name}Label`);
             closeInputLabel.for = `${name}`
 
-            //let closeInteract = createHTMLChildElement(inputContainer, 'button', 'closeSettingsButton', 'Close', 'closeSettingsButton');
-
-
-            // closeButton.insertAdjacentHTML(
-            //     "beforebegin",
-            //     "      <div>" + 
-            //     `\n        <input type=\"${type}\" id=\"${name}\" onchange=\"settingChanged('${name}')\" />` +
-            //     `\n        <label for=\"${name}\">${name}</label>` +
-            //     "\n    </div>"
-            // );
         }
 
     }
+
 }
 
 
