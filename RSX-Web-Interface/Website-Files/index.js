@@ -14,8 +14,11 @@ let overlayOccupied = false;
      * Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
      */
 let settings = { 
-    "Test": "checkbox"
+    "Light Mode On": "checkbox"
 };
+
+/** If light mode is on. */
+var lightModeOn = false;
 
 createPage();
 
@@ -300,10 +303,29 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
     /** A callback for when any setting has changed.
         @param{setting} - The name of the setting that was changed. */
-    // function settingChanged(setting) 
-    // {
-    //     alert(setting + " changed");
-    // }
+    function settingChanged(setting) 
+    {
+        // The main and secondary css vars.
+        let mainColorCssVar = '--mainColor'; 
+        let secondaryColorCssVar = '--secondaryColor'; 
+
+        switch (setting)
+        {
+            case "Light Mode On":
+                lightModeOn = !lightModeOn;
+
+                // https://davidwalsh.name/css-variables-javascript
+                // Get the current values
+                let currentMain = getComputedStyle(document.documentElement).getPropertyValue(mainColorCssVar);
+                let currentSecondary = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorCssVar);
+
+                // swap the values
+                document.documentElement.style.setProperty(mainColorCssVar, currentSecondary);
+                document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
+
+                break;
+        }
+    }
     
 
     /** Change the settings panel's HTML */
@@ -337,6 +359,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
         {
             let closeInput = createHTMLChildElement(inputContainer, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
+
+            closeInput.addEventListener("change", (e) => {
+                settingChanged(name);
+            });
 
             let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${type}Label`, `${name}`, `${name}Label`);
             closeInputLabel.for = `${name}`
