@@ -274,8 +274,9 @@ body{
 .inputContainer{
     display: flex;
     justify-content: left;
-    align-items: center;
+    /* align-items: center; */
     height: auto;
+    flex-direction: column;
 }
 
 .checkboxInput{

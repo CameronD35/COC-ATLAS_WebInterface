@@ -11,7 +11,8 @@ let overlayOccupied = false;
 
 
 let settings = { 
-    "Light Mode On": "checkbox"
+    "Light Mode On": "checkbox",
+    "Max Log Messages": "number"
 };
 
 // Variables for the log section
@@ -20,6 +21,8 @@ let logAutoScroll = true;
 
 /** If light mode is on. */
 let lightModeOn = false;
+/** The max amount of messages to show in the log. */
+let maxMessages = 50;
 
 createPage();
 
@@ -344,9 +347,15 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
 
                 break;
+            case "Max Log Messages":
+                let numberInput = document.getElementById("Max Log MessagesInput");
+                let newValue = numberInput.value;
+
+                maxMessages = newValue;
+                removeMessagesWhenBeyondMax();
+                break;
         }
     }
-    
 
     /** Change the settings panel's HTML */
     function constructSettings() 
@@ -381,14 +390,26 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
         */
         function constructInput(name, type)
         {
-            let closeInput = createHTMLChildElement(inputContainer, 'input', `${type}Input`, null, `${name}Input`);
+            let settingDiv = createHTMLChildElement(inputContainer, 'div', 'individualSettingDiv', null, null, null);
+            let closeInput = createHTMLChildElement(settingDiv, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
 
             closeInput.addEventListener("change", (e) => {
                 settingChanged(name);
             });
 
-            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${type}Label`, `${name}`, `${name}Label`);
+            // TODO: do this dynamically
+            switch (name)
+            {
+                case "Light Mode On":
+                    closeInput.checked = lightModeOn;
+                    break;
+                case "Max Log Messages":
+                    closeInput.value = maxMessages;
+                    break;
+            }
+
+            let closeInputLabel = createHTMLChildElement(settingDiv, 'label', `${type}Label`, `${name}`, `${name}Label`);
             closeInputLabel.for = `${name}`
 
         }
@@ -397,6 +418,26 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 }
 
+
+/** Remove the message elements when the count goes beyond the max. */
+function removeMessagesWhenBeyondMax()
+{
+    let logContainer = document.getElementById("chatContainer");
+    let messages = logContainer.children;
+
+    if (messages.length <= maxMessages)
+    {
+        // Don't remove if within the limit.
+        return;
+    }
+
+
+    let amountToRemove = messages.length - maxMessages;
+    for (var i = 0; i < amountToRemove; i++)
+    {
+        messages.item(0).remove();
+    }
+}
 
 function createRealTimeDataSection(){
 
@@ -517,6 +558,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
         grayMsg = !grayMsg;
     
+        // Remove old messages if needed.
+        removeMessagesWhenBeyondMax();
     }
 
     function createMessageSetting(settingTitle){
