@@ -14,8 +14,12 @@ let settings = {
     "Light Mode On": "checkbox"
 };
 
+// Variables for the log section
+let grayMsg = false;
+let logAutoScroll = true;
+
 /** If light mode is on. */
-var lightModeOn = false;
+let lightModeOn = false;
 
 createPage();
 
@@ -249,6 +253,9 @@ function createContentSpace(){
             return;
         }
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
+        if(i === 4){
+            return;
+        }
         //createHTMLChildElement();
 
         // Remove this guide text once you begin working on your component. 
@@ -356,7 +363,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
             if (settings.hasOwnProperty(key)) 
             {
                 // value is the type of input
-                var value = settings[key];
+                let value = settings[key];
                 switch (value) {
                     case "checkbox":
                     case "number":
@@ -399,9 +406,145 @@ function createFeaturesSection(){
 
 }
 
-function createLogSection(parent){
+function getTime(){
+    let time = new Date(Date.now()).toTimeString().substring(0, 8);
+    return(time);
+}
+
+function createLogSection(parent=document.getElementById('contentContainer4')){
+
+    let titleContainer = document.getElementById('LogTextContainer');
+    let timeContainer = createHTMLChildElement(titleContainer, 'div', 'timeContainer');
+    let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText', 'hello');
+
+
+    let logShadowContainer = createHTMLChildElement(parent, 'div', 'logShadowContainer');
+
+
+    let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
+    let chatContainer = createHTMLChildElement(chatOverheadContainer, 'div', 'chatContainer');
+
+
+    let messageSettingsContainer = createHTMLChildElement(parent, 'div', 'messageSettingsContainer');
+
+    let messageSettingsButtonContainer = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettingsButtonContainer');
+
+    let messageSettingsArrow = createHTMLChildElement(messageSettingsButtonContainer, 'span', 'messageSettingsArrow', "\u25B2");
+    let messageSettingsButton = createHTMLChildElement(messageSettingsButtonContainer, 'div', 'messageSettingsButton');
+
+    let messageSettingsButtonText = createHTMLChildElement(messageSettingsButton, 'span', 'messageSettingsButtonText', 'Message Settings');
+
+    let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
+
+    createMessageSetting('Lit title');
+    detectClickOnMessageSettings();
+
+    setInterval(() => {
+        let currentTime = getTime();
+        timeText.textContent = currentTime;
+        pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
+    }, 1000)
+
+    function detectClickOnMessageSettings(){
+
+        messageSettingsContainer.addEventListener('click', (event) => {
+        
+            if(messageSettings.style.transform != 'scaleY(1)'){
+        
+                messageSettingsButtonContainer.style.transform = 'translateY(0)';
+                messageSettings.style.transform = 'scaleY(1)';
+                messageSettingsArrow.style.transform = 'rotate(180deg)';
+        
+            } else {
+        
+                messageSettingsButtonContainer.style.transform = 'translateY(70%)';
+                messageSettings.style.transform = 'scaleY(0)';
+                messageSettingsArrow.style.transform = 'rotate(0deg)';
+        
+            }
+
+        });
+    }
+
+
+    // Pushes the a message to the interfaces's log (not to be confused with the console log)
+    /**
+    * @param {string} time - The current time as collected form the getTime() function
+    * @param {string} msg - Any string that will be pushed into a single chat
+    * @param {boolean} error - gives the message a certain error color/theme if it is 'true'
+    * @param {boolean} connection - gives the message a certain connection color/theme if it is 'true'
+    * @param {object} logContainer - DOM element that the message will be pushed to; default is '.chatContainer'
+    */
+
+    function pushChatToLog(time, msg, error, connect, logContainer=document.querySelector('.chatContainer')){
+
+        let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
+    
+        let timestampBox = createHTMLChildElement(singleChatBox, 'div', 'timestampBox');
+    
+        let timeText = createHTMLChildElement(timestampBox, 'span', 'timeText', time);
+    
+    
+    
+        let messageBox = createHTMLChildElement(singleChatBox, 'div', 'messageBox');
+    
+        //let messageBorder = createHTMLChildElement(messageBox, 'div', 'messageBorder');
+    
+        let message = createHTMLChildElement(messageBox, 'span', 'message', msg);
+    
+    
+        if(logAutoScroll){
+            chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
+        }
+    
+        if(error){
+    
+            singleChatBox.classList.add('errorMsg');
+            return;
+    
+        } else if(connect){
+    
+            singleChatBox.classList.add('connectMsg');
+            return;
+    
+        }
+    
+        if(grayMsg){
+    
+            singleChatBox.classList.add('grayMsg');
+    
+        }
+    
+        grayMsg = !grayMsg;
+    
+    }
+
+    function createMessageSetting(settingTitle){
+        let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
+
+        let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
+        settingInput.type = 'checkbox';
+        let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+    }
+
+    function setupMessageSetting(element, isToggle, settingOnFunction, settingOffFunction){
+        element.addEventListener('input', () => {
+    
+            if(isToggle){
+                settingOnFunction();
+            }
+    
+            if(element.checked){
+                settingOnFunction();
+            } else {
+                settingOffFunction();
+            }
+        });
+    }
 
 }
+
+createLogSection();
 
 function createConenctionStatusSection(){
 
