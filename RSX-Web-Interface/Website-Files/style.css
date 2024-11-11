@@ -296,6 +296,11 @@ body{
     background-color: var(--secondaryColor);
 }
 
+#dashRow1-Column2{
+    background-color: unset;
+    outline: unset;
+}
+
 
 
 /* REAL-TIME DATA */

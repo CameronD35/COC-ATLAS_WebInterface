@@ -245,6 +245,9 @@ function createReference(container){
 
 function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
+        if(i === 1){
+            return;
+        }
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
         //createHTMLChildElement();
 
@@ -253,7 +256,6 @@ function createContentSpace(){
         let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
     })
     // This is to remove the unnecassry components from this box. All you need is the settings icon.
-    cleanElement(document.getElementById('dashRow1-Column2'));
 }
 
 
@@ -264,6 +266,7 @@ function createComputerDataSection(){
 
 }
 
+// Creates the button/icon to open the settings
 function createSettingsBox(parent){
     parent.classList.add('settings');
     let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
@@ -281,6 +284,7 @@ function createSettingsBox(parent){
     }
 }
 
+// Creates the content when the settings icon is clicked
 function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
     
     
@@ -345,7 +349,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
         * @param {string} Key - The string name of the setting
         * @param {string} Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
         */
-       
+
         // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
         for (let key in settings)
         {
@@ -395,7 +399,7 @@ function createFeaturesSection(){
 
 }
 
-function createLogSection(){
+function createLogSection(parent){
 
 }
 
