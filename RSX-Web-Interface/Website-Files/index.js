@@ -418,7 +418,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText', 'hello');
 
 
-    let logShadowContainer = createHTMLChildElement(parent, 'div', 'logShadowContainer');
+    let topLogShadowContainer = createHTMLChildElement(parent, 'div', 'topLogShadowContainer');
+    let bottomLogShadowContainer = createHTMLChildElement(parent, 'div', 'bottomLogShadowContainer');
 
 
     let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
@@ -436,18 +437,18 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
 
-    createMessageSetting('Lit title');
+    createMessageSetting('Auto-Scroll', true);
     detectClickOnMessageSettings();
 
     setInterval(() => {
         let currentTime = getTime();
         timeText.textContent = currentTime;
         pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
-    }, 1000)
+    }, 500)
 
     function detectClickOnMessageSettings(){
 
-        messageSettingsContainer.addEventListener('click', (event) => {
+        messageSettingsButtonContainer.addEventListener('click', (event) => {
         
             if(messageSettings.style.transform != 'scaleY(1)'){
         
@@ -492,9 +493,37 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
         let message = createHTMLChildElement(messageBox, 'span', 'message', msg);
     
-    
+        
+        let topShadow = document.getElementById('topLogShadowContainer');
+        let bottomShadow = document.getElementById('bottomLogShadowContainer');
+
+
+        // If the user has auto-scroll on, it will bring the user to the most recent message when added, otherwise it will do nothing.
         if(logAutoScroll){
             chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
+        }
+
+        // This sequence of if/else statements shows a shadow on the top if the enterity of the first message added is not located within the message container
+        // It also shows a shadow on the bottom if the enterity of the last message added is not located in the message container
+
+        if(chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != 0){
+
+            topLogShadowContainer.style.opacity = 1;
+
+        } else {
+
+            topLogShadowContainer.style.opacity = 0;
+
+        }
+
+        if (chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != (chatOverheadContainer.scrollHeight - chatOverheadContainer.clientHeight)){
+
+            bottomLogShadowContainer.style.opacity = 1;
+
+        } else {
+
+            bottomLogShadowContainer.style.opacity = 0;
+
         }
     
         if(error){
@@ -519,19 +548,32 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
     }
 
-    function createMessageSetting(settingTitle){
+    function createMessageSetting(settingTitle, setDefaultToTrue){
         let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
 
         let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
         settingInput.type = 'checkbox';
+        if (setDefaultToTrue){ settingInput.checked= 'true'}
         let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+
+        setupMessageSetting(singleMessageSetting, true, () => {logAutoScroll = !logAutoScroll; console.log(logAutoScroll)}, () => {logAutoScroll = !logAutoScroll});
     }
+
+
+    // Sets up a setting for the log section
+    /**
+    * @param {object} element - The DOM element associated with the setting input
+    * @param {boolean} isToggle - Set to true if your setting simply turns something on/off, allows author to bypass having an off function
+    * @param {function} settingOnFunction - a function to execute if the checkboxed goes from unchecked to checked
+    * @param {function} settingOffFunction - a function to execute if the checkboxed goes from checked to unchecked
+    */
 
     function setupMessageSetting(element, isToggle, settingOnFunction, settingOffFunction){
         element.addEventListener('input', () => {
     
             if(isToggle){
                 settingOnFunction();
+                return;
             }
     
             if(element.checked){
