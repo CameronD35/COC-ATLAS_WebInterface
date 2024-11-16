@@ -1,4 +1,5 @@
 import createHTMLChildElement from './modules/createElement.js';
+import SettingsOption from './modules/settingsOption.js';
 //import Graph from '/modules/lineChart.js';
 
 // START SETUP CODE
@@ -8,21 +9,18 @@ let graphRange;
 let clickDetectEventExists = false;
 let overlayOccupied = false;
 
+/** The list of all settings. */
+let settings = [
+    new SettingsOption("Light Mode On", "checkbox", false),
+    new SettingsOption("Max Log Messages", "number", 50),
+];
 
-
-let settings = { 
-    "Light Mode On": "checkbox",
-    "Max Log Messages": "number"
-};
+/** The max messages setting option. */
+let maxMessagesSetting = settings[1];
 
 // Variables for the log section
 let grayMsg = false;
 let logAutoScroll = true;
-
-/** If light mode is on. */
-let lightModeOn = false;
-/** The max amount of messages to show in the log. */
-let maxMessages = 50;
 
 createPage();
 
@@ -325,17 +323,17 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     }
 
     /** A callback for when any setting has changed.
-        @param {setting} - The name of the setting that was changed. */
+        @param {SettingsOption} setting - The name of the setting that was changed. */
     function settingChanged(setting) 
     {
         // The main and secondary css vars.
         let mainColorCssVar = '--mainColor'; 
         let secondaryColorCssVar = '--secondaryColor'; 
 
-        switch (setting)
+        switch (setting.name)
         {
             case "Light Mode On":
-                lightModeOn = !lightModeOn;
+                setting.value = !setting.value;
 
                 // https://davidwalsh.name/css-variables-javascript
                 // Get the current values
@@ -350,8 +348,8 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
             case "Max Log Messages":
                 let numberInput = document.getElementById("Max Log MessagesInput");
                 let newValue = numberInput.value;
+                setting.value = newValue;
 
-                maxMessages = newValue;
                 removeMessagesWhenBeyondMax();
                 break;
         }
@@ -361,51 +359,37 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     function constructSettings() 
     {
 
-        /** The list of settings.
-        * @param {string} Key - The string name of the setting
-        * @param {string} Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
-        */
-
         // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
-        for (let key in settings)
+        for (const setting of settings) 
         {
-            if (settings.hasOwnProperty(key)) 
-            {
-                // value is the type of input
-                let value = settings[key];
-                switch (value) {
-                    case "checkbox":
-                    case "number":
-                        constructInput(key, value);
-                        break;
-                    default:
-                        break;
-                } 
-            }
+            constructInput(setting)
         }
 
         /** Create an input element. 
          * @param {string} name - The name of the setting.
          * @param {string} type - The type of the input element. 
         */
-        function constructInput(name, type)
+        function constructInput(setting)
         {
+            let name = setting.name;
+            let type = setting.type;
+            let value = setting.value;
+
             let settingDiv = createHTMLChildElement(inputContainer, 'div', 'individualSettingDiv', null, null, null);
             let closeInput = createHTMLChildElement(settingDiv, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
 
             closeInput.addEventListener("change", (e) => {
-                settingChanged(name);
+                settingChanged(setting);
             });
 
-            // TODO: do this dynamically
-            switch (name)
+            switch (type)
             {
-                case "Light Mode On":
-                    closeInput.checked = lightModeOn;
+                case "checkbox":
+                    closeInput.checked = value;
                     break;
-                case "Max Log Messages":
-                    closeInput.value = maxMessages;
+                case "number":
+                    closeInput.value = value;
                     break;
             }
 
@@ -425,14 +409,14 @@ function removeMessagesWhenBeyondMax()
     let logContainer = document.getElementById("chatContainer");
     let messages = logContainer.children;
 
-    if (messages.length <= maxMessages)
+    if (messages.length <= maxMessagesSetting.value)
     {
         // Don't remove if within the limit.
         return;
     }
 
 
-    let amountToRemove = messages.length - maxMessages;
+    let amountToRemove = messages.length - maxMessagesSetting.value;
     for (var i = 0; i < amountToRemove; i++)
     {
         messages.item(0).remove();
