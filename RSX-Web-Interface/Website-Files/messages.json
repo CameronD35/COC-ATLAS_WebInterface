@@ -1,0 +1,13 @@
+{
+    "message1": {
+        "type": "normal",
+        "time": "18:34:57",
+        "text": "The most important message"
+    },
+
+    "message2": {
+        "type": "error",
+        "time": "18:56:24",
+        "text": "The most important message"
+    }
+}

@@ -1,4 +1,6 @@
 import createHTMLChildElement from './modules/createElement.js';
+const fs = require('fs');
+let messagesFile = fs.readFileSync('messages.json');
 //import Graph from '/modules/lineChart.js';
 
 // START SETUP CODE
@@ -7,7 +9,7 @@ let referenceOpen = false;
 let graphRange;
 let clickDetectEventExists = false;
 let overlayOccupied = false;
-
+let messageCount = 0;
 
 
 let settings = { 
@@ -406,11 +408,13 @@ function createFeaturesSection(){
 
 }
 
+// Gets the current time in hh:mm:ss 24-hr format
 function getTime(){
     let time = new Date(Date.now()).toTimeString().substring(0, 8);
     return(time);
 }
 
+// Creates the log section
 function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let titleContainer = document.getElementById('LogTextContainer');
@@ -440,11 +444,13 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     createMessageSetting('Auto-Scroll', true);
     detectClickOnMessageSettings();
 
+
+    // For testing purposes
     setInterval(() => {
         let currentTime = getTime();
         timeText.textContent = currentTime;
         pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
-    }, 500)
+    }, 500);
 
     function detectClickOnMessageSettings(){
 
@@ -478,6 +484,33 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     */
 
     function pushChatToLog(time, msg, error, connect, logContainer=document.querySelector('.chatContainer')){
+
+        // This features requires node.js and thus will be added when the backend is setup
+
+        // let messageType = (() => {
+        //     if(error){
+        //         return 'error';
+        //     } else if (connect){
+        //         return 'connect';
+        //     } else {
+        //         return 'generic';
+        //     }
+        // })();
+        // let messageFileLog = JSON.parse(messagesFile);
+        
+        // let messageInJSONFormat = messageFileLog.push({
+        //     "type": messageType,
+        //     "time": time,
+        //     "message": msg
+        // });
+
+        // let updatedMessageLog = JSON.stringify(messageFileLog);
+
+        // fs.writeFile('messages.json', updatedMessageLog, (err) => {
+        //     if (err) throw err;
+
+        //     console.log('message added');
+        // });
 
         let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
     
@@ -526,6 +559,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
         }
     
+
+        // These are options for different message types
         if(error){
     
             singleChatBox.classList.add('errorMsg');
