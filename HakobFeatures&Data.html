@@ -1,0 +1,178 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="style.css" />
+    <title>Document</title>
+  </head>
+  <body>
+    <div class="hero" id="hero">
+      <div class="boxContainer">
+        <div class="dashRow" id="dashRow1" style="height: 15%">
+          <div
+            class="dashRow1-Column columnInRow box"
+            id="dashRow1-Column1"
+            style="width: 95%"
+          >
+            <div class="contentContainer" id="contentContainer0">
+              <!-- Place HTML code for the Computer Data Section here  -->
+              <div class="computerData computerName">Hal 3000</div>
+              <div class="border computerData"></div>
+              <div class="computerData Ram">
+                Ram:
+                <span class="computerDataVariable computerData">xx</span>
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData IPAddress">
+                IP Address:
+                <span class="computerDataVariable computerData">xx</span>
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData">
+                Currently Running:
+                <span class="computerDataVariable computerData">xx</span>
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData">
+                Something else:
+                <span class="computerDataVariable computerData">xx</span>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dashRow1-Column columnInRow box"
+            id="dashRow1-Column2"
+            style="width: 5%"
+          >
+            <div class="contentContainer" id="contentContainer0">
+              <!-- Place HTML code for the Settings Section here  -->
+            </div>
+          </div>
+        </div>
+        <div class="dashRow" id="dashRow2" style="height: 70%">
+          <div
+            class="dashRow2-Column columnInRow"
+            id="dashRow2-Column1"
+            style="width: 75%; flex-direction: row"
+          >
+            <div class="dashColumn" id="dashColumn4" style="width: 100%">
+              <div
+                class="dashColumn4-Row rowInColumn box"
+                id="dashColumn4-Row1"
+                style="height: 50%"
+              >
+                <div class="boxTitleContainer" id="ReaTextContainer">
+                  <div class="boxTitle" id="ReaText">Real-Time Data</div>
+                </div>
+                <div class="contentContainer" id="contentContainer2">
+                  <span class="guideText" id="guideText2"
+                    >Place your content here.</span
+                  >
+                  <!-- Place HTML code for the Computer Data Section here  -->
+                </div>
+              </div>
+              <div
+                class="dashColumn4-Row rowInColumn box"
+                id="dashColumn4-Row2"
+                style="height: 50%"
+              >
+                <div class="boxTitleContainer" id="FeaTextContainer">
+                  <div class="boxTitle" id="FeaText">Features</div>
+                </div>
+                <div class="contentContainer" id="contentContainer3">
+                  <!-- Place HTML code for the Features Section here  -->
+                  <ul class="features">
+                    <span id="initialization">Initialization</span>
+                    <div>
+                      <input type="checkbox" name="Features" checked />
+                      <label for="checkbox" class="featuresItem"
+                        >Activate TOF Sensor</label
+                      >
+                    </div>
+                    <div>
+                      <input type="checkbox" name="Features" checked />
+                      <label for="checkbox" class="featuresItem"
+                        >Activate Deployment System</label
+                      >
+                    </div>
+                    <div>
+                      <input type="checkbox" name="Features" checked />
+                      <label for="checkbox" class="featuresItem"
+                        >Rotate Motors</label
+                      >
+                    </div>
+                    <div>
+                      <input type="checkbox" name="Features" checked />
+                      <label for="checkbox" class="featuresItem"
+                        >Rotate Mirrors</label
+                      >
+                    </div>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+          <div
+            class="dashRow2-Column columnInRow box"
+            id="dashRow2-Column2"
+            style="width: 25%"
+          >
+            <div class="boxTitleContainer" id="LogTextContainer">
+              <div class="boxTitle" id="LogText">Log</div>
+            </div>
+            <div class="contentContainer" id="contentContainer4">
+              <!-- Place HTML code for the Log Section here  -->
+            </div>
+          </div>
+        </div>
+        <div class="dashRow" id="dashRow3" style="height: 15%">
+          <div
+            class="dashRow3-Column columnInRow box"
+            id="dashRow3-Column1"
+            style="width: 100%"
+          >
+            <div class="contentContainer" id="contentContainer5">
+              <div class="computerData">
+                Connected to<span
+                  class="computerDataVariable computerData"
+                  id="portNumber"
+                >
+                  Port: 8000</span
+                >
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData">
+                Current Connection:<span
+                  class="computerDataVariable computerData"
+                >
+                  Good</span
+                >
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData">
+                Average Response Time:<span
+                  class="computerDataVariable computerData"
+                >
+                  23ms</span
+                >
+              </div>
+              <div class="border computerData"></div>
+              <div class="computerData"></div>
+              <div class="computerData" id="lineChart"></div>
+              <!-- Place HTML code for the Connection Status here  -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+  <script src="index.js" type="module" defer></script>
+</html>

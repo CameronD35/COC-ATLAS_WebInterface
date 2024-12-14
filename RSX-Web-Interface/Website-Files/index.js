@@ -1,7 +1,8 @@
 import createHTMLChildElement from './modules/createElement.js';
-const fs = require('fs');
-let messagesFile = fs.readFileSync('messages.json');
-//import Graph from '/modules/lineChart.js';
+
+import SettingsOption from './modules/settingsOption.js';
+
+import Graph from './modules/lineChart.js';
 
 // START SETUP CODE
 
@@ -9,19 +10,22 @@ let referenceOpen = false;
 let graphRange;
 let clickDetectEventExists = false;
 let overlayOccupied = false;
+
 let messageCount = 0;
 
 
-let settings = { 
-    "Light Mode On": "checkbox"
-};
+/** The list of all settings. */
+let settings = [
+    new SettingsOption("Light Mode On", "checkbox", false),
+    new SettingsOption("Max Log Messages", "number", 50),
+];
+
+/** The max messages setting option. */
+let maxMessagesSetting = settings[1];
 
 // Variables for the log section
 let grayMsg = false;
 let logAutoScroll = true;
-
-/** If light mode is on. */
-let lightModeOn = false;
 
 createPage();
 
@@ -260,6 +264,10 @@ function createContentSpace(){
         }
         //createHTMLChildElement();
 
+        if(i === 0){
+            return;
+        }
+
         // Remove this guide text once you begin working on your component. 
         // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
         let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
@@ -271,9 +279,48 @@ function createContentSpace(){
 
 // PUT YOUR CODE HERE. FEEL FREE TO ADD, MODIFY, OR REMOVE FUNCTIONS AS NEEDED.
 
-function createComputerDataSection(){
+function createComputerDataSection(container, dataTitleAndPoints, computerName){
 
+    let computerDataContainer = createHTMLChildElement(container, 'div', 'computerDataContainer');
+
+    let computerNameSection = createHTMLChildElement(computerDataContainer, 'div', 'computerNameSection', computerName);
+    
+    let border = createHTMLChildElement(computerDataContainer, 'div', 'border', null, `computerDataBorder`)
+
+    for(let i = 0; i < dataTitleAndPoints.length; i++){
+        let currentDatumSection = createHTMLChildElement(computerDataContainer, 'div', 'computerDatumSection', null, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDatumSection`);
+
+        let currentDatumTitle = createHTMLChildElement(currentDatumSection, 'div', `computerDataTitle`, `${dataTitleAndPoints[i].title}:`, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDataTitle`);
+
+        let currentDatumPoint = createHTMLChildElement(currentDatumSection, 'span', `computerDataPoint`, dataTitleAndPoints[i].data, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDataPoint`);
+
+        if(i == dataTitleAndPoints.length - 1){
+            continue;
+        }
+    }
 }
+
+createComputerDataSection(document.getElementById('contentContainer0'), [
+    {
+        title: 'RAM',
+        data: '16GB'
+    },
+
+    {
+        title: 'IP Address',
+        data: '0000x6F'
+    },
+
+    {
+        title: 'Currently Running',
+        data: 'cv.py'
+    },
+
+    {
+        title: 'Something Else',
+        data: 'Cool'
+    }
+], 'Hal-3000')
 
 // Creates the button/icon to open the settings
 function createSettingsBox(parent){
@@ -282,16 +329,6 @@ function createSettingsBox(parent){
     settingsButton.src = './Image-Assets/SettingsIcon.webp';
 
     settingsButton.addEventListener("click", settingsButtonClicked);
-
-
-    /** Open settings when button clicked. */
-    function settingsButtonClicked()
-    {  
-        showOverlay(createSettingsSection);
-        //closeButton.addEventListener("click", closeSettingsButtonClicked);
-        document.getElementById('settingsDialog').show();
-    }
-}
 
 // Creates the content when the settings icon is clicked
 function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
@@ -313,6 +350,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
     // Listen for user clicking the button.
     closeButton.addEventListener('click', closeSettingsButtonClicked)
+    
 
 
     /* When the close button on the settings panel is clicked. */
@@ -324,17 +362,17 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     }
 
     /** A callback for when any setting has changed.
-        @param {setting} - The name of the setting that was changed. */
+        @param {SettingsOption} setting - The name of the setting that was changed. */
     function settingChanged(setting) 
     {
         // The main and secondary css vars.
         let mainColorCssVar = '--mainColor'; 
         let secondaryColorCssVar = '--secondaryColor'; 
 
-        switch (setting)
+        switch (setting.name)
         {
             case "Light Mode On":
-                lightModeOn = !lightModeOn;
+                setting.value = !setting.value;
 
                 // https://davidwalsh.name/css-variables-javascript
                 // Get the current values
@@ -346,51 +384,55 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
 
                 break;
+            case "Max Log Messages":
+                let numberInput = document.getElementById("Max Log MessagesInput");
+                let newValue = numberInput.value;
+                setting.value = newValue;
+
+                removeMessagesWhenBeyondMax();
+                break;
         }
     }
-    
 
     /** Change the settings panel's HTML */
     function constructSettings() 
     {
 
-        /** The list of settings.
-        * @param {string} Key - The string name of the setting
-        * @param {string} Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
-        */
-
         // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
-        for (let key in settings)
+        for (const setting of settings) 
         {
-            if (settings.hasOwnProperty(key)) 
-            {
-                // value is the type of input
-                let value = settings[key];
-                switch (value) {
-                    case "checkbox":
-                    case "number":
-                        constructInput(key, value);
-                        break;
-                    default:
-                        break;
-                } 
-            }
+            constructInput(setting)
         }
 
         /** Create an input element. 
          * @param {string} name - The name of the setting.
          * @param {string} type - The type of the input element. 
         */
-        function constructInput(name, type)
+        function constructInput(setting)
         {
-            let closeInput = createHTMLChildElement(inputContainer, 'input', `${type}Input`, null, `${name}Input`);
+            let name = setting.name;
+            let type = setting.type;
+            let value = setting.value;
+
+            let settingDiv = createHTMLChildElement(inputContainer, 'div', 'individualSettingDiv', null, null, null);
+            let closeInput = createHTMLChildElement(settingDiv, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
 
             closeInput.addEventListener("change", (e) => {
-                settingChanged(name);
+                settingChanged(setting);
             });
 
-            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${type}Label`, `${name}`, `${name}Label`);
+            switch (type)
+            {
+                case "checkbox":
+                    closeInput.checked = value;
+                    break;
+                case "number":
+                    closeInput.value = value;
+                    break;
+            }
+
+            let closeInputLabel = createHTMLChildElement(settingDiv, 'label', `${type}Label`, `${name}`, `${name}Label`);
             closeInputLabel.for = `${name}`
 
         }
@@ -399,6 +441,26 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 }
 
+
+/** Remove the message elements when the count goes beyond the max. */
+function removeMessagesWhenBeyondMax()
+{
+    let logContainer = document.getElementById("chatContainer");
+    let messages = logContainer.children;
+
+    if (messages.length <= maxMessagesSetting.value)
+    {
+        // Don't remove if within the limit.
+        return;
+    }
+
+
+    let amountToRemove = messages.length - maxMessagesSetting.value;
+    for (var i = 0; i < amountToRemove; i++)
+    {
+        messages.item(0).remove();
+    }
+}
 
 function createRealTimeDataSection(){
 
@@ -581,6 +643,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
         grayMsg = !grayMsg;
     
+        // Remove old messages if needed.
+        removeMessagesWhenBeyondMax();
     }
 
     function createMessageSetting(settingTitle, setDefaultToTrue){
