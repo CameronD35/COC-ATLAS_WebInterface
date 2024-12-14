@@ -9,11 +9,14 @@ let randomData = [];
 // Function for updating the graph
 export default class Graph {
 
-    constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id) {
+    constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id, [xAxisTicks, yAxisTicks]) {
 
         this.id = id;
         this.globX = 0  
         this.globY = 0
+
+        this.xTicks = xAxisTicks;
+        this.yTicks = yAxisTicks;
 
         // iinitializes the dataset for this graph
         this.dataset = [];
@@ -319,5 +322,10 @@ export default class Graph {
 
         
         
+    }
+
+    swapDataset(newDataset){
+        this.dataset = newDataset;
+        this.update();
     }
 }

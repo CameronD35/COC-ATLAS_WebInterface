@@ -1,10 +1,13 @@
 import createHTMLChildElement from './modules/createElement.js';
-import Graph from 'lineChart.js';
+import Graph from './modules/lineChart.js';
 
 // START SETUP CODE
 
 let referenceOpen = false;
 let graphRange;
+let graphArray = [];
+
+
 createPage();
 
 // END SETUP CODE
@@ -116,6 +119,10 @@ function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
 
+        if(i === 2){
+            return;
+        }
+
         // Remove this guide text once you begin working on your component. 
         // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
         let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
@@ -136,9 +143,97 @@ function createSettingsSection(){
 
 }
 
-function createRealTimeDataSection(){
+function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows){
+    let realTimeContainer = createHTMLChildElement(container, 'div', 'realTimeContainer');
+
+    let graphicalDataSection = createHTMLChildElement(realTimeContainer, 'div', 'graphicalDataSection');
+
+
+    
+    for(let i = 1; i <= numOfGraphs; i++){
+        let currentGraphSection = createHTMLChildElement(graphicalDataSection, 'div', 'graphSection', null, `graphSection${i}`);
+        let currentDataInfo = createHTMLChildElement(currentGraphSection, 'div', 'dataInfo', null, `dataInfo${i}`);
+        let dataTitle = createHTMLChildElement(currentDataInfo, 'div', 'dataTitle', `Data Point ${i}`, `dataTitle${i}`);
+    }
+
+    let lengthOfData = dataPoints.length;
+
+    // Based on how many rows are in each column, it will use the length of the array of data points
+    // It will round off to the highest number to account for integers that is not a multiple of the number of rows
+    let numOfColumns = Math.ceil(lengthOfData / numOfRows);
+
+    let numericalDataSection = createHTMLChildElement(realTimeContainer, 'div', 'numericalDataSection');
+
+    let dataTable = createHTMLChildElement(numericalDataSection, 'table', 'dataTable');
+
+    let equalParityOfDataAndRows = ((numOfRows % 2) == (lengthOfData % 2));
+    
+
+    console.log(equalParityOfDataAndRows)
+
+    // The reason we want to update the row number is to account for the case 
+    // where there are less data points then desired rows
+    let updatedRowNumber;
+
+    if(lengthOfData <= numOfRows){
+        updatedRowNumber = lengthOfData;
+    } else {
+        updatedRowNumber = numOfRows;
+    }  
+
+    for (let i = 1; i <= updatedRowNumber; i++){
+        let currentTableRow = createHTMLChildElement(dataTable, 'tr', 'dataRow', null, `dataRow${i}`);
+    }
+
+    for(let i = 1; i <= lengthOfData; i++){
+        let rowPlacement = i % updatedRowNumber;
+
+        let rowElement = document.getElementById(`dataRow${rowPlacement}`);
+
+        if (rowPlacement == 0){
+            rowElement = document.getElementById(`dataRow${updatedRowNumber}`);
+        }
+        // if(i/updatedRowNumber > 1){
+        //     console.log('sikrduhgskuhbfgvzsd');
+        //     continue;
+        // }
+
+        let currentTableHeader = createHTMLChildElement(rowElement, 'th', 'dataTitle', `${dataPoints[i-1]}:`, `dataTable${i}`);
+        let currentTableData = createHTMLChildElement(rowElement, 'td', 'dataValue', 23, `dataValue${i}`);
+
+    }
+}
+
+
+createRealTimeDataSection(document.getElementById('contentContainer2'), 2, 
+['Temperature', 'Pressure', 'SO2 Concentration', 'Cloud Points', 'CPU Usage', 'Epic Info'], 3)
+
+function createRealTimeGraphs(){
+    let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph1', [5,4]);
+    let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph2', [5,4]);
+    graph1.create();
+    graph2.create();
+
+    graphArray.push(graph1, graph2)
+}
+
+window.addEventListener('resize', () => {resizeElements();});
+
+function resizeElements(){
+    let graphSectionDimensions = document.querySelector('.graphicalDataSection').getBoundingClientRect();
+    const graphSectionWidth = graphSectionDimensions.width;
+    const graphSectionHeight = graphSectionDimensions.height;
+
+    console.log(graphSectionWidth);
+
+    graphArray.forEach((elem, i) => {
+        elem.resize(Math.round(graphSectionWidth) * 0.4, Math.round(graphSectionHeight) * 0.75);
+    })
+
 
 }
+
+createRealTimeGraphs();
 
 function createFeaturesSection(){
 
