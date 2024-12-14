@@ -289,9 +289,9 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
     constructSettings();
 
-    closeButton.addEventListener('click', closeSettingsButtonClicked)
-
     // Listen for user clicking the button.
+    closeButton.addEventListener('click', closeSettingsButtonClicked)
+    
 
     /** When the close button on the settings panel is clicked. */
     function closeSettingsButtonClicked(event)
