@@ -16,21 +16,44 @@
 </head>
 <body>
 
-    <div class="reference" id="reference"> REFERENCE
+    <div class="overlay" id="overlay" style="width: 0">
+        <div class="overlayContentContainer" id="overlayContentContainer">
+            
+        </div>
 
-        <div class="referenceContent" id="referenceContent"> 
+        <!-- <div class="referenceContent" id="referenceContent"> 
             <img src="Image-Assets/RSX25WebInterfaceConcept.webp" class="referenceImage" id="referenceImage">
         </div>
         <div class="hintContainer" id="hintContainer">
             <span class="hintTextKey">Shift + R</span><div class="hintText">to close</div>
+        </div> -->
+    </div>
+
+
+    <!--Settings panel https://developer.mozilla.org/en-US/docs/Web/HTML/Element/dialog-->
+    <!-- <dialog id="settingsDialog">
+        <div>
+            Settings header
+            <h1>
+                Settings
+            </h1>
+
+            Close settings button
+            <button autofocus id="closeSettingsButton">Close</button>
+         </div> -->
+    <!-- </dialog> -->
+
+    
+    <div class="hero" id="hero">
+        <div class="boxContainer">
+            
+
         </div>
     </div>
 
-    <div class="hero" id="hero">
-        <div class="boxContainer"></div>
-    </div>
     <script src="https://unpkg.com/axios@0.19.0/dist/axios.js"></script>
     <script src="Website-Files/index.js" type="module"></script>
+    <!-- <script src="Website-Files/settingsPanel.js" type="text/javascript"></script> -->
     </div>
 </body>
 </html>

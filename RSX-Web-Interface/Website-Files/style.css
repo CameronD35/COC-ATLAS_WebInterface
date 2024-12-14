@@ -35,7 +35,7 @@ body{
 
 /* REFERENCE IMAGE */
 
-.reference{
+.overlay{
     width: 100vw;
     height: 100vh;
     position: fixed;
@@ -44,16 +44,23 @@ body{
     flex-direction: column;
     justify-content: center;
     align-items: center;
-    opacity: 0;
     transition: 0.6s;
+
+}
+
+.overlayContentContainer{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    flex-direction: column;
     color: white;
     font-size: 40px;
-
+    width: 70%;
 }
 
 .referenceContent{
     aspect-ratio: 16/9;
-    width: 70%;
+    width: 100%;
     display: flex;
     justify-content: center;
     align-items: center;
@@ -68,6 +75,11 @@ body{
     aspect-ratio: 16/9;
     width: 100%;
     pointer-events: all;
+}
+
+.referenceTitle{
+    font-weight: 900;
+    font-size: 40px;
 }
 
 .hintText, .hintTextKey{
@@ -119,7 +131,8 @@ body{
     margin: 0.25%;
     display: flex;
     flex-direction: column;
-    align-items: center; 
+    align-items: center;
+    overflow: clip;
 }
 
 .boxTitleContainer{
@@ -256,6 +269,86 @@ body{
 
 /* SETTINGS */
 
+.settings{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+.settingsIcon{
+    max-width: 70%;
+    max-height: 70%;
+}
+
+.settingsContentContainer{
+    width: 100%;
+}
+
+.settingsControlContainer{
+    margin: 0 0 5px 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.closeSettingsContainer{
+    border: var(--mainColor) solid 2px;
+    border-radius: 10px;
+    padding: 5px;
+    color: var(--mainColor);
+    background-color: var(--secondaryColor);
+}
+
+.closeSettingsContainer:hover{
+    border: var(--mainColor) solid 2px;
+    border-radius: 10px;
+    padding: 5px;
+    color: var(--secondaryColor);
+    background-color: var(--mainColor);
+}
+
+.closeSettingsButton{
+    font-size: 15px;
+    font-weight: 600;
+    font-style: italic;
+}
+
+.settingsTitle{
+    color: var(--mainColor);
+    font-weight: 900;
+}
+
+.inputContainer{
+    display: flex;
+    justify-content: left;
+    /* align-items: center; */
+    height: auto;
+    flex-direction: column;
+}
+
+.checkboxInput{
+    background-color: var(--secondaryColor);
+}
+
+.checkboxLabel{
+    color: var(--mainColor);
+    margin: 0 0 0 5px;
+    font-weight: 500;
+}
+
+.settingsDialog{
+    width: 30%;
+    height: calc(100% - 40px);
+    border-radius: 20px;
+    padding: 20px;
+    margin: 0.75%;
+    background-color: var(--secondaryColor);
+}
+
+#dashRow1-Column2{
+    background-color: unset;
+    outline: unset;
+}
+
 
 
 /* REAL-TIME DATA */
@@ -268,6 +361,189 @@ body{
 
 /* LOG */
 
+.logShadowContainer{
+    position: absolute;
+    width: 100%;
+    height: 10%;
+    top: 0;
+    background-color: var(--secondaryColor);
+    mask-image: linear-gradient(rgba(0, 0, 0, 1) 5%, rgba(0, 0, 0, 0));
+    z-index: 1;
+}
+
+#LogTextContainer{
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-items: center;
+    position: relative;
+    background-color: var(--secondaryColor);
+}
+
+.timeContainer{
+    margin: 0 10px 0 0;
+}
+
+.timeText{
+    color: white;
+    font-family: 'JetBrains Mono';
+    font-weight: 800;
+    font-size: 16px;
+}
+
+.chatOverheadContainer{
+    height: 85%;
+    width: 100%;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    background-color: var(--secondaryColor);
+}
+
+.chatContainer{
+    background-color: var(--secondaryColor);
+    height: 100%;
+    width: 100%;
+    color: white;
+    align-content: end;
+
+}
+
+.singleChat{
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition-duration: 0;
+}
+
+.timestampBox{
+    background-color: unset;
+    width: 30%;
+    height: 100%;
+    padding: 5px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.timestampBox span{
+    font-family: 'JetBrains Mono';
+    font-weight: 300;
+    font-style: italic;
+    font-size: 12px;
+    opacity: 0.5;
+}
+
+.grayMsg{
+    background-color: rgba(68, 68, 68, 0.4);
+}
+
+.errorMsg{
+    background-color: rgba(219, 15, 15, 0.3);
+}
+
+.connectMsg{
+    background-color: rgba(44, 212, 27, 0.3);
+}
+
+.messageBox{
+    background-color: unset;
+    width: 70%;
+    height: 100%;
+    padding: 2% 6%;
+}
+
+.messageBox span{
+    font-family: 'JetBrains Mono';
+    font-size: 12px;
+}
+
+.messageSettingsContainer{
+    width: 100%;
+    height: 15%;
+    background-color: unset;
+    display: flex;
+    flex-direction: column;
+    justify-content: end;
+    background-color: var(--secondaryColor);
+}
+
+#contentContainer4{
+    justify-content: center;
+    align-items: start;
+    flex-direction: column;
+    position: relative;
+}
+
+.messageSettingsButton{
+    color: var(--mainColor);
+    border-radius: 3px;
+    padding: 3px;
+}
+
+.messageSettingsButtonContainer{
+    display: flex;
+    justify-content: start;
+    align-items: center;
+    height: auto;
+    flex-direction: column;
+    width: 100%;
+    background-color: unset;
+    color: var(--mainColor);
+    padding: 5px 0;
+    transform: translateY(70%);
+    transition-duration: 0.4s;
+}
+
+.messageSettingsButtonContainer::before{
+    border: var(--tertiaryColor) solid;
+    border-width: 3px 0 0 0;
+}
+
+#messageSettingsButtonText{
+    font-size: 16px;
+    font-weight: 800;
+}
+
+#messageSettingsArrow{
+    font-size: 10px;
+    scale: 1 0.5;
+    line-height: 10px;
+}
+
+.chatOverheadContainer::-webkit-scrollbar {
+    display: none;
+    width: 0;
+}
+  
+.chatOverheadContainer{
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+}
+
+.messageSettings{
+    background-color: unset;
+    height: 70%;
+    width: 100%;
+    transform-origin: bottom;
+    transform: scaleY(0);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 10px;
+    color: white;
+}
+
+.singleMessageSetting{
+    display: flex;
+    align-items: center;
+}
+
+.singleMessageSetting label{
+    font-size: 10px;
+    margin: 0 5px;
+}
 
 
 /* CONNECTION STATUS */
