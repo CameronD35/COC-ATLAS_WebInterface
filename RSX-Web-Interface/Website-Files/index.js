@@ -1,4 +1,5 @@
 import createHTMLChildElement from './modules/createElement.js';
+import SettingsOption from './modules/settingsOption.js';
 //import Graph from '/modules/lineChart.js';
 
 // START SETUP CODE
@@ -8,17 +9,18 @@ let graphRange;
 let clickDetectEventExists = false;
 let overlayOccupied = false;
 
+/** The list of all settings. */
+let settings = [
+    new SettingsOption("Light Mode On", "checkbox", false),
+    new SettingsOption("Max Log Messages", "number", 50),
+];
 
-/** The list of settings.
-     * Key - The string name of the setting
-     * Value - The type of the setting. Currently, only supports 'checkbox' and 'number'.
-     */
-let settings = { 
-    "Light Mode On": "checkbox"
-};
+/** The max messages setting option. */
+let maxMessagesSetting = settings[1];
 
-/** If light mode is on. */
-var lightModeOn = false;
+// Variables for the log section
+let grayMsg = false;
+let logAutoScroll = true;
 
 createPage();
 
@@ -46,6 +48,7 @@ function createPage() {
 
 // DO NOT DELETE THIS FUNCTION
 // Creates the row and column organization
+
 function createBoxStructure(parent){
     let topRow = createRow(parent, 1, 2, 15, false, [90, 10]);
     let secondRow = createRow(parent, 2, 2, 70, false, [75, 25]);
@@ -55,13 +58,13 @@ function createBoxStructure(parent){
     //console.log(topRow, secondRow);
 }
 
-// This creates a row with a cusotmizable amount of columns
-// int rowNumber: The associated value of the row. (ex: if the row is the 3rd row on the page, it should be 3)
-// int numOfColumns: The number of columns (boxes) that will be inside of this row
-// int rowHeight: The desired height of the row in percentage (ex: For 40% you would put 40)
-// bool autoColumnSizing: True for equal sizing of the columns, false for programmer-defined sizing
-// int array columnWidths: An array containing the widths of all the columns (if autoColumnSizing == false)
-
+/** This creates a row with a cusotmizable amount of columns
+* @param {number} rowNumber: The associated value of the row. (ex: if the row is the 3rd row on the page, it should be 3)
+* @param {number} numOfColumns: The number of columns (boxes) that will be inside of this row
+* @param {number} rowHeight: The desired height of the row in percentage (ex: For 40% you would put 40)
+* @param {boolean} autoColumnSizing: True for equal sizing of the columns, false for programmer-defined sizing
+* @param {number} array columnWidths: An array containing the widths of all the columns (if autoColumnSizing == false)
+*/
 // DO NOT DELETE THIS FUNCTION
 
 function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing, columnWidths, name) {
@@ -91,12 +94,14 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
     return row;
 }
 
-// This creates a column with a cusotmizable amount of rows
-// int columnNumber: The associated value of the column. (ex: if the column is the 3rd column on the page, it should be 3)
-// int numOfRows: The number of rows (boxes) that will be inside of this column
-// int columnWidth: The desired width of the column in percentage (ex: For 40% you would put 40)
-// bool autoaRowSizing: True for equal sizing of the rows, false for programmer-defined sizing
-// int array rowHeights: An array containing the heights of all the rows (if autoRowSizing == false)
+/** 
+* This creates a column with a cusotmizable amount of rows
+* @param {number} columnNumber: The associated value of the column. (ex: if the column is the 3rd column on the page, it should be 3)
+* @param {number} numOfRows: The number of rows (boxes) that will be inside of this column
+* @param {number} columnWidth: The desired width of the column in percentage (ex: For 40% you would put 40)
+* @param {boolean} autoaRowSizing: True for equal sizing of the rows, false for programmer-defined sizing
+* @param {number} array rowHeights: An array containing the heights of all the rows (if autoRowSizing == false)
+*/
 
 // DO NOT DELETE THIS FUNCTION
 
@@ -128,16 +133,6 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
-// function createOverlay(func){
-//     let pageContainer = document.querySelector('.hero');
-//     let overlay = document.getElementById('overlay');
-//     let overlayContentContainer = document.getElementById('overlayContentContainer');
-//     pageContainer.style.filter = 'blur(2px)';
-//     overlay.style.opacity = 1;
-//     overlay.style.width = '100vw';
-//     func(overlayContentContainer);
-// }
-
 function showOverlay(functionToCreateContent) {
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
@@ -157,6 +152,13 @@ function showOverlay(functionToCreateContent) {
 
 }
 
+/** 
+* This function detects if the user clicks inside of the content within the overlay (i.e. settings or reference)
+* If the user did click inside, nothing happens
+* If the user clicked outside it will delete the overlay content by utilizing the hideOverlay function
+* @param {object} event - Pulled from the .addEventListener function. The element of which the user clicked
+*/
+
 function readForClick(event) {
     console.log(event)
     let target = event.target;
@@ -169,7 +171,6 @@ function readForClick(event) {
         referenceOpen = false;
         console.log('reference:', referenceOpen);
         hideOverlay();
-        overlay.style.width = 0;
         //console.log(target);
 
     } else { 
@@ -179,7 +180,13 @@ function readForClick(event) {
     }
 }
 
-function hideOverlay(functionToDeleteContent){
+/* 
+* Hides the overlay by cleaning--or deleting--the 'overlay' element
+* It also sets the overlay opacity and width to 0
+* The delay is added for a smoother animation
+*/
+
+function hideOverlay(){
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
     let overlayContentContainer = document.getElementById('overlayContentContainer');
@@ -197,6 +204,7 @@ function hideOverlay(functionToDeleteContent){
     pageContainer.style.filter = '';
 }
 
+// Function that creates the reference accessible by holding down 'Shift' and 'F' simultaneously
 
 function createReference(container){
 
@@ -215,12 +223,17 @@ function createReference(container){
 
     referenceContent.addEventListener('mouseout', focusReference);
 
+
+    // Removes the blur applied to the main page and reduces the opacity of the reference & its container
+
     function focusPage(){
         if(referenceOpen){
             container.style.opacity = 0.4;
             pageContainer.style.filter = 'blur(0px)';
         }
     }
+
+    // Adds a blur to be applied to the main page and increases the opacity of the reference & its container
 
     function focusReference(){
         if(referenceOpen){
@@ -234,9 +247,16 @@ function createReference(container){
 
 // OPEN THE FUNCTION AND REMOVE SPECIFIED LINES WHEN READY
 // This creates the space for you to make your component (The grey area upon first opening up the template.)
+
 function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
+        if(i === 1){
+            return;
+        }
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
+        if(i === 4){
+            return;
+        }
         //createHTMLChildElement();
 
         // Remove this guide text once you begin working on your component. 
@@ -244,7 +264,6 @@ function createContentSpace(){
         let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
     })
     // This is to remove the unnecassry components from this box. All you need is the settings icon.
-    cleanElement(document.getElementById('dashRow1-Column2'));
 }
 
 
@@ -255,6 +274,7 @@ function createComputerDataSection(){
 
 }
 
+// Creates the button/icon to open the settings
 function createSettingsBox(parent){
     parent.classList.add('settings');
     let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
@@ -272,6 +292,7 @@ function createSettingsBox(parent){
     }
 }
 
+// Creates the content when the settings icon is clicked
 function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
     
     
@@ -293,7 +314,8 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     closeButton.addEventListener('click', closeSettingsButtonClicked)
     
 
-    /** When the close button on the settings panel is clicked. */
+
+    /* When the close button on the settings panel is clicked. */
     function closeSettingsButtonClicked(event)
     {
         // Unhook
@@ -302,17 +324,17 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     }
 
     /** A callback for when any setting has changed.
-        @param{setting} - The name of the setting that was changed. */
+        @param {SettingsOption} setting - The name of the setting that was changed. */
     function settingChanged(setting) 
     {
         // The main and secondary css vars.
         let mainColorCssVar = '--mainColor'; 
         let secondaryColorCssVar = '--secondaryColor'; 
 
-        switch (setting)
+        switch (setting.name)
         {
             case "Light Mode On":
-                lightModeOn = !lightModeOn;
+                setting.value = !setting.value;
 
                 // https://davidwalsh.name/css-variables-javascript
                 // Get the current values
@@ -324,47 +346,55 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
 
                 break;
+            case "Max Log Messages":
+                let numberInput = document.getElementById("Max Log MessagesInput");
+                let newValue = numberInput.value;
+                setting.value = newValue;
+
+                removeMessagesWhenBeyondMax();
+                break;
         }
     }
-    
 
     /** Change the settings panel's HTML */
     function constructSettings() 
     {
 
-
         // https://www.geeksforgeeks.org/how-to-iterate-over-a-javascript-object/
-        for (let key in settings)
+        for (const setting of settings) 
         {
-            if (settings.hasOwnProperty(key)) 
-            {
-                // value is the type of input
-                var value = settings[key];
-                switch (value) {
-                    case "checkbox":
-                    case "number":
-                        constructInput(key, value);
-                        break;
-                    default:
-                        break;
-                } 
-            }
+            constructInput(setting)
         }
 
         /** Create an input element. 
-         * @param{name} - The name of the setting.
-         * @param{type} - The type of the input element. 
+         * @param {string} name - The name of the setting.
+         * @param {string} type - The type of the input element. 
         */
-        function constructInput(name, type)
+        function constructInput(setting)
         {
-            let closeInput = createHTMLChildElement(inputContainer, 'input', `${type}Input`, null, `${name}Input`);
+            let name = setting.name;
+            let type = setting.type;
+            let value = setting.value;
+
+            let settingDiv = createHTMLChildElement(inputContainer, 'div', 'individualSettingDiv', null, null, null);
+            let closeInput = createHTMLChildElement(settingDiv, 'input', `${type}Input`, null, `${name}Input`);
             closeInput.type = `${type}`
 
             closeInput.addEventListener("change", (e) => {
-                settingChanged(name);
+                settingChanged(setting);
             });
 
-            let closeInputLabel = createHTMLChildElement(inputContainer, 'label', `${type}Label`, `${name}`, `${name}Label`);
+            switch (type)
+            {
+                case "checkbox":
+                    closeInput.checked = value;
+                    break;
+                case "number":
+                    closeInput.value = value;
+                    break;
+            }
+
+            let closeInputLabel = createHTMLChildElement(settingDiv, 'label', `${type}Label`, `${name}`, `${name}Label`);
             closeInputLabel.for = `${name}`
 
         }
@@ -374,6 +404,26 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 }
 
 
+/** Remove the message elements when the count goes beyond the max. */
+function removeMessagesWhenBeyondMax()
+{
+    let logContainer = document.getElementById("chatContainer");
+    let messages = logContainer.children;
+
+    if (messages.length <= maxMessagesSetting.value)
+    {
+        // Don't remove if within the limit.
+        return;
+    }
+
+
+    let amountToRemove = messages.length - maxMessagesSetting.value;
+    for (var i = 0; i < amountToRemove; i++)
+    {
+        messages.item(0).remove();
+    }
+}
+
 function createRealTimeDataSection(){
 
 }
@@ -382,9 +432,147 @@ function createFeaturesSection(){
 
 }
 
-function createLogSection(){
+function getTime(){
+    let time = new Date(Date.now()).toTimeString().substring(0, 8);
+    return(time);
+}
+
+function createLogSection(parent=document.getElementById('contentContainer4')){
+
+    let titleContainer = document.getElementById('LogTextContainer');
+    let timeContainer = createHTMLChildElement(titleContainer, 'div', 'timeContainer');
+    let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText', 'hello');
+
+
+    let logShadowContainer = createHTMLChildElement(parent, 'div', 'logShadowContainer');
+
+
+    let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
+    let chatContainer = createHTMLChildElement(chatOverheadContainer, 'div', 'chatContainer');
+
+
+    let messageSettingsContainer = createHTMLChildElement(parent, 'div', 'messageSettingsContainer');
+
+    let messageSettingsButtonContainer = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettingsButtonContainer');
+
+    let messageSettingsArrow = createHTMLChildElement(messageSettingsButtonContainer, 'span', 'messageSettingsArrow', "\u25B2");
+    let messageSettingsButton = createHTMLChildElement(messageSettingsButtonContainer, 'div', 'messageSettingsButton');
+
+    let messageSettingsButtonText = createHTMLChildElement(messageSettingsButton, 'span', 'messageSettingsButtonText', 'Message Settings');
+
+    let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
+
+    createMessageSetting('Lit title');
+    detectClickOnMessageSettings();
+
+    setInterval(() => {
+        let currentTime = getTime();
+        timeText.textContent = currentTime;
+        pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
+    }, 1000)
+
+    function detectClickOnMessageSettings(){
+
+        messageSettingsContainer.addEventListener('click', (event) => {
+        
+            if(messageSettings.style.transform != 'scaleY(1)'){
+        
+                messageSettingsButtonContainer.style.transform = 'translateY(0)';
+                messageSettings.style.transform = 'scaleY(1)';
+                messageSettingsArrow.style.transform = 'rotate(180deg)';
+        
+            } else {
+        
+                messageSettingsButtonContainer.style.transform = 'translateY(70%)';
+                messageSettings.style.transform = 'scaleY(0)';
+                messageSettingsArrow.style.transform = 'rotate(0deg)';
+        
+            }
+
+        });
+    }
+
+
+    // Pushes the a message to the interfaces's log (not to be confused with the console log)
+    /**
+    * @param {string} time - The current time as collected form the getTime() function
+    * @param {string} msg - Any string that will be pushed into a single chat
+    * @param {boolean} error - gives the message a certain error color/theme if it is 'true'
+    * @param {boolean} connection - gives the message a certain connection color/theme if it is 'true'
+    * @param {object} logContainer - DOM element that the message will be pushed to; default is '.chatContainer'
+    */
+
+    function pushChatToLog(time, msg, error, connect, logContainer=document.querySelector('.chatContainer')){
+
+        let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
+    
+        let timestampBox = createHTMLChildElement(singleChatBox, 'div', 'timestampBox');
+    
+        let timeText = createHTMLChildElement(timestampBox, 'span', 'timeText', time);
+    
+    
+    
+        let messageBox = createHTMLChildElement(singleChatBox, 'div', 'messageBox');
+    
+        //let messageBorder = createHTMLChildElement(messageBox, 'div', 'messageBorder');
+    
+        let message = createHTMLChildElement(messageBox, 'span', 'message', msg);
+    
+    
+        if(logAutoScroll){
+            chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
+        }
+    
+        if(error){
+    
+            singleChatBox.classList.add('errorMsg');
+            return;
+    
+        } else if(connect){
+    
+            singleChatBox.classList.add('connectMsg');
+            return;
+    
+        }
+    
+        if(grayMsg){
+    
+            singleChatBox.classList.add('grayMsg');
+    
+        }
+    
+        grayMsg = !grayMsg;
+    
+        // Remove old messages if needed.
+        removeMessagesWhenBeyondMax();
+    }
+
+    function createMessageSetting(settingTitle){
+        let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
+
+        let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
+        settingInput.type = 'checkbox';
+        let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+    }
+
+    function setupMessageSetting(element, isToggle, settingOnFunction, settingOffFunction){
+        element.addEventListener('input', () => {
+    
+            if(isToggle){
+                settingOnFunction();
+            }
+    
+            if(element.checked){
+                settingOnFunction();
+            } else {
+                settingOffFunction();
+            }
+        });
+    }
 
 }
+
+createLogSection();
 
 function createConenctionStatusSection(){
 
@@ -410,7 +598,7 @@ function addTextToBoxes(boxesArray, titlesArray){
 
 // DO NOT DELETE THESE FUNCTIONS. USE THESE FUNCTIONS TO HELP BUILD YOUR FUNCTIONS IF NEEDED.
 
-// Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function will ruin.
+// Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function 'run' will run.
 function ifElementExists(element, func) {
     if (element) {
         //console.log('work');
@@ -432,6 +620,11 @@ function cleanElement(element){
 }
 
 // Returns any desired value based on some criteria
+/**
+* @param {boolean} criteria - Some criteria to determine if the true or false value shall be returned
+* @param {any} trueVal - Any value the author would like to return when criteria is met
+* @param {any} falseVal - Any value the author would like to return when criteria is not met
+*/
 function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
     if (criteria) {
         return trueVal;
@@ -469,6 +662,17 @@ let keysActive = {};
 // THESE FUNCTIONS HANDLE THE OPENING AND CLOSING OF THE REFERENCE OVERLAY. DON'T CHANGE THESE, BUT THEY MAY BE A HELPFUL REFERENCE FOR THE OTHER COMPONENTS ON THE PAGE. 
 // Use 'Shift + F' to open and close the reference. You may also click outside the image to close it
 
+/* 
+
+* Whenever any key is clicked while the site is in focus this .addEventListener will run
+* This function uses the first parameter uses within the .addEventListener function and sets it to a variable named 'event'
+* It checkes to see if both the 'Shift' and 'R' keys are clicked simutaneously
+* If they are, it ensures their is nothing occupiying the global overlay (i.e. the settings panel)
+* It then shows the overlay by calling the 'showOverlay' function
+* Lastly it lets the program know the reference is open by utilizing the 'referenceOpen' variable
+
+*/
+
 window.addEventListener('keydown', (target) => {
 
     keysActive[target.key] = true;
@@ -480,10 +684,6 @@ window.addEventListener('keydown', (target) => {
         if(!overlayOccupied){
             showOverlay(createReference);
         }
-
-        //     referenceContainer.addEventListener('mouseover', focusPage);
-
-        //     referenceContainer.addEventListener('mouseout', focusReference);
             
         else if (overlayOccupied){
             console.log('make sure to close settings before attempting to open reference');       
