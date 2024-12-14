@@ -1,5 +1,5 @@
 import createHTMLChildElement from './modules/createElement.js';
-import Graph from 'lineChart.js';
+import Graph from './modules/lineChart.js';
 
 // START SETUP CODE
 
