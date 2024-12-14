@@ -217,9 +217,55 @@ body{
     height: calc(100% - 50px);
 }
 
+#contentContainer0{
+    height: 100%;
+}
+
 /* COMPUTER DATA */
 
+.computerDataContainer{
+    background-color: unset;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
 
+.computerDatumSection{
+    background-color: unset;
+    display: flex;
+    align-items: center;
+}
+
+.border{
+    width: 3px;
+    height: 70%;
+    background-color: var(--mainColor);
+    border-radius: 5px;
+    opacity: 0.5;
+}
+
+.computerDataTitle{
+    color: var(--mainColor);
+    font-size: 16px; 
+    font-family: 'JetBrains Mono';
+}
+
+.computerDataPoint{
+    color: var(--mainColor);
+    font-size: 16px; 
+    font-family: 'JetBrains Mono';
+    padding-left: 7px;
+    font-style: italic;
+}
+
+#computerNameSection{
+    color: var(--mainColor);
+    font-size: 25px; 
+    width: auto;
+    font-family: 'JetBrains Mono';
+}
 
 /* SETTINGS */
 
