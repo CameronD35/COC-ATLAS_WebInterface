@@ -125,7 +125,7 @@ body{
 
 .box{
     box-sizing: border-box;
-    background-color: rgb(68, 68, 68)/*var(--secondaryColor)*/;
+    background-color: var(--secondaryColor);
     border-radius: 20px;
     height: 100%;
     margin: 0.25%;
@@ -216,8 +216,55 @@ body{
     width: 100%;
     height: calc(100% - 50px);
 }
+#contentContainer0, #contentContainer5{
+    height: 100%;
+}
+
+input:focus{
+    outline: none;
+}
 
 /* COMPUTER DATA */
+
+.computerDataContainer{
+    background-color: unset;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    justify-content: space-around;
+    align-items: center;
+}
+.computerDatumSection{
+    background-color: unset;
+    display: flex;
+    align-items: center;
+}
+.border{
+    width: 3px;
+    height: 70%;
+    background-color: var(--mainColor);
+    border-radius: 5px;
+    opacity: 0.5;
+}
+.computerDataTitle{
+    color: var(--mainColor);
+    font-size: 16px; 
+    font-family: 'JetBrains Mono';
+}
+
+.computerDataPoint{
+    color: var(--mainColor);
+    font-size: 16px; 
+    font-family: 'JetBrains Mono';
+    padding-left: 7px;
+    font-style: italic;
+}
+#computerNameSection{
+    color: var(--mainColor);
+    font-size: 25px; 
+    width: auto;
+    font-family: 'JetBrains Mono';
+}
 
 
 
@@ -283,10 +330,14 @@ body{
     background-color: var(--secondaryColor);
 }
 
-.checkboxLabel{
+.checkboxLabel, .numberLabel{
     color: var(--mainColor);
     margin: 0 0 0 5px;
     font-weight: 500;
+}
+
+.numberInput{
+    width: 30%;
 }
 
 .settingsDialog{
@@ -296,6 +347,7 @@ body{
     padding: 20px;
     margin: 0.75%;
     background-color: var(--secondaryColor);
+    border-color: var(--tertiaryColor);
 }
 
 #dashRow1-Column2{
@@ -303,6 +355,10 @@ body{
     outline: unset;
 }
 
+.individualSettingDiv{
+    padding: 10px 0;
+    display: flex;
+}
 
 
 /* REAL-TIME DATA */

@@ -267,9 +267,46 @@ function createContentSpace(){
 
 // PUT YOUR CODE HERE. FEEL FREE TO ADD, MODIFY, OR REMOVE FUNCTIONS AS NEEDED.
 
-function createComputerDataSection(){
+function createComputerDataSection(container, dataTitleAndPoints, computerName){
+    let computerDataContainer = createHTMLChildElement(container, 'div', 'computerDataContainer');
+    let computerNameSection = createHTMLChildElement(computerDataContainer, 'div', 'computerNameSection', computerName);
+    
+    let border = createHTMLChildElement(computerDataContainer, 'div', 'border', null, `computerDataBorder`)
 
+    for(let i = 0; i < dataTitleAndPoints.length; i++){
+
+        let currentDatumSection = createHTMLChildElement(computerDataContainer, 'div', 'computerDatumSection', null, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDatumSection`);
+
+        let currentDatumTitle = createHTMLChildElement(currentDatumSection, 'div', `computerDataTitle`, `${dataTitleAndPoints[i].title}:`, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDataTitle`);
+        let currentDatumPoint = createHTMLChildElement(currentDatumSection, 'span', `computerDataPoint`, dataTitleAndPoints[i].data, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDataPoint`);
+        
+        if(i == dataTitleAndPoints.length - 1){
+
+            continue;
+
+        }
+
+    }
 }
+
+createComputerDataSection(document.getElementById('contentContainer0'), [
+    {
+        title: 'RAM',
+        data: '16GB'
+    },
+    {
+        title: 'IP Address',
+        data: '0000x6F'
+    },
+    {
+        title: 'Currently Running',
+        data: 'cv.py'
+    },
+    {
+        title: 'Something Else',
+        data: 'Cool'
+    }
+], 'Hal-3000')
 
 // Creates the button/icon to open the settings
 function createSettingsBox(parent){
