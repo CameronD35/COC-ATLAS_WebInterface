@@ -54,6 +54,10 @@ function createPage() {
             data: '16GB'
         },
         {
+            title: 'OS',
+            data: 'UBUNTU'
+        },
+        {
             title: 'IP Address',
             data: '0000x6F'
         },
@@ -72,6 +76,7 @@ function createPage() {
 
     createRealTimeGraphs();
     createLogSection();
+    createConnectionStatusSection(['Connected to ', 'Current Connection: ', 'Avg. Response Time: ']);
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -739,8 +744,25 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 }
 
 
-function createConenctionStatusSection(){
+function createConnectionStatusSection(dataTitles, container=document.getElementById('contentContainer5')){
+    let connectionStatusContainer = createHTMLChildElement(container, 'div', 'connectionStatusContainer');
 
+    for(let i = 0; i < dataTitles.length; i++){
+        let abbreviatedName = dataTitles[i].substring(0, 3);
+
+        let currentConnectionStatusSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusSection', null, `${abbreviatedName}ConnectionStatusSection`);
+
+        let currentTitle = createHTMLChildElement(currentConnectionStatusSection, 'div', 'connectionStatusTitle', `${dataTitles[i]}`, `${abbreviatedName}ConnectionStatusTitle`);
+        let currentDatum = createHTMLChildElement(currentTitle, 'span', 'connectionStatusData', 23, `${abbreviatedName}ConnectionStatusData`);
+        
+        let currentBorder = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusBorder', null, `connectionStatusBorder${i}`);
+    }
+
+    let currentGraphSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusGraphSection');
+    let conStatGraph = new Graph(300, 100,{ top: 20, bottom: 20, right: 20, left: 40 }, '#connectionStatusGraphSection', null,
+    ['Time', null], ['red', 'green'], 'connectionStatusGraph', [4, 3]);
+
+    conStatGraph.create();
 }
 
 // Adds all the titles to their respective boxes, reference their input for which box you will be working on.
