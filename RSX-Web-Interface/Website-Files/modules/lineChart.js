@@ -9,13 +9,16 @@ let randomData = [];
 // Function for updating the graph
 export default class Graph {
 
-    constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id) {
+    constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id, [xAxisTicks, yAxisTicks]) {
 
         this.id = id;
         this.globX = 0  
         this.globY = 0
 
-        // iinitializes the dataset for this graph
+        this.xTicks = xAxisTicks;
+        this.yTicks = yAxisTicks;
+
+        // initializes the dataset for this graph
         this.dataset = [];
 
         this.maxY = d3.max(this.dataset, (d) => { return d.y});
@@ -143,13 +146,28 @@ export default class Graph {
         // Calls this objects axes using the objects new scales
         // Ticks: 10 if the highest # is <= 100; else, the tick count = 5
         this.xAxis.transition().duration(250).call(d3.axisBottom(this.xScale).ticks((() => {
-            if (this.higherDomainBound >= 100) {
+
+            if(this.xTicks > 1){
+                return this.xTicks
+            } else if (this.higherDomainBound >= 100) {
                 return 5;
+            } else {
+                return 10;
             }
 
-            return 10;
         })()));
-        this.yAxis.transition().duration(250).call(d3.axisLeft(this.yScale));
+
+        this.yAxis.transition().duration(250).call(d3.axisLeft(this.yScale).ticks((() => {
+
+            if(this.yTicks > 1){
+                return this.yTicks
+            } else if (this.higherDomainBound >= 100) {
+                return 5;
+            } else {
+                return 10;
+            }
+            
+        })()));
 
         // Resets the datum used for this object's line path and redraws the line
         // Adds transition to the line
