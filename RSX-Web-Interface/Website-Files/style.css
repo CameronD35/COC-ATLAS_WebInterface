@@ -358,6 +358,25 @@ input:focus{
 .individualSettingDiv{
     padding: 10px 0;
     display: flex;
+    align-items: center;
+}
+
+.numberInput{
+    color: var(--mainColor);
+    font-size: 12px;
+    padding: 10px;
+    background: none;
+    height: 18px;
+    width: 60px;
+    border: 2px solid var(--mainColor);
+    border-radius: 3px;
+    outline: none;
+    text-align: center;
+    cursor: text;
+}
+
+.numberInput::-webkit-outer-spin-button, ::-webkit-inner-spin-button{
+    -webkit-appearance: none;
 }
 
 
