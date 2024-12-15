@@ -362,16 +362,26 @@ input:focus{
 }
 
 .numberInput{
-    color: var(--mainColor);
+    color: var(--quadraryColor);
     font-size: 12px;
     padding: 10px;
-    background: none;
+    background: var(--mainColor);
     height: 18px;
     width: 60px;
-    border: 2px solid var(--mainColor);
+    border: 2px solid var(--tertiaryColor);
     border-radius: 3px;
     outline: none;
     text-align: center;
+    cursor: text;
+}
+
+.numberInput:focus{
+    color: var(--mainColor);
+    font-size: 14px;
+    padding: 10px;
+    background: none;
+    border: 2px solid var(--mainColor);
+    border-radius: 3px;
     cursor: text;
 }
 
