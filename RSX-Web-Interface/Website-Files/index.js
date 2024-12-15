@@ -77,6 +77,8 @@ function createPage() {
     createRealTimeGraphs();
     createLogSection();
     createConnectionStatusSection(['Connected to ', 'Current Connection: ', 'Avg. Response Time: ']);
+
+    updateTime();
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -316,6 +318,8 @@ function createComputerDataSection(container, dataTitleAndPoints, computerName){
 
         }
 
+        let miniBorder = createHTMLChildElement(computerDataContainer, 'div', 'miniBorder');
+
     }
 }
 
@@ -460,7 +464,7 @@ function removeMessagesWhenBeyondMax()
     let logContainer = document.getElementById("chatContainer");
     let messages = logContainer.children;
 
-    console.log(messages.length);
+    //console.log(messages.length);
 
     if (messages.length <= maxMessagesSetting.value)
     {
@@ -564,20 +568,97 @@ function resizeElements(){
 }
 
 
-function createFeaturesSection(){
+function createFeaturesSection(sectionTitlesAndOptions, container=document.getElementById('contentContainer3')){
+    let featuresContainer = createHTMLChildElement(container, 'div', 'featuresContainer');
+
+    for(let i = 0; i < sectionTitlesAndOptions.length; i++){
+        let titleAbbreviation = sectionTitlesAndOptions[i].title.substring(0,3);
+        let featureSubsection = createHTMLChildElement(featuresContainer, 'div', 'featureSubsection', null, `${titleAbbreviation}FeatureSubsection`);
+        let subsectionTitle = createHTMLChildElement(featureSubsection, 'span', 'subsectionTitle', sectionTitlesAndOptions[i].title, `${titleAbbreviation}SubsectionTitle`);
+
+        let optionsSection = createHTMLChildElement(featureSubsection, 'div', 'optionsSection', null, `optionsSection${i}`);
+
+        for(let j = 0; j < sectionTitlesAndOptions[i].options.length; j++){
+            let inputID = `featuresCheackbox${j}`;
+            let inputType = sectionTitlesAndOptions[i].type;
+            let inputIsCheckbox = (inputType == 'checkbox');
+
+            let inputSection = createHTMLChildElement(optionsSection, 'div', 'inputSection', null, `${titleAbbreviation}InputSection${j}`);
+
+            // Makes sure that label is BEFORE input if it is not a checkbox
+            if(!inputIsCheckbox){
+                let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                inputLabel.for = inputID
+            }
+
+            let input = createHTMLChildElement(inputSection, 'input', `features${inputType}`, null, `${titleAbbreviation}Features${inputType}${j}`);
+            input.type = inputType;
+            
+            // Adds button if the input is NOT a checkbox
+            if(!inputIsCheckbox){
+                let miniBorder = createHTMLChildElement(inputSection, 'div', 'miniBorder');
+                let testButton = createHTMLChildElement(inputSection, 'button', `featuresButton`, 'TEST');
+            }
+
+            // Makes sure that label is AFTER in put if it is a checkbox
+            if(inputIsCheckbox){
+                let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                inputLabel.for = inputID
+            }
+        }
+
+        if(i == sectionTitlesAndOptions.length - 1){
+            continue;
+        }
+
+        let border = createHTMLChildElement(featuresContainer, 'div', 'featuresBorder', null, `featuresBorder${i}`);
+    }
+
 
 }
+
+createFeaturesSection([
+    {
+        title: 'Initialization',
+        options: [
+            'Activate TOF Sensor',
+            'Activate Deployment System',
+            'Rotate Motors',
+            'Rotate Mirrors'
+        ],
+        type: 'checkbox'
+    },
+
+    {
+        title: 'Controls',
+        options: [
+            'Test Motor',
+        ],
+        type: 'number'
+    }
+])
 
 function getTime(){
     let time = new Date(Date.now()).toTimeString().substring(0, 8);
     return(time);
 }
 
+function updateTime(){
+    let timeText = document.getElementById('timeText');
+    let currentTime = getTime();
+    timeText.textContent = currentTime;
+
+    setInterval(() => {
+        currentTime = getTime();
+        timeText.textContent = currentTime;
+    }, 1000)
+}
+
 function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let titleContainer = document.getElementById('LogTextContainer');
     let timeContainer = createHTMLChildElement(titleContainer, 'div', 'timeContainer');
-    let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText', 'hello');
+    let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText');
 
 
     let topLogShadowContainer = createHTMLChildElement(parent, 'div', 'topLogShadowContainer');
@@ -603,10 +684,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     detectClickOnMessageSettings();
 
     setInterval(() => {
-        let currentTime = getTime();
-        timeText.textContent = currentTime;
         pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
-    }, 250)
+    }, 2000)
 
     function detectClickOnMessageSettings(){
 
