@@ -19,6 +19,7 @@ span{
     --mainColor: #ffffff;
     --secondaryColor: #1f1f1f;
     --tertiaryColor: #181818;
+    --quadraryColor: black;
 
     --webInterfaceGreen: #2cd41b;
     --webInterfaceRed: #db0f0f;
@@ -104,7 +105,7 @@ body{
     outline: var(--tertiaryColor) solid 2px;
 }
 
-/* DASHBOARD DESIGN */
+/* INTERFACE DESIGN */
 
 .hero{
     width: 100%;
@@ -276,8 +277,8 @@ input:focus{
     align-items: center;
 }
 .settingsIcon{
-    max-width: 70%;
-    max-height: 70%;
+    max-width: 60%;
+    max-height: 60%;
 }
 
 .settingsContentContainer{
@@ -610,6 +611,7 @@ input:focus{
     flex-direction: row;
     align-items: center;
     transition-duration: 0;
+    background-color: var(--secondaryColor);
 }
 
 .timestampBox{
@@ -628,10 +630,15 @@ input:focus{
     font-style: italic;
     font-size: 12px;
     opacity: 0.5;
+    color: var(--mainColor);
 }
 
 .grayMsg{
     background-color: rgba(68, 68, 68, 0.4);
+}
+
+.grayMsgDarkMode{
+    background-color: rgba(187, 187, 187, 0.4);
 }
 
 .errorMsg{
@@ -652,6 +659,7 @@ input:focus{
 .messageBox span{
     font-family: 'JetBrains Mono';
     font-size: 12px;
+    color: var(--mainColor);
 }
 
 .messageSettingsContainer{
@@ -738,6 +746,7 @@ input:focus{
 .singleMessageSetting label{
     font-size: 10px;
     margin: 0 5px;
+    color: var(--mainColor);
 }
 
 

@@ -47,6 +47,31 @@ function createPage() {
     console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
 
     createSettingsBox(document.getElementById('dashRow1-Column2'));
+    
+    createComputerDataSection(document.getElementById('contentContainer0'), [
+        {
+            title: 'RAM',
+            data: '16GB'
+        },
+        {
+            title: 'IP Address',
+            data: '0000x6F'
+        },
+        {
+            title: 'Currently Running',
+            data: 'cv.py'
+        },
+        {
+            title: 'Something Else',
+            data: 'Cool'
+        }
+    ], 'Hal-3000')
+
+    createRealTimeDataSection(document.getElementById('contentContainer2'), 2, 
+    ['Temperature', 'Pressure', 'SO2 Concentration', 'Cloud Points', 'CPU Usage', 'Epic Info'], 3);
+
+    createRealTimeGraphs();
+    createLogSection();
     //setCurrentBoxes(CSSClasses);
 }
 
@@ -289,25 +314,6 @@ function createComputerDataSection(container, dataTitleAndPoints, computerName){
     }
 }
 
-createComputerDataSection(document.getElementById('contentContainer0'), [
-    {
-        title: 'RAM',
-        data: '16GB'
-    },
-    {
-        title: 'IP Address',
-        data: '0000x6F'
-    },
-    {
-        title: 'Currently Running',
-        data: 'cv.py'
-    },
-    {
-        title: 'Something Else',
-        data: 'Cool'
-    }
-], 'Hal-3000')
-
 // Creates the button/icon to open the settings
 function createSettingsBox(parent){
     parent.classList.add('settings');
@@ -377,6 +383,12 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 // swap the values
                 document.documentElement.style.setProperty(mainColorCssVar, currentSecondary);
                 document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
+
+                if(setting.value){
+                    document.getElementById('settingsIcon').style.filter = 'invert()';
+                } else {
+                    document.getElementById('settingsIcon').style.filter = '';
+                }
 
                 break;
             case "Max Log Messages":
@@ -521,9 +533,6 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
 }
 
 
-createRealTimeDataSection(document.getElementById('contentContainer2'), 2, 
-['Temperature', 'Pressure', 'SO2 Concentration', 'Cloud Points', 'CPU Usage', 'Epic Info'], 3);
-
 function createRealTimeGraphs(){
     let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph1', [5,4]);
     let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph2', [5,4]);
@@ -549,7 +558,6 @@ function resizeElements(){
 
 }
 
-createRealTimeGraphs();
 
 function createFeaturesSection(){
 
@@ -730,7 +738,6 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
 }
 
-createLogSection();
 
 function createConenctionStatusSection(){
 
