@@ -8,6 +8,7 @@ let referenceOpen = false;
 let graphRange;
 let clickDetectEventExists = false;
 let overlayOccupied = false;
+let messageCount = 0;
 
 /** The list of all settings. */
 let settings = [
@@ -21,6 +22,8 @@ let maxMessagesSetting = settings[1];
 // Variables for the log section
 let grayMsg = false;
 let logAutoScroll = true;
+
+let lightMode = false;
 
 createPage();
 
@@ -254,14 +257,6 @@ function createContentSpace(){
             return;
         }
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
-        if(i === 4){
-            return;
-        }
-        //createHTMLChildElement();
-
-        // Remove this guide text once you begin working on your component. 
-        // After you finish your component remove the background-color from '.boxTitleContainer' and '.box' (CSS).
-        let guideText = createHTMLChildElement(currentContentSpace, 'span', 'guideText', 'Place your content here.', `guideText${i}`);
     })
     // This is to remove the unnecassry components from this box. All you need is the settings icon.
 }
@@ -409,6 +404,8 @@ function removeMessagesWhenBeyondMax()
     let logContainer = document.getElementById("chatContainer");
     let messages = logContainer.children;
 
+    console.log(messages.length);
+
     if (messages.length <= maxMessagesSetting.value)
     {
         // Don't remove if within the limit.
@@ -443,7 +440,8 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText', 'hello');
 
 
-    let logShadowContainer = createHTMLChildElement(parent, 'div', 'logShadowContainer');
+    let topLogShadowContainer = createHTMLChildElement(parent, 'div', 'topLogShadowContainer');
+    let bottomLogShadowContainer = createHTMLChildElement(parent, 'div', 'bottomLogShadowContainer');
 
 
     let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
@@ -461,18 +459,18 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
 
-    createMessageSetting('Lit title');
+    createMessageSetting('Auto-Scroll', true);
     detectClickOnMessageSettings();
 
     setInterval(() => {
         let currentTime = getTime();
         timeText.textContent = currentTime;
         pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
-    }, 1000)
+    }, 250)
 
     function detectClickOnMessageSettings(){
 
-        messageSettingsContainer.addEventListener('click', (event) => {
+        messageSettingsButtonContainer.addEventListener('click', (event) => {
         
             if(messageSettings.style.transform != 'scaleY(1)'){
         
@@ -517,11 +515,41 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
         let message = createHTMLChildElement(messageBox, 'span', 'message', msg);
     
-    
+
+        let topShadow = document.getElementById('topLogShadowContainer');
+        let bottomShadow = document.getElementById('bottomLogShadowContainer');
+
+
+        // If the user has auto-scroll on, it will bring the user to the most recent message when added, otherwise it will do nothing.
         if(logAutoScroll){
             chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
         }
+
+        // This sequence of if/else statements shows a shadow on the top if the enterity of the first message added is not located within the message container
+        // It also shows a shadow on the bottom if the enterity of the last message added is not located in the message container
+
+        if(chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != 0){
+
+            topLogShadowContainer.style.opacity = 1;
+
+        } else {
+
+            topLogShadowContainer.style.opacity = 0;
+
+        }
+
+        if (chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != (chatOverheadContainer.scrollHeight - chatOverheadContainer.clientHeight)){
+
+            bottomLogShadowContainer.style.opacity = 1;
+
+        } else {
+
+            bottomLogShadowContainer.style.opacity = 0;
+
+        }
     
+
+        // These are options for different message types
         if(error){
     
             singleChatBox.classList.add('errorMsg');
@@ -546,12 +574,15 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
         removeMessagesWhenBeyondMax();
     }
 
-    function createMessageSetting(settingTitle){
+    function createMessageSetting(settingTitle, setDefaultToTrue){
         let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
 
         let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
         settingInput.type = 'checkbox';
+        if (setDefaultToTrue){ settingInput.checked= 'true'}
         let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+
+        setupMessageSetting(singleMessageSetting, true, () => {logAutoScroll = !logAutoScroll; console.log(logAutoScroll)}, () => {logAutoScroll = !logAutoScroll});
     }
 
     function setupMessageSetting(element, isToggle, settingOnFunction, settingOffFunction){
@@ -559,6 +590,7 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     
             if(isToggle){
                 settingOnFunction();
+                return;
             }
     
             if(element.checked){
