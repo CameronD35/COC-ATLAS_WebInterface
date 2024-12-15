@@ -116,7 +116,7 @@ function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
         let currentContentSpace = createHTMLChildElement(box, 'div', 'contentContainer', null, `contentContainer${i}`);
 
-        if(i === 0){
+        if(i === 0 || i === 5){
             return;
         }
 
@@ -138,7 +138,7 @@ function createComputerDataSection(container, dataTitleAndPoints, computerName){
 
     let computerNameSection = createHTMLChildElement(computerDataContainer, 'div', 'computerNameSection', computerName);
     
-    let border = createHTMLChildElement(computerDataContainer, 'div', 'border', null, `computerDataBorder`)
+    let border = createHTMLChildElement(computerDataContainer, 'div', 'border', null, `computerDataBorder`);
 
     for(let i = 0; i < dataTitleAndPoints.length; i++){
         let currentDatumSection = createHTMLChildElement(computerDataContainer, 'div', 'computerDatumSection', null, `${dataTitleAndPoints[i].title.substring(0,3)}ComputerDatumSection`);
@@ -191,9 +191,29 @@ function createLogSection(){
 
 }
 
-function createConenctionStatusSection(){
+function createConnectionStatusSection(dataTitles, container=document.getElementById('contentContainer5')){
+    let connectionStatusContainer = createHTMLChildElement(container, 'div', 'connectionStatusContainer');
 
+    for(let i = 0; i < dataTitles.length; i++){
+        let abbreviatedName = dataTitles[i].substring(0, 3);
+
+        let currentConnectionStatusSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusSection', null, `${abbreviatedName}ConnectionStatusSection`);
+
+        let currentTitle = createHTMLChildElement(currentConnectionStatusSection, 'div', 'connectionStatusTitle', `${dataTitles[i]}`, `${abbreviatedName}ConnectionStatusTitle`);
+        let currentDatum = createHTMLChildElement(currentTitle, 'span', 'connectionStatusData', 23, `${abbreviatedName}ConnectionStatusData`);
+        
+        let currentBorder = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusBorder', null, `connectionStatusBorder${i}`);
+    }
+
+    let currentGraphSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusGraphSection');
+    let conStatGraph = new Graph(200, 100,{ top: 20, bottom: 20, right: 20, left: 20 }, '#connectionStatusGraphSection', null,
+    ['Time', null], ['red', 'green'], 'connectionStatusGraph'
+    );
+
+    conStatGraph.create();
 }
+
+createConnectionStatusSection(['Connected to ', 'Current Connection: ', 'Avg. Response Time: ']);
 
 // Adds all the titles to their respective boxes, reference their input for which box you will be working on.
 function addTextToBoxes(boxesArray, titlesArray){

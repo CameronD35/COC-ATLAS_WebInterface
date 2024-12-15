@@ -41,7 +41,7 @@ export default function createHTMLChildElement(parent, tag, classes, text, id, t
 
     if (id) {
 
-        elem.id = id;
+        elem.id = id.replaceAll(' ', '');
         return elem;
 
     } else if (classes) {
