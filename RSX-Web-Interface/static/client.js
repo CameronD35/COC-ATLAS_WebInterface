@@ -2,14 +2,7 @@ const socket = io();
 
 const messageInput = document.querySelector('.messageInput');
 const sendButton = document.querySelector('.sendButton');
-const messagesContainer = document.querySelector('.messagesContainer')
-
-// sendButton.addEventListener('click', (event) => {
-//     event.preventDefault();
-
-//     socket.emit('chat message', messageInput.value);
-//     messageInput.value = '';
-// });
+const messagesContainer = document.querySelector('.messagesContainer');
 
 socket.on('chat message', (msg) => {
     const message = document.createElement('div');
