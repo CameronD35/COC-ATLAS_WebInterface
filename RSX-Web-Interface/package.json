@@ -1,0 +1,10 @@
+{
+    "name": "rsx25-web-interface",
+    "version": "0.1",
+    "description": "Test SocketIO App",
+    "type": "commonjs",
+    "dependencies": {
+        "express": "^4.21.2",
+        "socket.io": "^4.8.1"
+    }
+}

@@ -72,7 +72,7 @@ function createPage() {
     ], 'Hal-3000')
 
     createRealTimeDataSection(document.getElementById('contentContainer2'), 2, 
-    ['Temperature', 'Pressure', 'SO2 Concentration', 'Cloud Points', 'CPU Usage', 'Epic Info'], 3);
+    ['Temperature', 'Pressure', 'Cloud Points', 'CPU Usage'], 2);
 
     createRealTimeGraphs();
     createLogSection();
@@ -553,7 +553,12 @@ function createRealTimeGraphs(){
 
 window.addEventListener('resize', () => {resizeElements();});
 
+window.addEventListener('resize', () => {
+    
+})
+
 function resizeElements(){
+
     let graphSectionDimensions = document.querySelector('.graphicalDataSection').getBoundingClientRect();
     const graphSectionWidth = graphSectionDimensions.width;
     const graphSectionHeight = graphSectionDimensions.height;
@@ -860,8 +865,6 @@ function addTextToBoxes(boxesArray, titlesArray){
 
 }
 
-
-
 // DO NOT DELETE THESE FUNCTIONS. USE THESE FUNCTIONS TO HELP BUILD YOUR FUNCTIONS IF NEEDED.
 
 // Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function 'run' will run.
@@ -966,3 +969,17 @@ window.addEventListener('keydown', (target) => {
 window.addEventListener('keyup', (target) => {
     delete keysActive[target.key];
 });
+
+function updateAllElements(){
+}
+
+function updateElement(elementID, newValue){
+    let elem = document.getElementById(elementID);
+    elem.textContent = newValue
+} 
+
+function interpretIncomingJSON(){
+    
+}
+
+updateElement('dataValue1', 34);

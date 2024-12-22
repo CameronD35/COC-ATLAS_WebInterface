@@ -1,0 +1,21 @@
+{
+    "temperature": {
+        "value": 34,
+        "interfaceElemID": "dataValue1"
+    },
+
+    "pressure": {
+        "value": 34,
+        "interfaceElemID": "dataValue2"
+    },
+
+    "cloudPoints": {
+        "value": 34,
+        "interfaceElemID": "dataValue4"
+    },
+
+    "cpuUsuage": {
+        "value": 34,
+        "interfaceElemID": "dataValue5"
+    }
+}
