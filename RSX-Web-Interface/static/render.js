@@ -1,6 +1,9 @@
 import createHTMLChildElement from './modules/createElement.js';
 import SettingsOption from './modules/settingsOption.js';
 import Graph from './modules/lineChart.js';
+import getTime from './modules/getTime.js';
+import settings from './modules/settings.js';
+import { checkContainerPosition } from './modules/chatLog.js';
 
 // START SETUP CODE
 
@@ -12,20 +15,13 @@ let clickDetectEventExists = false;
 let overlayOccupied = false;
 let messageCount = 0;
 
-/** The list of all settings. */
-let settings = [
-    new SettingsOption("Light Mode On", "checkbox", false),
-    new SettingsOption("Max Log Messages", "number", 50),
-];
+let lightMode = false;
 
 /** The max messages setting option. */
 let maxMessagesSetting = settings[1];
 
 // Variables for the log section
-let grayMsg = false;
 let logAutoScroll = true;
-
-let lightMode = false;
 
 createPage();
 
@@ -643,11 +639,6 @@ createFeaturesSection([
     }
 ])
 
-function getTime(){
-    let time = new Date(Date.now()).toTimeString().substring(0, 8);
-    return(time);
-}
-
 function updateTime(){
     let timeText = document.getElementById('timeText');
     let currentTime = getTime();
@@ -688,9 +679,9 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     createMessageSetting('Auto-Scroll', true);
     detectClickOnMessageSettings();
 
-    setInterval(() => {
-        pushChatToLog(getTime(), 'the most amazing message you have ever seen.');
-    }, 2000)
+    chatContainer.addEventListener('scroll', () => {
+        checkContainerPosition();
+    })
 
     function detectClickOnMessageSettings(){
 
@@ -713,97 +704,12 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
         });
     }
 
-
-    // Pushes the a message to the interfaces's log (not to be confused with the console log)
-    /**
-    * @param {string} time - The current time as collected form the getTime() function
-    * @param {string} msg - Any string that will be pushed into a single chat
-    * @param {boolean} error - gives the message a certain error color/theme if it is 'true'
-    * @param {boolean} connection - gives the message a certain connection color/theme if it is 'true'
-    * @param {object} logContainer - DOM element that the message will be pushed to; default is '.chatContainer'
-    */
-
-    function pushChatToLog(time, msg, error, connect, logContainer=document.querySelector('.chatContainer')){
-
-        let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
-    
-        let timestampBox = createHTMLChildElement(singleChatBox, 'div', 'timestampBox');
-    
-        let timeText = createHTMLChildElement(timestampBox, 'span', 'timeText', time);
-    
-    
-    
-        let messageBox = createHTMLChildElement(singleChatBox, 'div', 'messageBox');
-    
-        //let messageBorder = createHTMLChildElement(messageBox, 'div', 'messageBorder');
-    
-        let message = createHTMLChildElement(messageBox, 'span', 'message', msg);
-    
-
-        let topShadow = document.getElementById('topLogShadowContainer');
-        let bottomShadow = document.getElementById('bottomLogShadowContainer');
-
-
-        // If the user has auto-scroll on, it will bring the user to the most recent message when added, otherwise it will do nothing.
-        if(logAutoScroll){
-            chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
-        }
-
-        // This sequence of if/else statements shows a shadow on the top if the enterity of the first message added is not located within the message container
-        // It also shows a shadow on the bottom if the enterity of the last message added is not located in the message container
-
-        if(chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != 0){
-
-            topLogShadowContainer.style.opacity = 1;
-
-        } else {
-
-            topLogShadowContainer.style.opacity = 0;
-
-        }
-
-        if (chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != (chatOverheadContainer.scrollHeight - chatOverheadContainer.clientHeight)){
-
-            bottomLogShadowContainer.style.opacity = 1;
-
-        } else {
-
-            bottomLogShadowContainer.style.opacity = 0;
-
-        }
-    
-
-        // These are options for different message types
-        if(error){
-    
-            singleChatBox.classList.add('errorMsg');
-            return;
-    
-        } else if(connect){
-    
-            singleChatBox.classList.add('connectMsg');
-            return;
-    
-        }
-    
-        if(grayMsg){
-    
-            singleChatBox.classList.add('grayMsg');
-    
-        }
-    
-        grayMsg = !grayMsg;
-    
-        // Remove old messages if needed.
-        removeMessagesWhenBeyondMax();
-    }
-
     function createMessageSetting(settingTitle, setDefaultToTrue){
         let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
 
         let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
         settingInput.type = 'checkbox';
-        if (setDefaultToTrue){ settingInput.checked= 'true'}
+        if (setDefaultToTrue){ settingInput.checked = 'true'}
         let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
 
         setupMessageSetting(singleMessageSetting, true, () => {logAutoScroll = !logAutoScroll; console.log(logAutoScroll)}, () => {logAutoScroll = !logAutoScroll});

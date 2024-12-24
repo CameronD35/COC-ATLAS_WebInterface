@@ -6,7 +6,7 @@ const {join} = require('node:path');
 const {Server} = require('socket.io')
 
 // Initializing express.js app and socket.io server
-const app = express();
+const app = express(3000);
 const server = createServer(app);
 const io = new Server(server);
 
@@ -22,8 +22,7 @@ app.get('/', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
-    console.log('A user connected');
-
+    io.emit('chatTest', 'User connected');
     // On disconnect, send message
     socket.on('disconnect', () => {
         console.log('A user disconnected')

@@ -588,6 +588,10 @@ input:focus{
     align-items: center;
 }
 
+.featurescheckbox{
+    accent-color: var(--webInterfaceGreen);
+}
+
 .featurescheckboxLabel{
     margin-left: 10px;
     font-family: 'JetBrains Mono';
@@ -724,6 +728,14 @@ input:focus{
     background-color: var(--secondaryColor);
 }
 
+.singleChat:nth-child(odd){
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    transition-duration: 0;
+    background-color: rgba(68, 68, 68, 0.4);
+}
+
 .timestampBox{
     background-color: unset;
     width: 30%;
@@ -741,14 +753,6 @@ input:focus{
     font-size: 12px;
     opacity: 0.5;
     color: var(--mainColor);
-}
-
-.grayMsg{
-    background-color: rgba(68, 68, 68, 0.4);
-}
-
-.grayMsgDarkMode{
-    background-color: rgba(187, 187, 187, 0.4);
 }
 
 .errorMsg{
