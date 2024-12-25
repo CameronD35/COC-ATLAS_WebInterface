@@ -22,10 +22,21 @@ app.get('/', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
-    io.emit('chatTest', 'User connected');
+    io.emit('logMessage', 'User connected');
     // On disconnect, send message
     socket.on('disconnect', () => {
-        console.log('A user disconnected')
+        io.emit('logMessage', 'User connected');
+        console.log('A user disconnected');
+    });
+    
+    // Response when any of the initialization processes are toggled on
+    socket.on('ActivateInit', (sys) => {
+        console.log(`Beginning \u001b[1m${sys}\u001b[0m Sequence.`);
+    });
+
+    // Response when any of the initialization processes are toggled off
+    socket.on('DeactivateInit', (sys) => {
+        console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
     });
 });
 
