@@ -16,6 +16,9 @@ socket.on('logMessage', (msg) => {
 });
 
 socket.on('commConnection', (isConnected, portNumber) => {
+
+    updateConnectionQuality();
+
     if (isConnected) {
         console.log(`Connection established on port number ${portNumber}`);
 
@@ -88,11 +91,24 @@ function createPortMessage(portNumber=42069, container=document.getElementById('
 }
 
 function updateConnectionQuality(){
-
+    let quality = gaugeConnectionQuality();
+    updateElement('ConConnectionStatusData1', quality, (() => {
+            if (quality == 'Good'){
+                return 'var(--webInterfaceGreen)'
+            } else if (quality == 'Ok'){
+                return 'var(--webInterfaceOrange)'
+            } else if (quality == 'Bad'){
+                return 'var(--webInterfaceRed)'
+            } else {
+                return 'var(--mainColor)'
+            }
+        })()
+    );
 }
 
 function gaugeConnectionQuality(){
-    return 'Good';
+    let types = ['Good', 'Ok', 'Bad', 'N/A']
+    return types[Math.floor(Math.random() * 3)];
 }
 
 function updateAllElements(){

@@ -728,10 +728,10 @@ function createConnectionStatusSection(dataTitles, container=document.getElement
     for(let i = 0; i < dataTitles.length; i++){
         let abbreviatedName = dataTitles[i].substring(0, 3);
 
-        let currentConnectionStatusSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusSection', null, `${abbreviatedName}ConnectionStatusSection`);
+        let currentConnectionStatusSection = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusSection', null, `${abbreviatedName}ConnectionStatusSection${i}`);
 
-        let currentTitle = createHTMLChildElement(currentConnectionStatusSection, 'div', 'connectionStatusTitle', `${dataTitles[i]}`, `${abbreviatedName}ConnectionStatusTitle`);
-        let currentDatum = createHTMLChildElement(currentTitle, 'span', 'connectionStatusData', 23, `${abbreviatedName}ConnectionStatusData`);
+        let currentTitle = createHTMLChildElement(currentConnectionStatusSection, 'div', 'connectionStatusTitle', `${dataTitles[i]}`, `${abbreviatedName}ConnectionStatusTitle${i}`);
+        let currentDatum = createHTMLChildElement(currentTitle, 'span', 'connectionStatusData', 23, `${abbreviatedName}ConnectionStatusData${i}`);
         
         let currentBorder = createHTMLChildElement(connectionStatusContainer, 'div', 'connectionStatusBorder', null, `connectionStatusBorder${i}`);
     }
