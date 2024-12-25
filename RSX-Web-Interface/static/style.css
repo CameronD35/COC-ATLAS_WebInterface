@@ -105,6 +105,27 @@ body{
     outline: var(--tertiaryColor) solid 2px;
 }
 
+/* PORT ERROR */
+
+.portErrorContainer{
+    width: 100%;
+    height: 30vh;
+    background-color: rgba(219, 15, 15, 0.3);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border-radius: 10px;
+    border: 2px solid var(--mainColor);
+    backdrop-filter: blur(7px);
+}
+
+.portErrorText{
+    font-size: 20px;
+    font-weight: 700;
+}
+
+
+
 /* INTERFACE DESIGN */
 
 .hero{

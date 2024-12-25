@@ -1,12 +1,16 @@
+const serverPort = 3000;
+const commPort = 42069;
 
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
 const {createServer} = require('node:http');
 const {join} = require('node:path');
-const {Server} = require('socket.io')
+const {Server} = require('socket.io');
+
+const net = require('net');
 
 // Initializing express.js app and socket.io server
-const app = express(3000);
+const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
 
@@ -40,7 +44,55 @@ io.on('connection', (socket) => {
     });
 });
 
-// Opens server listener on port 3000 (localhost:3000)
-server.listen(3000, () => {
-    console.log('server running at http://localhost:3000')
+// Opens server listener on port serverPort (localhost:serverPort)
+server.listen(serverPort, () => {
+    console.log(`server running at http://localhost:${serverPort}`)
 });
+
+function checkCommPortAvailability(portNumber){
+    // Promise that returns if the port is occupied or not
+    return new Promise((resolve, reject) => {
+        const server = net.createServer();
+
+        server.once('error', (err) => {
+            // This error code indicates that the port is in use by some other application
+            if (err.code == 'EADDRINUSE'){
+                resolve(false);
+            // Other errors
+            } else {
+                reject(err)
+            }
+        });
+
+        // If the server is opened, that indicates it's unoccupied
+        // Since we don't want to establish a connection yet, we close the server and resolve the Promise as true
+        server.once('listening', () => {
+            server.close();
+            resolve(true);
+        });
+
+        // Attempt to listen on port portNumber
+        server.listen(portNumber);
+
+    });
+}
+
+
+setInterval( () => {
+    checkCommPortAvailability(commPort)
+    .then((isAvailable) => {
+        console.log(isAvailable)
+            if (isAvailable) {
+                console.log(`Port ${commPort} is open.`);
+                // Emit event stating that there is no connection on the commPort
+                io.emit('commConnection', false, commPort);
+
+            } else {
+                console.log(`Port ${commPort} is closed.`);
+                // Emit event stating that there is a connection on the commPort
+                // TODO: Check if connection is ethernet and not some other random thing
+                io.emit('commConnection', true, commPort);
+            }
+        }   
+    )}
+, 10000)

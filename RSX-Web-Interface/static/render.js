@@ -1,7 +1,9 @@
+
+// THIS FILE IS USED FOR RENDERING THE PAGE AND MANAGING THE SETTINGS
+
 import createHTMLChildElement from './modules/createElement.js';
 import SettingsOption from './modules/settingsOption.js';
 import Graph from './modules/lineChart.js';
-import getTime from './modules/getTime.js';
 import settings from './modules/settings.js';
 import { checkContainerPosition } from './modules/chatLog.js';
 
@@ -24,7 +26,6 @@ let maxMessagesSetting = settings[1];
 let logAutoScroll = true;
 
 createPage();
-
 
 // END SETUP CODE
 
@@ -72,10 +73,8 @@ function createPage() {
 
     createRealTimeGraphs();
     createLogSection();
-    createConnectionStatusSection(['Connected to ', 'Current Connection: ', 'Avg. Response Time: ']);
+    createConnectionStatusSection(['Connected to ', 'Connection Quality: ', 'Avg. Response Time: ']);
 
-    updateTime();
-    //setCurrentBoxes(CSSClasses);
 }
 
 
@@ -166,7 +165,7 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
-function showOverlay(functionToCreateContent) {
+export default function showOverlay(functionToCreateContent) {
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
     let overlayContentContainer = document.getElementById('overlayContentContainer');
@@ -639,17 +638,6 @@ createFeaturesSection([
     }
 ])
 
-function updateTime(){
-    let timeText = document.getElementById('timeText');
-    let currentTime = getTime();
-    timeText.textContent = currentTime;
-
-    setInterval(() => {
-        currentTime = getTime();
-        timeText.textContent = currentTime;
-    }, 1000)
-}
-
 function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let titleContainer = document.getElementById('LogTextContainer');
@@ -875,17 +863,3 @@ window.addEventListener('keydown', (target) => {
 window.addEventListener('keyup', (target) => {
     delete keysActive[target.key];
 });
-
-function updateAllElements(){
-}
-
-function updateElement(elementID, newValue){
-    let elem = document.getElementById(elementID);
-    elem.textContent = newValue
-} 
-
-function interpretIncomingJSON(){
-    
-}
-
-updateElement('dataValue1', 34);
