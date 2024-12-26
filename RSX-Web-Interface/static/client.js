@@ -15,21 +15,27 @@ socket.on('logMessage', (msg) => {
     pushChatToLog(getTime(), msg, false, true);
 });
 
-socket.on('commConnection', (isConnected, portNumber) => {
+socket.on('commConnection', (isConnected, portNumber, timeElapsed) => {
 
-    updateConnectionQuality();
+    console.log(timeElapsed);
+    updateConnectionQuality(isConnected, timeElapsed);
+    updateElement('ConConnectionStatusData0', `PORT:${portNumber}`, 'var(--mainColor)');
 
     if (isConnected) {
         console.log(`Connection established on port number ${portNumber}`);
 
     } else {
         console.log(`No connection detected on port number ${portNumber}`);
-
+        updateElement('ConConnectionStatusData0', `NONE`, 'var(--webInterfaceRed)');
+        // Show an overlay identifying a lack of connection (only happens once)
         if (!errorClosed){
             showOverlay(createPortMessage);
         }
     }
-})
+
+
+
+});
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -90,8 +96,18 @@ function createPortMessage(portNumber=42069, container=document.getElementById('
     return portErrorContainer;
 }
 
-function updateConnectionQuality(){
-    let quality = gaugeConnectionQuality();
+function updateConnectionQuality(isConnected, timeToTransmit){
+
+    // if(!isConnected){
+    //     updateElement('ConConnectionStatusData0', 'NONE', 'var(--webInterfaceRed)');
+    //     updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
+    //     updateElement('AvgConnectionStatusData2', 'N/A');
+
+    //     return;
+    // }
+
+    let quality = gaugeConnectionQuality(timeToTransmit);
+
     updateElement('ConConnectionStatusData1', quality, (() => {
             if (quality == 'Good'){
                 return 'var(--webInterfaceGreen)'
@@ -99,15 +115,22 @@ function updateConnectionQuality(){
                 return 'var(--webInterfaceOrange)'
             } else if (quality == 'Bad'){
                 return 'var(--webInterfaceRed)'
-            } else {
-                return 'var(--mainColor)'
             }
         })()
     );
+
+    updateElement('AvgConnectionStatusData2', `${timeToTransmit.toFixed(2)}ms`);
 }
 
-function gaugeConnectionQuality(){
-    let types = ['Good', 'Ok', 'Bad', 'N/A']
+function gaugeConnectionQuality(timeToTransmit){
+
+    if (timeToTransmit <= 1){
+        return 'Good'
+    } else if (timeToTransmit <= 3){
+        return 'Ok'
+    } else {
+        return 'Bad'
+    }
     return types[Math.floor(Math.random() * 3)];
 }
 

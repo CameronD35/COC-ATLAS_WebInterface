@@ -79,19 +79,27 @@ function checkCommPortAvailability(portNumber){
 
 
 setInterval( () => {
+    
+    let startTime = performance.now();
+
     checkCommPortAvailability(commPort)
     .then((isAvailable) => {
+
+        let endTime = performance.now();
+
+        let timeElapsed = endTime - startTime;
+
         console.log(isAvailable)
             if (isAvailable) {
                 console.log(`Port ${commPort} is open.`);
                 // Emit event stating that there is no connection on the commPort
-                io.emit('commConnection', false, commPort);
+                io.emit('commConnection', false, commPort, timeElapsed);
 
             } else {
                 console.log(`Port ${commPort} is closed.`);
                 // Emit event stating that there is a connection on the commPort
                 // TODO: Check if connection is ethernet and not some other random thing
-                io.emit('commConnection', true, commPort);
+                io.emit('commConnection', true, commPort, timeElapsed);
             }
         }   
     )}
