@@ -749,7 +749,7 @@ input:focus{
     background-color: var(--secondaryColor);
 }
 
-.singleChat:nth-child(odd):not(.connectMsg){
+.singleChat:nth-child(odd):not(.connectMsg):not(.errorMsg){
     display: flex;
     flex-direction: row;
     align-items: center;

@@ -1,5 +1,7 @@
 const serverPort = 3000;
-const commPort = 42069;
+//const commPort = 42069;
+const IP = '192.168.1.10'
+const nanoIP = '192.168.1.20'
 
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
@@ -8,14 +10,36 @@ const {join} = require('node:path');
 const {Server} = require('socket.io');
 
 const net = require('net');
+const { create } = require('node:domain');
 
 // Initializing express.js app and socket.io server
 const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
 
+// const app2 = express();
+// const server2 = createServer(app2);
+// const io2 = createServer(server2);
+
+// server2.listen('3001', '192.168.1.10', () => {
+//     console.log('test');
+// });
+
+// app2.get('/', (req, res) => {
+//     console.log('hi');
+// });
+
+// io2.on('connection', (socket) => {
+//     console.log('working');
+
+//     socket.on('disconnect', () => {
+//         io.emit('logMessage', 'User connected');
+//         console.log('jon disconnected');
+//     });
+// })
+
 // Serving the static files (in the /static directory) to the client (browser)
-app.use(express.static('static'))
+app.use(express.static('static'));
 
 // The home route handler; essentially the first page/link 
 // that opens upon accessing the URL
@@ -26,10 +50,10 @@ app.get('/', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
-    io.emit('logMessage', 'User connected');
+    io.emit('logMessage', 'User connected', false, true);
     // On disconnect, send message
     socket.on('disconnect', () => {
-        io.emit('logMessage', 'User connected');
+        io.emit('logMessage', 'User disconnnected', true, false);
         console.log('A user disconnected');
     });
     
@@ -42,19 +66,24 @@ io.on('connection', (socket) => {
     socket.on('DeactivateInit', (sys) => {
         console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
     });
+
+    socket.on('data', () => {
+        console.log('test')
+    });
 });
+
 
 // Opens server listener on port serverPort (localhost:serverPort)
-server.listen(serverPort, () => {
-    console.log(`server running at http://localhost:${serverPort}`)
+server.listen(serverPort, IP, () => {
+    console.log(`server running at http://${IP}:${serverPort}`)
 });
 
-function checkCommPortAvailability(portNumber){
+function checkCommPortAvailability(portNumber, nanoIP){
     // Promise that returns if the port is occupied or not
     return new Promise((resolve, reject) => {
-        const server = net.createServer();
+        const testServer = net.createServer();
 
-        server.once('error', (err) => {
+        testServer.once('error', (err) => {
             // This error code indicates that the port is in use by some other application
             if (err.code == 'EADDRINUSE'){
                 resolve(false);
@@ -66,13 +95,13 @@ function checkCommPortAvailability(portNumber){
 
         // If the server is opened, that indicates it's unoccupied
         // Since we don't want to establish a connection yet, we close the server and resolve the Promise as true
-        server.once('listening', () => {
-            server.close();
+        testServer.once('listening', () => {
+            testServer.close();
             resolve(true);
         });
 
         // Attempt to listen on port portNumber
-        server.listen(portNumber);
+        testServer.listen(portNumber, IP);
 
     });
 }
@@ -82,7 +111,7 @@ setInterval( () => {
     
     let startTime = performance.now();
 
-    checkCommPortAvailability(commPort)
+    checkCommPortAvailability(serverPort, nanoIP)
     .then((isAvailable) => {
 
         let endTime = performance.now();
@@ -91,16 +120,18 @@ setInterval( () => {
 
         console.log(isAvailable)
             if (isAvailable) {
-                console.log(`Port ${commPort} is open.`);
+                //console.log(`Port ${serverPort} is open.`);
+
                 // Emit event stating that there is no connection on the commPort
-                io.emit('commConnection', false, commPort, timeElapsed);
+                io.emit('commConnection', false, nanoIP, serverPort, timeElapsed);
 
             } else {
-                console.log(`Port ${commPort} is closed.`);
+                //console.log(`Port ${serverPort} is closed.`);
+
                 // Emit event stating that there is a connection on the commPort
                 // TODO: Check if connection is ethernet and not some other random thing
-                io.emit('commConnection', true, commPort, timeElapsed);
+                io.emit('commConnection', true, nanoIP, serverPort, timeElapsed);
             }
         }   
     )}
-, 10000)
+, 2500)

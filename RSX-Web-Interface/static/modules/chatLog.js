@@ -38,12 +38,10 @@ export default function pushChatToLog(time, msg, error, connect, logContainer=do
     if(error){
 
         singleChatBox.classList.add('errorMsg');
-        return;
 
     } else if(connect){
 
         singleChatBox.classList.add('connectMsg');
-        return;
 
     }
 

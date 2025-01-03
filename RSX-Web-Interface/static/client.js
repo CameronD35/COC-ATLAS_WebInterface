@@ -11,21 +11,25 @@ const socket = io();
 
 let errorClosed = false;
 
-socket.on('logMessage', (msg) => {
-    pushChatToLog(getTime(), msg, false, true);
+socket.on('logMessage', (msg, isError, isConnect) => {
+    if (isError != null && isConnect != null){
+        pushChatToLog(getTime(), msg, isError, isConnect);
+    } else {
+        pushChatToLog(getTime(), msg);
+    }
 });
 
-socket.on('commConnection', (isConnected, portNumber, timeElapsed) => {
+socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
     console.log(timeElapsed);
     updateConnectionQuality(isConnected, timeElapsed);
     updateElement('ConConnectionStatusData0', `PORT:${portNumber}`, 'var(--mainColor)');
 
     if (isConnected) {
-        console.log(`Connection established on port number ${portNumber}`);
+        console.log(`Connection established on port number ${portNumber} with ip ${IP}`);
 
     } else {
-        console.log(`No connection detected on port number ${portNumber}`);
+        console.log(`No connection detected on port number ${portNumber} with ip ${IP}`);
         updateElement('ConConnectionStatusData0', `NONE`, 'var(--webInterfaceRed)');
         // Show an overlay identifying a lack of connection (only happens once)
         if (!errorClosed){
