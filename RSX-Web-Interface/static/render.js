@@ -5,7 +5,11 @@ import createHTMLChildElement from './modules/createElement.js';
 import SettingsOption from './modules/settingsOption.js';
 import Graph from './modules/lineChart.js';
 import settings from './modules/settings.js';
+import pushChatToLog from './modules/chatLog.js';
+import getTime from './modules/getTime.js';
 import { checkContainerPosition } from './modules/chatLog.js';
+
+import socket from './client.js';
 
 // START SETUP CODE
 
@@ -21,6 +25,7 @@ let lightMode = false;
 
 /** The max messages setting option. */
 let maxMessagesSetting = settings[1];
+let dataFrequency = 2.5;
 
 // Variables for the log section
 let logAutoScroll = true;
@@ -61,10 +66,6 @@ function createPage() {
         {
             title: 'Currently Running',
             data: 'cv.py'
-        },
-        {
-            title: 'Something Else',
-            data: 'Cool'
         }
     ], 'Hal-3000')
 
@@ -401,6 +402,23 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 setting.value = newValue;
 
                 removeMessagesWhenBeyondMax();
+                break;
+            case "Data Transmission Frequency (seconds)":
+                let freqInput = document.getElementById('Data Transmission Frequency (seconds)Input');
+                let newFreq = freqInput.value;
+
+                setting.value = newFreq;
+                
+                if (newFreq < 1) {
+                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will dreastically reduce performance and accuracy.');
+                    socket.emit('dataFreq', 1);
+                    break;
+
+                } else {
+                    let msgString = `Setting data frequency to ${newFreq} ${(newFreq < 2)? 'second' : 'seconds'}.`;
+                    pushChatToLog(getTime(), msgString);
+                }
+                socket.emit('dataFreq', newFreq);
                 break;
         }
     }

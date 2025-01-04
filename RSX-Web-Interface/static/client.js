@@ -5,9 +5,14 @@ import pushChatToLog from "./modules/chatLog.js";
 import getTime from "./modules/getTime.js";
 import showOverlay from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
+import elementMap from "./modules/elementMap.js";
 
 // Global io variable. It's initialization sends message to server that a client has connected.
 const socket = io();
+const nanoIP = '192.168.1.20';
+
+export default socket;
+
 
 let errorClosed = false;
 
@@ -21,16 +26,18 @@ socket.on('logMessage', (msg, isError, isConnect) => {
 
 socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
-    console.log(timeElapsed);
+    //console.log(timeElapsed);
     updateConnectionQuality(isConnected, timeElapsed);
     updateElement('ConConnectionStatusData0', `PORT:${portNumber}`, 'var(--mainColor)');
 
     if (isConnected) {
-        console.log(`Connection established on port number ${portNumber} with ip ${IP}`);
+        //console.log(`Connection established on port number ${portNumber} with ip ${IP}`);
 
     } else {
         console.log(`No connection detected on port number ${portNumber} with ip ${IP}`);
         updateElement('ConConnectionStatusData0', `NONE`, 'var(--webInterfaceRed)');
+        updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
+        updateElement('AvgConnectionStatusData2', 'N/A');
         // Show an overlay identifying a lack of connection (only happens once)
         if (!errorClosed){
             showOverlay(createPortMessage);
@@ -40,6 +47,25 @@ socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
 
 });
+
+socket.on('interpretStaticData', (data) => {
+
+    console.log('IM WORKING!!!!!!!')
+    if (typeof data.msg === 'string'){
+        let element = document.getElementById(elementMap[tags]);
+
+        element.textContent = data.msg;
+
+        return;
+    }
+
+    data.tags.forEach((tag, i) => {
+        let element = document.getElementById(elementMap[tag]);
+
+        element.textContent = data.msg[i];
+    });
+
+})
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -88,6 +114,8 @@ document.addEventListener('DOMContentLoaded', () => {
             socket.emit('DeactivateInit', 'mirror rotation');
         }
     });
+
+    document.getElementById('IP ComputerDataPoint').textContent = nanoIP;
 });
 
 function createPortMessage(portNumber=42069, container=document.getElementById('overlayContentContainer')){
@@ -102,13 +130,13 @@ function createPortMessage(portNumber=42069, container=document.getElementById('
 
 function updateConnectionQuality(isConnected, timeToTransmit){
 
-    // if(!isConnected){
-    //     updateElement('ConConnectionStatusData0', 'NONE', 'var(--webInterfaceRed)');
-    //     updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
-    //     updateElement('AvgConnectionStatusData2', 'N/A');
+    if(!isConnected){
+        updateElement('ConConnectionStatusData0', 'NONE', 'var(--webInterfaceRed)');
+        updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
+        updateElement('AvgConnectionStatusData2', 'N/A');
 
-    //     return;
-    // }
+        return;
+    }
 
     let quality = gaugeConnectionQuality(timeToTransmit);
 
@@ -135,7 +163,6 @@ function gaugeConnectionQuality(timeToTransmit){
     } else {
         return 'Bad'
     }
-    return types[Math.floor(Math.random() * 3)];
 }
 
 function updateAllElements(){

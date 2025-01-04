@@ -1,7 +1,7 @@
 const serverPort = 3000;
 //const commPort = 42069;
-const IP = '192.168.1.10'
-const nanoIP = '192.168.1.20'
+const IP = '192.168.1.10';
+const nanoIP = '192.168.1.20';
 
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
@@ -67,9 +67,24 @@ io.on('connection', (socket) => {
         console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
     });
 
-    socket.on('data', () => {
-        console.log('test')
+    socket.on('data', (data) => {
+        let formattedData = JSON.parse(data)
+        //console.log(formattedData);
+        io.emit('logMessage', `Data with tags ${formattedData.tags} recieved`)
     });
+
+    socket.on('dataFreq', (freq) => {
+        io.emit('changeFreq', freq)
+    });
+
+    socket.on('staticData', (data) => {
+        let formattedData = JSON.parse(data);
+        console.log(formattedData);
+
+        console.log('hello')
+        io.emit('interpretStaticData', formattedData);
+    })
+
 });
 
 
@@ -88,6 +103,8 @@ function checkCommPortAvailability(portNumber, nanoIP){
             if (err.code == 'EADDRINUSE'){
                 resolve(false);
             // Other errors
+            } else if (err.code == 'EADDRNOTAVAIL'){
+                resolve(true);
             } else {
                 reject(err)
             }
@@ -118,7 +135,7 @@ setInterval( () => {
 
         let timeElapsed = endTime - startTime;
 
-        console.log(isAvailable)
+        //console.log(isAvailable)
             if (isAvailable) {
                 //console.log(`Port ${serverPort} is open.`);
 
