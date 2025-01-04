@@ -67,21 +67,24 @@ io.on('connection', (socket) => {
         console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
     });
 
+    // gets data from JON python script and posts it to all clients with handlers
     socket.on('data', (data) => {
         let formattedData = JSON.parse(data)
         //console.log(formattedData);
         io.emit('logMessage', `Data with tags ${formattedData.tags} recieved`)
     });
 
+    // takes data from interface regarding data frequency and sends it over to JON python script
     socket.on('dataFreq', (freq) => {
-        io.emit('changeFreq', freq)
+        io.emit('changeFreq', freq);
     });
 
+    // grabs data from JON python script regarding it's ip, os, and name
     socket.on('staticData', (data) => {
         let formattedData = JSON.parse(data);
         console.log(formattedData);
 
-        console.log('hello')
+        //console.log('hello')
         io.emit('interpretStaticData', formattedData);
     })
 

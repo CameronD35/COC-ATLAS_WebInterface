@@ -16,6 +16,7 @@ export default socket;
 
 let errorClosed = false;
 
+// socket event that creates message on all clients
 socket.on('logMessage', (msg, isError, isConnect) => {
     if (isError != null && isConnect != null){
         pushChatToLog(getTime(), msg, isError, isConnect);
@@ -24,6 +25,7 @@ socket.on('logMessage', (msg, isError, isConnect) => {
     }
 });
 
+// measures and displays the time taken to contact the server; updates connection status section
 socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
     //console.log(timeElapsed);
@@ -48,6 +50,7 @@ socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
 });
 
+// Used to grab static values (such as os or ip) and display them
 socket.on('interpretStaticData', (data) => {
 
     console.log('IM WORKING!!!!!!!')
@@ -65,7 +68,8 @@ socket.on('interpretStaticData', (data) => {
         element.textContent = data.msg[i];
     });
 
-})
+});
+
 
 document.addEventListener('DOMContentLoaded', () => {
 
@@ -118,7 +122,8 @@ document.addEventListener('DOMContentLoaded', () => {
     document.getElementById('IP ComputerDataPoint').textContent = nanoIP;
 });
 
-function createPortMessage(portNumber=42069, container=document.getElementById('overlayContentContainer')){
+// creates box that will display when no connection is found
+function createPortMessage(portNumber=3000, container=document.getElementById('overlayContentContainer')){
     let portErrorContainer = createHTMLChildElement(container, 'div', 'portErrorContainer');
 
     let portErrorText = createHTMLChildElement(portErrorContainer, 'div', 'portErrorText', `No connection found on PORT:42069`);
@@ -128,6 +133,7 @@ function createPortMessage(portNumber=42069, container=document.getElementById('
     return portErrorContainer;
 }
 
+// updates connection quality in connection status section
 function updateConnectionQuality(isConnected, timeToTransmit){
 
     if(!isConnected){
@@ -165,9 +171,7 @@ function gaugeConnectionQuality(timeToTransmit){
     }
 }
 
-function updateAllElements(){
-}
-
+// updates an element with a new value
 function updateElement(elementID, newValue, color=null){
     let elem = document.getElementById(elementID);
     elem.textContent = newValue;
@@ -181,6 +185,7 @@ function interpretIncomingJSON(){
     
 }
 
+// updates time in log section
 function updateTime(){
     let timeText = document.getElementById('timeText');
     let currentTime = getTime();
