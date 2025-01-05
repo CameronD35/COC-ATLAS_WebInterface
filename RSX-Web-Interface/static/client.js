@@ -50,12 +50,12 @@ socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
 
 });
 
-// Used to grab static values (such as os or ip) and display them
-socket.on('interpretStaticData', (data) => {
-
+// Used to grab any values (such as os or ip) and display them
+socket.on('interpretData', (data) => {
+    console.log('eoifewbfgfvefyktew');
     console.log('IM WORKING!!!!!!!')
     if (typeof data.msg === 'string'){
-        let element = document.getElementById(elementMap[tags]);
+        let element = document.getElementById(elementMap[data.tags]);
 
         element.textContent = data.msg;
 
@@ -67,8 +67,7 @@ socket.on('interpretStaticData', (data) => {
 
         element.textContent = data.msg[i];
     });
-
-});
+})
 
 
 document.addEventListener('DOMContentLoaded', () => {

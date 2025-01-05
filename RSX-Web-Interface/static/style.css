@@ -488,7 +488,7 @@ input:focus{
 .graphicalDataSection{
     background-color: unset;
     height: 100%;
-    width: 60%;
+    width: 50%;
     display: flex;
     justify-content: space-around;
 }
@@ -601,6 +601,7 @@ input:focus{
     display: flex;
     flex-direction: column;
     margin-top: 10px;
+    position: relative;
 }
 
 .inputSection{
@@ -678,6 +679,14 @@ input:focus{
     margin: 0 20px;
 }
 
+.modelRender{
+    height: 170px;
+    width: 100%;
+    background-color: unset;
+    border: 2px solid var(--mainColor);
+    border-radius: 5px;
+}
+
 /* LOG */
 
 .topLogShadowContainer{
@@ -702,13 +711,12 @@ input:focus{
     z-index: 1;
 }
 
-#LogTextContainer{
+.boxTitleContainer{
     display: flex;
     flex-direction: row;
     justify-content: space-between;
     align-items: center;
     position: relative;
-    background-color: var(--secondaryColor);
 }
 
 .timeContainer{
@@ -749,7 +757,7 @@ input:focus{
     background-color: var(--secondaryColor);
 }
 
-.singleChat:nth-child(odd):not(.connectMsg):not(.errorMsg){
+.singleChat:nth-child(odd):not(.connectMsg):not(.errorMsg):not(.warningMsg){
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -782,6 +790,10 @@ input:focus{
 
 .connectMsg{
     background-color: rgba(44, 212, 27, 0.3);
+}
+
+.warningMsg{
+    background-color: rgba(209, 212, 27, 0.3);
 }
 
 .messageBox{

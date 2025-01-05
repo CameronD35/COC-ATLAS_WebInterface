@@ -11,6 +11,7 @@ const {Server} = require('socket.io');
 
 const net = require('net');
 const { create } = require('node:domain');
+const { lstat } = require('node:fs');
 
 // Initializing express.js app and socket.io server
 const app = express(serverPort);
@@ -50,28 +51,32 @@ app.get('/', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
-    io.emit('logMessage', 'User connected', false, true);
+    io.emit('logMessage', 'User connected', false, true, false);
+    io.emit('reqStaticData');
     // On disconnect, send message
     socket.on('disconnect', () => {
-        io.emit('logMessage', 'User disconnnected', true, false);
+        io.emit('logMessage', 'User disconnnected', true, false, false);
         console.log('A user disconnected');
     });
     
     // Response when any of the initialization processes are toggled on
     socket.on('ActivateInit', (sys) => {
         console.log(`Beginning \u001b[1m${sys}\u001b[0m Sequence.`);
+        io.emit('executeFile', `${sys}.py`);
     });
 
     // Response when any of the initialization processes are toggled off
     socket.on('DeactivateInit', (sys) => {
         console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
+        io.emit('terminateFile', `${sys}.py`);
     });
 
     // gets data from JON python script and posts it to all clients with handlers
     socket.on('data', (data) => {
-        let formattedData = JSON.parse(data)
-        //console.log(formattedData);
-        io.emit('logMessage', `Data with tags ${formattedData.tags} recieved`)
+        let formattedData = JSON.parse(data);
+        console.log(formattedData);
+        io.emit('logMessage', `Msg: ${formattedData.msg}\nTags: ${formattedData.tags}`, false, false, false);
+        io.emit('interpretData', formattedData);
     });
 
     // takes data from interface regarding data frequency and sends it over to JON python script
@@ -79,22 +84,15 @@ io.on('connection', (socket) => {
         io.emit('changeFreq', freq);
     });
 
-    // grabs data from JON python script regarding it's ip, os, and name
-    socket.on('staticData', (data) => {
-        let formattedData = JSON.parse(data);
-        console.log(formattedData);
-
-        //console.log('hello')
-        io.emit('interpretStaticData', formattedData);
-    })
-
 });
 
 
 // Opens server listener on port serverPort (localhost:serverPort)
-server.listen(serverPort, IP, () => {
-    console.log(`server running at http://${IP}:${serverPort}`)
+server.listen(serverPort, () => {
+    console.log(`server running at http://${IP}:${serverPort}`);
 });
+
+
 
 function checkCommPortAvailability(portNumber, nanoIP){
     // Promise that returns if the port is occupied or not

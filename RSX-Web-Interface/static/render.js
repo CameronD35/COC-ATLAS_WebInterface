@@ -72,6 +72,31 @@ function createPage() {
     createRealTimeDataSection(document.getElementById('contentContainer2'), 2, 
     ['Temperature', 'Pressure', 'Cloud Points', 'CPU Usage'], 2);
 
+    createFeaturesSection([
+        {
+            title: 'Initialization',
+            options: [
+                'Activate TOF Sensor',
+                'Activate Deployment System',
+                'Rotate Motors',
+                'Rotate Mirrors'
+            ],
+            type: 'checkbox'
+        },
+    
+        {
+            title: 'Controls',
+            options: [
+                'Test Motor',
+            ],
+            type: 'number'
+        },
+        {
+            title: '3D Render',
+            type: 'model'
+        }
+    ]);
+
     createRealTimeGraphs();
     createLogSection();
     createConnectionStatusSection(['Connected to ', 'Connection Quality: ', 'Avg. Response Time: ']);
@@ -410,7 +435,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 setting.value = newFreq;
                 
                 if (newFreq < 1) {
-                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will dreastically reduce performance and accuracy.');
+                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will dreastically reduce performance and accuracy.', false, false, true);
                     socket.emit('dataFreq', 1);
                     break;
 
@@ -596,33 +621,40 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
 
         let optionsSection = createHTMLChildElement(featureSubsection, 'div', 'optionsSection', null, `optionsSection${i}`);
 
-        for(let j = 0; j < sectionTitlesAndOptions[i].options.length; j++){
-            let inputID = `featuresCheackbox${j}`;
-            let inputType = sectionTitlesAndOptions[i].type;
-            let inputIsCheckbox = (inputType == 'checkbox');
-
-            let inputSection = createHTMLChildElement(optionsSection, 'div', 'inputSection', null, `${titleAbbreviation}InputSection${j}`);
-
-            // Makes sure that label is BEFORE input if it is not a checkbox
-            if(!inputIsCheckbox){
-                let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
-                inputLabel.for = inputID
+        if(sectionTitlesAndOptions[i].options != null){
+            for(let j = 0; j < sectionTitlesAndOptions[i].options.length; j++){
+                let inputID = `featuresCheackbox${j}`;
+                let inputType = sectionTitlesAndOptions[i].type;
+                let inputIsCheckbox = (inputType == 'checkbox');
+    
+                let inputSection = createHTMLChildElement(optionsSection, 'div', 'inputSection', null, `${titleAbbreviation}InputSection${j}`);
+    
+                // Makes sure that label is BEFORE input if it is not a checkbox
+                if(!inputIsCheckbox){
+                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                    inputLabel.for = inputID
+                }
+    
+                let input = createHTMLChildElement(inputSection, 'input', `features${inputType}`, null, `${titleAbbreviation}Features${inputType}${j}`);
+                input.type = inputType;
+                
+                // Adds button if the input is NOT a checkbox
+                if(!inputIsCheckbox){
+                    let miniBorder = createHTMLChildElement(inputSection, 'div', 'miniBorder');
+                    let testButton = createHTMLChildElement(inputSection, 'button', `featuresButton`, 'TEST');
+                }
+    
+                // Makes sure that label is AFTER in put if it is a checkbox
+                if(inputIsCheckbox){
+                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                    inputLabel.for = inputID
+                }
             }
+    
+        }
 
-            let input = createHTMLChildElement(inputSection, 'input', `features${inputType}`, null, `${titleAbbreviation}Features${inputType}${j}`);
-            input.type = inputType;
-            
-            // Adds button if the input is NOT a checkbox
-            if(!inputIsCheckbox){
-                let miniBorder = createHTMLChildElement(inputSection, 'div', 'miniBorder');
-                let testButton = createHTMLChildElement(inputSection, 'button', `featuresButton`, 'TEST');
-            }
-
-            // Makes sure that label is AFTER in put if it is a checkbox
-            if(inputIsCheckbox){
-                let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
-                inputLabel.for = inputID
-            }
+        if(sectionTitlesAndOptions[i].type === 'model'){
+            let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender')
         }
 
         if(i == sectionTitlesAndOptions.length - 1){
@@ -634,27 +666,6 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
 
 
 }
-
-createFeaturesSection([
-    {
-        title: 'Initialization',
-        options: [
-            'Activate TOF Sensor',
-            'Activate Deployment System',
-            'Rotate Motors',
-            'Rotate Mirrors'
-        ],
-        type: 'checkbox'
-    },
-
-    {
-        title: 'Controls',
-        options: [
-            'Test Motor',
-        ],
-        type: 'number'
-    }
-])
 
 function createLogSection(parent=document.getElementById('contentContainer4')){
 
