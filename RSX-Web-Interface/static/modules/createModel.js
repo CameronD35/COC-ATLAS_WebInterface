@@ -2,6 +2,9 @@ import * as THREE from 'three';
 import { GLTFLoader } from 'three/addons/loaders/GLTFLoader.js';
 import { DRACOLoader } from 'three/addons/loaders/DRACOLoader.js';
 import { OrbitControls } from 'three/addons/controls/OrbitControls.js';
+//import { TextGeometry } from 'three/addons/renderers/CSS2DRenderer.js';
+//import { CSS2DObject, CSS2DRenderer } from 'three/examples/jsm/Addons.js';
+import createHTMLChildElement from './createElement.js';
 
 let modelLoaded = false;
 
@@ -12,6 +15,7 @@ class SceneManager{
         this.container = container;
         this.width = initialWidth;
         this.height = initialHeight;
+        this.containerDimensions = this.container.getBoundingClientRect();
         this.model;
         this.modelLoaded;
         this.scene = new THREE.Scene();
@@ -27,8 +31,8 @@ class SceneManager{
         window.addEventListener('resize', this.resizeScene);
 
         // SCENE & CAMERA
-        this.scene.background = new THREE.Color(0x888888)
-        this.camera = new THREE.PerspectiveCamera(75, this.width / this.height, 0.1, 1000);
+        this.scene.background = new THREE.Color(0x1f1f1f)
+        this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
 
         // LOADER
         this.loader = new GLTFLoader();
@@ -69,7 +73,7 @@ class SceneManager{
 
             this.model = gltf.scene;
 
-            //centerModel(this.model, 0.01);
+            this.centerModel(0.01);
 
             this.modelLoaded = true;
 
@@ -98,6 +102,7 @@ class SceneManager{
 
         console.log(this);
 
+        this.createAxisLabels()
 
         // START ANIMATION
         this.renderer.setAnimationLoop(this.animate);
@@ -109,13 +114,13 @@ class SceneManager{
         this.renderer.render(this.scene, this.camera);
 
         if(modelLoaded){
-            //rotateWithQuaternion(model);
-            //console.log(model.prevPositon);
+            this.applyQuaternion(this.model);
+            console.log(this.model.prevPositon);
         }
     }
 
     centerModel(precisionAmount){
-        const geometry = findType(this.object, 'Mesh');
+        const geometry = findType(this.model, 'Mesh');
         console.log(geometry);
 
         geometry.center();
@@ -124,25 +129,25 @@ class SceneManager{
     resizeScene(){
 
         
-        let containerDimensions = this.container.getBoundingClientRect();
+        this.containerDimensions = this.container.getBoundingClientRect();
 
 
-        this.camera.aspect = containerDimensions.width / containerDimensions.height;
+        this.camera.aspect = this.containerDimensions.width / this.containerDimensions.height;
     
         this.camera.updateProjectionMatrix();
     
-        this.renderer.setSize(containerDimensions.width, containerDimensions.height);
+        this.renderer.setSize(this.containerDimensions.width, this.containerDimensions.height);
     }
 
-    applyQuaternion(object, gyroscopeData){
+    applyQuaternion(gyroscopeData){
 
         if(modelLoaded){
 
-            let prevQuaternion = object.quaternion;
+            let prevQuaternion = this.model.quaternion;
 
             let newQuaternion = calculateNewQuaternion(prevQuaternion, gyroscopeData);
 
-            object.quaternion.slerp(newQuaternion, 0.5);
+            this.model.quaternion.slerp(newQuaternion, 0.5);
         }
     }
 
@@ -175,6 +180,21 @@ class SceneManager{
 
         return newQuaternion;
         
+    }
+
+    createAxisLabels(){
+
+        let labelContainer = createHTMLChildElement(this.container, 'div', 'labelContainer', null)
+        let x = createHTMLChildElement(labelContainer, 'div', 'label', 'x', 'labelX');
+        x.style.color = 'orange';
+        let y = createHTMLChildElement(labelContainer, 'div', 'label', 'y', 'labelY');
+        y.style.color = 'limegreen';
+        let z = createHTMLChildElement(labelContainer, 'div', 'label', 'z', 'labelZ');
+        z.style.color = 'steelblue';
+
+        // let labelRenderer = new CSS2DRenderer();
+        // label.domElement.id = 'labelRenderer';
+        // labelRenderer.setSize(this.containerDimensions.width, this.containerDimensions.height);
     }
 }
 

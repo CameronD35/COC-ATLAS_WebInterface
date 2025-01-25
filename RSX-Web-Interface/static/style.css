@@ -688,6 +688,42 @@ input:focus{
     overflow: hidden;
 }
 
+.labelContainer {
+    position: relative;
+    z-index: 1;
+    display: flex;
+    width: 10%;
+    height: auto;
+    justify-content: space-between;
+    align-items: center;
+    float: left;
+    margin-top: -10%;
+    margin-left: 80%;
+}
+
+.label {
+    text-shadow: 0px 0px 5px rgba(255, 255, 255, 0.3);
+    margin: 0 5px;
+}
+
+.label:nth-child(-n + 2):after{
+    content: '';
+    position: absolute;
+    top: 40%;
+    margin-left: 4px;
+    width: 1px;
+    height: 40%;
+    border-radius: 3px;
+    opacity: 0.5;
+    background-color: white;
+
+}
+
+
+/* #labelRenderer{
+    position: absolute;
+} */
+
 /* LOG */
 
 .topLogShadowContainer{
