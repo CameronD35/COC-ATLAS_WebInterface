@@ -8,6 +8,7 @@ import settings from './modules/settings.js';
 import pushChatToLog from './modules/chatLog.js';
 import getTime from './modules/getTime.js';
 import { checkContainerPosition } from './modules/chatLog.js';
+//import SceneManager from './modules/createModel.js';
 
 import socket from './client.js';
 
@@ -591,10 +592,6 @@ function createRealTimeGraphs(){
 
 window.addEventListener('resize', () => {resizeElements();});
 
-window.addEventListener('resize', () => {
-    
-})
-
 function resizeElements(){
 
     let graphSectionDimensions = document.querySelector('.graphicalDataSection').getBoundingClientRect();
@@ -654,7 +651,8 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
         }
 
         if(sectionTitlesAndOptions[i].type === 'model'){
-            let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender')
+            let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender');
+            //let scene = new SceneManager(modelContainer, [300, 300]);
         }
 
         if(i == sectionTitlesAndOptions.length - 1){

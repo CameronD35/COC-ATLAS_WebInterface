@@ -6,6 +6,7 @@ import getTime from "./modules/getTime.js";
 import showOverlay from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
 import elementMap from "./modules/elementMap.js";
+import createScene from "./modules/createModel.js"
 
 // Global io variable. It's initialization sends message to server that a client has connected.
 const socket = io();
@@ -119,6 +120,12 @@ document.addEventListener('DOMContentLoaded', () => {
     });
 
     document.getElementById('IP ComputerDataPoint').textContent = nanoIP;
+
+    let scene = createScene(document.getElementById('modelRender'), [document.getElementById('modelRender').getBoundingClientRect().width, document.getElementById('modelRender').getBoundingClientRect().height]);
+    scene.create();
+    //window.addEventListener('resize', scene.resizeScene);
+
+
 });
 
 // creates box that will display when no connection is found

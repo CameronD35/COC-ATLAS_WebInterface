@@ -1,6 +1,6 @@
 const serverPort = 3000;
 //const commPort = 42069;
-const IP = '192.168.1.10';
+const IP = '127.0.0.1';
 const nanoIP = '192.168.1.20';
 
 // Grabbing necessary modules (express.js and socket.io)

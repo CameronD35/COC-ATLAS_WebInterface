@@ -13,6 +13,18 @@
     <link rel="stylesheet" href="/style.css">
     <link rel="icon" href="/Image-Assets/WebInterfaceIcon.webp">
     <title>RSX '25 Web Interface</title>
+
+    <script type="importmap">
+        {
+            "imports": {
+              "three": "https://cdn.jsdelivr.net/npm/three@0.172.0/build/three.module.js",
+              "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/",
+              "three/addons/loaders": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/loaders/",
+              "three/addons/controls": "https://cdn.jsdelivr.net/npm/three@0.172.0/examples/jsm/controls/"
+            }
+        }    
+    </script> 
+
 </head>
 <body>
 
@@ -30,9 +42,12 @@
         </div>
     </div>
     <!-- <script src="Website-Files/index.js" type="module"></script> -->
+     
     <script src="/socket.io/socket.io.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/0.172.0/three.min.js"></script>
     <script src="/client.js" type="module"></script>
     <script src="/render.js" type="module"></script>
+    
     </div>
 </body>
 </html>
