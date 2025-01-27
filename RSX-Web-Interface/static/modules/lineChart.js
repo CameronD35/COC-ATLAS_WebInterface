@@ -12,14 +12,15 @@ export default class Graph {
     constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id, [xAxisTicks, yAxisTicks]) {
 
         this.id = id;
-        this.globX = 0  
-        this.globY = 0
+        this.timeElapsed = 0;  
+        this.currentVal = 0;
+        this.startTime = Date.now();
 
         this.xTicks = xAxisTicks;
         this.yTicks = yAxisTicks;
 
         // initializes the dataset for this graph
-        this.dataset = [];
+        this.dataset = dataset? dataset : [];
 
         this.maxY = d3.max(this.dataset, (d) => { return d.y});
 
@@ -84,20 +85,25 @@ export default class Graph {
 
 
         // Interval that updates the graph every 1 second --USED FOR TESTING--
-        setInterval(() => {
-            this.update(this.dataset);
-        }, 1000);
+        // setInterval(() => {
+        //     this.update(Math.round(Math.random()*10));
+        // }, 1000);
     }
 
-    update() {
+    update(newY) {
 
-        
-        // Global x and y values --USED FOR TESTING--
-        this.globX += Math.round(Math.random()*10);
-        this.globY += Math.round(Math.random()*10);
+        if (newY != null){
+            let currentTime = Date.now();
 
-        // Pushes the global values to the dataset --USED FOR TESTING--
-        this.dataset.push({x: this.globX, y: this.globY});
+            this.timeElapsed = (currentTime - this.startTime)/1000;
+
+            this.currentVal = newY;
+
+            console.log(this.currentVal);
+
+            // Pushes the global values to the dataset
+            this.dataset.push({x: this.timeElapsed, y: this.currentVal});
+        }
 
         this.maxY = d3.max(this.dataset, (d) => { return d.y});
         

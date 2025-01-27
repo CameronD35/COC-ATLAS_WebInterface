@@ -16,7 +16,7 @@ import socket from './client.js';
 
 let referenceOpen = false;
 let graphRange;
-let graphArray = [];
+export let graphArray = [];
 
 let clickDetectEventExists = false;
 let overlayOccupied = false;
@@ -32,6 +32,7 @@ let dataFrequency = 2.5;
 let logAutoScroll = true;
 
 createPage();
+resizeElements();
 
 // END SETUP CODE
 
@@ -101,7 +102,6 @@ function createPage() {
     createRealTimeGraphs();
     createLogSection();
     createConnectionStatusSection(['Connected to ', 'Connection Quality: ', 'Avg. Response Time: ']);
-
 }
 
 
@@ -598,9 +598,12 @@ function resizeElements(){
     const graphSectionWidth = graphSectionDimensions.width;
     const graphSectionHeight = graphSectionDimensions.height;
 
-    console.log(graphSectionWidth);
+    //console.log(graphSectionWidth);
 
     graphArray.forEach((elem, i) => {
+        // the if statement prevents the conenction status graph from being resized
+        // this is quite janky, but works for now
+        if (i == 2) {return;}
         elem.resize(Math.round(graphSectionWidth) * 0.4, Math.round(graphSectionHeight) * 0.75);
     })
 
@@ -768,6 +771,8 @@ function createConnectionStatusSection(dataTitles, container=document.getElement
     ['Time', null], ['red', 'green'], 'connectionStatusGraph', [4, 3]);
 
     conStatGraph.create();
+
+    graphArray.push(conStatGraph);
 }
 
 // Adds all the titles to their respective boxes, reference their input for which box you will be working on.

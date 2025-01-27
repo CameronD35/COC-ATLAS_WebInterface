@@ -3,7 +3,7 @@
 
 import pushChatToLog from "./modules/chatLog.js";
 import getTime from "./modules/getTime.js";
-import showOverlay from "./render.js";
+import showOverlay, {graphArray} from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
 import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js"
@@ -125,14 +125,18 @@ document.addEventListener('DOMContentLoaded', () => {
     scene.create();
     //window.addEventListener('resize', scene.resizeScene);
 
-
+    setInterval(() => {
+        graphArray.forEach((item, i) => {
+            updateElement(null, Math.round(Math.random()*10), null, item);
+        });
+    }, 1000);
 });
 
 // creates box that will display when no connection is found
 function createPortMessage(portNumber=3000, container=document.getElementById('overlayContentContainer')){
     let portErrorContainer = createHTMLChildElement(container, 'div', 'portErrorContainer');
 
-    let portErrorText = createHTMLChildElement(portErrorContainer, 'div', 'portErrorText', `No connection found on PORT:42069`);
+    let portErrorText = createHTMLChildElement(portErrorContainer, 'div', 'portErrorText', `No connection found on PORT:${3000}`);
 
     errorClosed = true;
 
@@ -178,11 +182,17 @@ function gaugeConnectionQuality(timeToTransmit){
 }
 
 // updates an element with a new value
-function updateElement(elementID, newValue, color=null){
+function updateElement(elementID, newValue, color=null, graph=null){
+    
+    if (graph) {
+        graph.update(newValue);
+        return;
+    }
+    
     let elem = document.getElementById(elementID);
     elem.textContent = newValue;
 
-    if (color){
+    if (color) {
         elem.style.color = color;
     }
 } 
