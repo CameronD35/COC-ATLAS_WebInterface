@@ -21,6 +21,11 @@ span{
     --tertiaryColor: #181818;
     --quadraryColor: black;
 
+    --mainColor-transparent: (255, 255, 255, 0.4);
+    --secondaryColor-transparent: rgba(31, 31, 31, 0.4);
+    --tertiaryColor-transparent: rgba(24, 24, 24, 0.4);
+    --quadraryColor-transparent: rgba(0, 0, 0, 0.4);
+
     --webInterfaceGreen: #2cd41b;
     --webInterfaceRed: #db0f0f;
     --webInterfaceOrange: #ff7f00;
@@ -437,53 +442,121 @@ input:focus{
 
 .dataInfo{
     display: flex;
-    width: 150%;
+    width: 100%;
     justify-content: center;
     align-items: center;
 }
 
-.dataDropdown{
+.dropdown {
     position: relative;
-    margin: 0 15px;
+    height: auto;
+    width: fit-content;
+    margin-left: 10px;
+    width: 70%;
 }
 
-.dataDropdownMenu{
-    position: absolute;
-    left: 0;
-    top: calc(100% + 0.25rem);
-    background-color: var(--mainColor);
-    padding: 0.75rem;
-    border-radius: 0.25rem;
-    pointer-events: none;
-    box-shadow: 0 0 5px rgba(0, 0, 0, 0.25);
-    transform: translateY(-10px);
-    transition-duration: 0.15s;
-    opacity: 0;
-}
-
-/* .dataSelect {
-    border: 1px solid var(--quadraryColor);
+.dropdownButton {
+    background: gray;
+    cursor: pointer;
+    background-color: var(--tertiaryColor-transparent);
     border-radius: 2px;
-    padding: 1px 3px;
-    background-color: unset;
+    border: var(--mainColor) solid 1px;
+    backdrop-filter: blur(5px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 2px;
+    width: 100%;
 }
 
-.dataSelect > div {
-    transform: rotate(180deg);
+.dropdownTitle {
+    font-weight: 700;
     font-size: 10px;
-    line-height: 6px;
-    scale: 1 0.5;
     color: var(--mainColor);
 }
 
-.dataDropdown > .dataSelect:focus + .dataDropdownMenu{
+.dropdownArrow {
+    font-weight: 700;
+    font-size: 10px;
+    margin-left: 5px;
+    display: block;
+    transition-duration: 0.4s;
+    color: var(--mainColor);
+}
+
+.dropdownMenu {
+    position: absolute;
+    left: 0;
+    top: 120%;
+    font-weight: 400;
+    cursor: default;
+    background-color: var(--tertiaryColor-transparent);
+    padding: 10px;
+    backdrop-filter: blur(5px);
+    border-radius: 5px;
+    box-shadow: 0 0 5px var(--quadrary-transparent);
+    transition-duration: 0.4s;
+    transform: translateY(-10%);
+    opacity: 0;
+    pointer-events: none;
+    width: 100%;
+    height: auto;
+}
+
+.dropdownOption {
+    font-weight: 500;
+    color: var(--mainColor);
+}
+
+.dropdownBorder {
+    height: 1px;
+    border-radius: 2px;
+    width: 100%;
+    background-color: var(--mainColor);
+    opacity: 0.6;
+    margin: 5px 0;
+}
+
+.defaultDropdownOption {
+    opacity: 0.4;
+}
+
+.dropdownCurrentOption {
+    color: var(--webInterfaceGreen);
     opacity: 1;
-    transform: translateY(0px);
-    pointer-events: auto;
-    background-color: var(--quadraryColor);
-    color: white;
-    opacity: 0.8;
-} */
+}
+
+.dropdownArrow {
+    margin-left: 5px;
+    display: block;
+    transition-duration: 0.4s;
+}
+
+@keyframes showDropdown {
+    from {
+        transform: translateY(-10%);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0%);
+        opacity: 1;
+        pointer-events: all;
+    }
+}
+
+@keyframes hideDropdown {
+    from {
+        transform: translateY(0%);
+        opacity: 1;
+    }
+
+    to {
+        transform: translateY(10%);
+        opacity: 0;
+        pointer-events: none;
+    }
+}
 
 .graphicalDataSection{
     background-color: unset;

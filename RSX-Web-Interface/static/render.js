@@ -8,7 +8,7 @@ import settings from './modules/settings.js';
 import pushChatToLog from './modules/chatLog.js';
 import getTime from './modules/getTime.js';
 import { checkContainerPosition } from './modules/chatLog.js';
-//import SceneManager from './modules/createModel.js';
+import Dropdown from './modules/dropdown.js';
 
 import socket from './client.js';
 
@@ -22,6 +22,7 @@ let clickDetectEventExists = false;
 let overlayOccupied = false;
 let messageCount = 0;
 
+// light mode toggle variable
 let lightMode = false;
 
 /** The max messages setting option. */
@@ -102,6 +103,7 @@ function createPage() {
     createRealTimeGraphs();
     createLogSection();
     createConnectionStatusSection(['Connected to ', 'Connection Quality: ', 'Avg. Response Time: ']);
+
 }
 
 
@@ -219,7 +221,7 @@ export default function showOverlay(functionToCreateContent) {
 */
 
 function readForClick(event) {
-    console.log(event)
+    //console.log(event);
     let target = event.target;
     let didClickInside = document.getElementById('overlayContentContainer').contains(target);
 
@@ -497,7 +499,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 }
 
 
-/** Remove the message elements when the count goes beyond the max. */
+/* Remove the message elements when the count goes beyond the max. */
 function removeMessagesWhenBeyondMax()
 {
     let logContainer = document.getElementById("chatContainer");
@@ -529,7 +531,21 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
     for(let i = 1; i <= numOfGraphs; i++){
         let currentGraphSection = createHTMLChildElement(graphicalDataSection, 'div', 'graphSection', null, `graphSection${i}`);
         let currentDataInfo = createHTMLChildElement(currentGraphSection, 'div', 'dataInfo', null, `dataInfo${i}`);
-        let dataTitle = createHTMLChildElement(currentDataInfo, 'div', 'dataTitle', `Data Point ${i}`, `dataTitle${i}`);
+        //let dataTitle = createHTMLChildElement(currentDataInfo, 'div', 'dataTitle', `Data Point ${i}`, `dataTitle${i}`);
+
+        let pointsFormattedForDropdown = {
+            "Select": "def"
+        }
+
+        dataPoints.forEach((point, i) => {
+            pointsFormattedForDropdown[point] = 'std';
+        });
+
+        console.log(pointsFormattedForDropdown);
+
+        let dataDropdown = new Dropdown(currentDataInfo, i, pointsFormattedForDropdown, currentDataInfo);
+
+        //dataDropdown.attachToExternalTitle(dataTitle);
     }
 
     let lengthOfData = dataPoints.length;
@@ -587,7 +603,7 @@ function createRealTimeGraphs(){
     graph1.create();
     graph2.create();
 
-    graphArray.push(graph1, graph2)
+    graphArray.push(graph1, graph2);
 }
 
 window.addEventListener('resize', () => {resizeElements();});
@@ -790,6 +806,8 @@ function addTextToBoxes(boxesArray, titlesArray){
     }
 
 }
+
+
 
 // DO NOT DELETE THESE FUNCTIONS. USE THESE FUNCTIONS TO HELP BUILD YOUR FUNCTIONS IF NEEDED.
 

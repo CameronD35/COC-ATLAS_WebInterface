@@ -325,11 +325,11 @@ export default class Graph {
 
 
 
-        console.log(this.width/2);
+        //console.log(this.width/2);
         this.xAxisLabel.attr("x", this.width/2);
         this.xAxisLabel.attr("y", (this.height - (this.margin.bottom + 8)))
         
-        console.log(this.width/2);
+        //console.log(this.width/2);
         this.yAxisLabel.attr("x", (this.height - this.margin.bottom - this.margin.top)/2);
         this.yAxisLabel.attr("y", this.margin.left + this.height/6)
 
