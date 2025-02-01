@@ -9,13 +9,17 @@ import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js";
 
 // Global io variable. It's initialization sends message to server that a client has connected.
-const socket = io();
+const socket = io({
+    auth: {
+        token: 'Laptop'
+    }
+});
+
 const nanoIP = '192.168.1.20';
 
 export default socket;
 
-
-let errorClosed = false;
+let clientsConnected = []
 
 // socket event that creates message on all clients
 socket.on('logMessage', (msg, isError, isConnect) => {
@@ -27,28 +31,36 @@ socket.on('logMessage', (msg, isError, isConnect) => {
 });
 
 // measures and displays the time taken to contact the server; updates connection status section
-socket.on('commConnection', (isConnected, IP, portNumber, timeElapsed) => {
+socket.on('commConnection', (isConnected, IP, portNumber) => {
+
+
 
     //console.log(timeElapsed);
-    updateConnectionQuality(isConnected, timeElapsed);
     updateElement('ConConnectionStatusData0', `PORT:${portNumber}`, 'var(--mainColor)');
 
     if (isConnected) {
         //console.log(`Connection established on port number ${portNumber} with ip ${IP}`);
+        return;
 
     } else {
         console.log(`No connection detected on port number ${portNumber} with ip ${IP}`);
         updateElement('ConConnectionStatusData0', `NONE`, 'var(--webInterfaceRed)');
-        updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
-        updateElement('AvgConnectionStatusData2', 'N/A');
+        const overlay = document.getElementById('overlay');
+
+        const errorClosed = overlay.getAttribute('data-portErr');
+        const overlayOccupied = overlay.getAttribute('data-occupied');
         // Show an overlay identifying a lack of connection (only happens once)
-        if (!errorClosed){
+        if (errorClosed == 'false' && overlayOccupied == 'false'){
             showOverlay(createPortMessage);
         }
     }
 
 
 
+});
+
+socket.on('clientID', (clients) => {
+    updateClientDisplay(clients);
 });
 
 // Used to grab any values (such as os or ip) and display them
@@ -119,6 +131,7 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    // Update IP address as shown in the top section
     document.getElementById('IP ComputerDataPoint').textContent = nanoIP;
 
     let scene = createScene(document.getElementById('modelRender'), [document.getElementById('modelRender').getBoundingClientRect().width, document.getElementById('modelRender').getBoundingClientRect().height]);
@@ -132,53 +145,27 @@ document.addEventListener('DOMContentLoaded', () => {
     }, 1000);
 });
 
+function updateClientDisplay(clientArray) {
+
+    console.log(clientArray);
+    const clientDisplay = document.getElementById('CliConnectionStatusData1');
+
+    clientDisplay.textContent = clientArray.join(', ');
+
+}
+
 // creates box that will display when no connection is found
 function createPortMessage(portNumber=3000, container=document.getElementById('overlayContentContainer')){
     let portErrorContainer = createHTMLChildElement(container, 'div', 'portErrorContainer');
 
+
     let portErrorText = createHTMLChildElement(portErrorContainer, 'div', 'portErrorText', `No connection found on PORT:${3000}`);
 
-    errorClosed = true;
+    let overlay = document.getElementById('overlay');
+
+    overlay.setAttribute('data-portErr', 'true');
 
     return portErrorContainer;
-}
-
-// updates connection quality in connection status section
-function updateConnectionQuality(isConnected, timeToTransmit){
-
-    if(!isConnected){
-        updateElement('ConConnectionStatusData0', 'NONE', 'var(--webInterfaceRed)');
-        updateElement('ConConnectionStatusData1', 'N/A', 'var(--mainColor)');
-        updateElement('AvgConnectionStatusData2', 'N/A');
-
-        return;
-    }
-
-    let quality = gaugeConnectionQuality(timeToTransmit);
-
-    updateElement('ConConnectionStatusData1', quality, (() => {
-            if (quality == 'Good'){
-                return 'var(--webInterfaceGreen)'
-            } else if (quality == 'Ok'){
-                return 'var(--webInterfaceOrange)'
-            } else if (quality == 'Bad'){
-                return 'var(--webInterfaceRed)'
-            }
-        })()
-    );
-
-    updateElement('AvgConnectionStatusData2', `${timeToTransmit.toFixed(2)}ms`);
-}
-
-function gaugeConnectionQuality(timeToTransmit){
-
-    if (timeToTransmit <= 1){
-        return 'Good'
-    } else if (timeToTransmit <= 3){
-        return 'Ok'
-    } else {
-        return 'Bad'
-    }
 }
 
 // updates an element with a new value
@@ -197,9 +184,9 @@ function updateElement(elementID, newValue, color=null, graph=null){
     }
 } 
 
-function interpretIncomingJSON(){
+// function interpretIncomingJSON(){
     
-}
+// }
 
 // updates time in log section
 function updateTime(){

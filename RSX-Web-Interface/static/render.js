@@ -19,7 +19,6 @@ let graphRange;
 export let graphArray = [];
 
 let clickDetectEventExists = false;
-let overlayOccupied = false;
 let messageCount = 0;
 
 // light mode toggle variable
@@ -102,7 +101,7 @@ function createPage() {
 
     createRealTimeGraphs();
     createLogSection();
-    createConnectionStatusSection(['Connected to ', 'Connection Quality: ', 'Avg. Response Time: ']);
+    createConnectionStatusSection(['Connected to ', 'Clients: ']);
 
 }
 
@@ -203,7 +202,8 @@ export default function showOverlay(functionToCreateContent) {
     setTimeout(() => {
         overlay.style.opacity = 1;
     }, 50)
-    overlayOccupied = true;
+   
+    overlay.setAttribute('data-occupied', 'true');
 
     console.log('showing overlay');
     functionToCreateContent(overlayContentContainer);
@@ -225,10 +225,12 @@ function readForClick(event) {
     let target = event.target;
     let didClickInside = document.getElementById('overlayContentContainer').contains(target);
 
-    if (!didClickInside && overlayOccupied){
+    const overlayOccupied = overlay.getAttribute('data-occupied');
+
+    if (!didClickInside && overlayOccupied == 'true'){
 
         console.log('clicked outside.', target.id);
-        overlayOccupied = false;
+        overlay.setAttribute('data-occupied', 'false');
         referenceOpen = false;
         console.log('reference:', referenceOpen);
         hideOverlay();
@@ -261,7 +263,7 @@ function hideOverlay(){
     setTimeout(() => {
         cleanElement(overlayContentContainer);
     }, 450);
-    overlayOccupied = false;
+    overlay.setAttribute('data-occupied', 'false');
     pageContainer.style.filter = '';
 }
 
@@ -400,8 +402,15 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     function settingChanged(setting) 
     {
         // The main and secondary css vars.
-        let mainColorCssVar = '--mainColor'; 
-        let secondaryColorCssVar = '--secondaryColor'; 
+        const mainColorCssVar = '--mainColor'; 
+        const secondaryColorCssVar = '--secondaryColor'; 
+        const tertiaryColorCssVar = '--tertiaryColor'; 
+        const quadraryColorCssVar = '--quadraryColor'; 
+
+        const mainColorTransparentCssVar = '--mainColor-transparent'; 
+        const secondaryColorTransparentCssVar = '--secondaryColor-transparent'; 
+        const tertiaryColorTransparentCssVar = '--tertiaryColor-transparent'; 
+        const quadraryColorTransparentCssVar = '--quadraryColor-transparent'; 
 
         switch (setting.name)
         {
@@ -410,16 +419,41 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
                 // https://davidwalsh.name/css-variables-javascript
                 // Get the current values
-                let currentMain = getComputedStyle(document.documentElement).getPropertyValue(mainColorCssVar);
-                let currentSecondary = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorCssVar);
+                const currentMain = getComputedStyle(document.documentElement).getPropertyValue(mainColorCssVar);
+                const currentSecondary = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorCssVar);
+                const currentTertiary = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorCssVar);
+                const currentQuadrary = getComputedStyle(document.documentElement).getPropertyValue(quadraryColorCssVar);
+
+                const currentMainTransparent = getComputedStyle(document.documentElement).getPropertyValue(mainColorTransparentCssVar);
+                const currentSecondaryTransparent = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorTransparentCssVar);
+                const currentTertiaryTransparent = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorTransparentCssVar);
+                const currentQuadraryTransparent = getComputedStyle(document.documentElement).getPropertyValue(quadraryColorTransparentCssVar);
 
                 // swap the values
-                document.documentElement.style.setProperty(mainColorCssVar, currentSecondary);
-                document.documentElement.style.setProperty(secondaryColorCssVar, currentMain);
+                document.documentElement.style.setProperty(mainColorCssVar, currentQuadrary);
+                document.documentElement.style.setProperty(quadraryColorCssVar, currentMain);
 
+
+                // set values and invert settings icon color
                 if(setting.value){
+                    // opaque
+                    document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(224, 224, 224)');
+                    document.documentElement.style.setProperty(tertiaryColorCssVar, 'rgb(231, 231, 231)');
+
+                    // transparent
+                    document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(224, 224, 224, 0.4)');
+                    document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(231, 231, 231, 0.4)');
+
                     document.getElementById('settingsIcon').style.filter = 'invert()';
                 } else {
+                    // opaque
+                    document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(31, 31, 31)');
+                    document.documentElement.style.setProperty(tertiaryColorCssVar, 'rgb(24, 24, 24)');
+
+                    // transparent
+                    document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(224, 224, 224, 0.4)');
+                    document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(231, 231, 231, 0.4)');
+
                     document.getElementById('settingsIcon').style.filter = '';
                 }
 
@@ -893,12 +927,13 @@ window.addEventListener('keydown', (target) => {
     if (keysActive['Shift'] == true && target.key == 'R'){
         console.log('clicked!')
 
+        const overlayOccupied = overlay.getAttribute('data-occupied');
 
-        if(!overlayOccupied){
+        if(overlayOccupied == 'false'){
             showOverlay(createReference);
         }
             
-        else if (overlayOccupied){
+        else if (overlayOccupied == 'true'){
             console.log('make sure to close settings before attempting to open reference');       
             hideOverlay();
         }

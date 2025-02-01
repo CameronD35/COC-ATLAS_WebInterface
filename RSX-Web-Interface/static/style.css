@@ -16,12 +16,12 @@ span{
 }
 
 :root{
-    --mainColor: #ffffff;
-    --secondaryColor: #1f1f1f;
-    --tertiaryColor: #181818;
-    --quadraryColor: black;
+    --mainColor: rgb(255, 255, 255);
+    --secondaryColor: rgb(31, 31, 31);
+    --tertiaryColor: rgb(24, 24, 24);
+    --quadraryColor: rgb(0, 0, 0);
 
-    --mainColor-transparent: (255, 255, 255, 0.4);
+    --mainColor-transparent: rgba(255, 255, 255, 0.4);
     --secondaryColor-transparent: rgba(31, 31, 31, 0.4);
     --tertiaryColor-transparent: rgba(24, 24, 24, 0.4);
     --quadraryColor-transparent: rgba(0, 0, 0, 0.4);
@@ -364,6 +364,7 @@ input:focus{
 }
 
 .checkboxInput{
+    accent-color: var(--webInterfaceGreen);
     background-color: var(--secondaryColor);
 }
 
@@ -482,6 +483,8 @@ input:focus{
     display: block;
     transition-duration: 0.4s;
     color: var(--mainColor);
+    scale: 1 0.5;
+    line-height: 10px;
 }
 
 .dropdownMenu {
@@ -524,12 +527,6 @@ input:focus{
 .dropdownCurrentOption {
     color: var(--webInterfaceGreen);
     opacity: 1;
-}
-
-.dropdownArrow {
-    margin-left: 5px;
-    display: block;
-    transition-duration: 0.4s;
 }
 
 @keyframes showDropdown {
@@ -836,7 +833,7 @@ input:focus{
 }
 
 .timeText{
-    color: white;
+    color: var(--mainColor);
     font-family: 'JetBrains Mono';
     font-weight: 800;
     font-size: 16px;

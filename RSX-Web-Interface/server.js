@@ -1,7 +1,8 @@
 const serverPort = 3000;
 //const commPort = 42069;
-const IP = '127.0.0.1';//'192.168.1.10';
+const IP = '192.168.1.10';
 const nanoIP = '192.168.1.20';
+let clients = []
 
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
@@ -51,6 +52,14 @@ app.get('/', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
+    const clientID = socket.handshake.auth.token;
+
+    // this indicates that a new client has connected
+    if (!clients.includes(clientID)) {
+        clients.push(clientID);
+    }
+    io.emit('clientID', clients);
+    console.log(clientID, '   wr;iufgskugfuigs')
     io.emit('logMessage', 'User connected', false, true, false);
     io.emit('reqStaticData');
     // On disconnect, send message
@@ -58,6 +67,8 @@ io.on('connection', (socket) => {
         io.emit('logMessage', 'User disconnnected', true, false, false);
         console.log('A user disconnected');
     });
+
+    
     
     // Response when any of the initialization processes are toggled on
     socket.on('ActivateInit', (sys) => {
@@ -131,24 +142,24 @@ setInterval( () => {
 
     checkCommPortAvailability(serverPort, nanoIP)
     .then((isAvailable) => {
+        
+        // let endTime = performance.now();
 
-        let endTime = performance.now();
-
-        let timeElapsed = endTime - startTime;
+        // let timeElapsed = endTime - startTime;
 
         //console.log(isAvailable)
             if (isAvailable) {
                 //console.log(`Port ${serverPort} is open.`);
 
                 // Emit event stating that there is no connection on the commPort
-                io.emit('commConnection', false, nanoIP, serverPort, timeElapsed);
+                io.emit('commConnection', false, nanoIP, serverPort);
 
             } else {
                 //console.log(`Port ${serverPort} is closed.`);
 
                 // Emit event stating that there is a connection on the commPort
                 // TODO: Check if connection is ethernet and not some other random thing
-                io.emit('commConnection', true, nanoIP, serverPort, timeElapsed);
+                io.emit('commConnection', true, nanoIP, serverPort);
             }
         }   
     )}
