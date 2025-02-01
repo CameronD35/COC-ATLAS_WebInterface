@@ -401,20 +401,22 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
         @param {SettingsOption} setting - The name of the setting that was changed. */
     function settingChanged(setting) 
     {
-        // The main and secondary css vars.
-        const mainColorCssVar = '--mainColor'; 
-        const secondaryColorCssVar = '--secondaryColor'; 
-        const tertiaryColorCssVar = '--tertiaryColor'; 
-        const quadraryColorCssVar = '--quadraryColor'; 
-
-        const mainColorTransparentCssVar = '--mainColor-transparent'; 
-        const secondaryColorTransparentCssVar = '--secondaryColor-transparent'; 
-        const tertiaryColorTransparentCssVar = '--tertiaryColor-transparent'; 
-        const quadraryColorTransparentCssVar = '--quadraryColor-transparent'; 
 
         switch (setting.name)
         {
             case "Light Mode On":
+
+                // The main and secondary css vars.
+                const mainColorCssVar = '--mainColor'; 
+                const secondaryColorCssVar = '--secondaryColor'; 
+                const tertiaryColorCssVar = '--tertiaryColor'; 
+                const quadraryColorCssVar = '--quadraryColor'; 
+
+                const mainColorTransparentCssVar = '--mainColor-transparent'; 
+                const secondaryColorTransparentCssVar = '--secondaryColor-transparent'; 
+                const tertiaryColorTransparentCssVar = '--tertiaryColor-transparent'; 
+                const quadraryColorTransparentCssVar = '--quadraryColor-transparent'; 
+
                 setting.value = !setting.value;
 
                 // https://davidwalsh.name/css-variables-javascript
@@ -451,8 +453,8 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.documentElement.style.setProperty(tertiaryColorCssVar, 'rgb(24, 24, 24)');
 
                     // transparent
-                    document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(224, 224, 224, 0.4)');
-                    document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(231, 231, 231, 0.4)');
+                    document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(31, 31, 31, 0.4)');
+                    document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(24, 24, 24, 0.4)');
 
                     document.getElementById('settingsIcon').style.filter = '';
                 }

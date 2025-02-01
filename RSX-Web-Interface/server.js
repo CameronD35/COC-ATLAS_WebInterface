@@ -19,6 +19,7 @@ const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
 
+
 // const app2 = express();
 // const server2 = createServer(app2);
 // const io2 = createServer(server2);
@@ -86,7 +87,7 @@ io.on('connection', (socket) => {
     socket.on('data', (data) => {
         let formattedData = JSON.parse(data);
         console.log(formattedData);
-        io.emit('logMessage', `Msg: ${formattedData.msg}\nTags: ${formattedData.tags}`, false, false, false);
+        io.emit('logMessage', `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`, false, false, false);
         io.emit('interpretData', formattedData);
     });
 

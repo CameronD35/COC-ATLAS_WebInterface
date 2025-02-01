@@ -196,6 +196,10 @@ class SceneManager{
         // label.domElement.id = 'labelRenderer';
         // labelRenderer.setSize(this.containerDimensions.width, this.containerDimensions.height);
     }
+
+    hideRender(){
+        
+    }
 }
 
 
