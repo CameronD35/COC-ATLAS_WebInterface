@@ -1,6 +1,7 @@
 const serverPort = 3000;
 //const commPort = 42069;
-const IP = '192.168.1.10';
+//const IP = '192.168.1.10';
+const IP = '127.0.0.1';
 const nanoIP = '192.168.1.20';
 let clients = []
 
@@ -59,14 +60,18 @@ io.on('connection', (socket) => {
     if (!clients.includes(clientID)) {
         clients.push(clientID);
     }
+
+
     io.emit('clientID', clients);
-    console.log(clientID, '   wr;iufgskugfuigs')
-    io.emit('logMessage', 'User connected', false, true, false);
+    console.log(`\u001b[1m${clientID}\u001b[0m connected`)
+    io.emit('logMessage', `'${clientID}' connected`, false, true, false);
     io.emit('reqStaticData');
     // On disconnect, send message
     socket.on('disconnect', () => {
-        io.emit('logMessage', 'User disconnnected', true, false, false);
-        console.log('A user disconnected');
+        io.emit('logMessage', `'${clientID}' disconnnected`, true, false, false);
+
+
+        console.log(`\u001b[1m${clientID}\u001b[0m disconnected`);
     });
 
     

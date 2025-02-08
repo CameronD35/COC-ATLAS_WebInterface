@@ -15,7 +15,6 @@ import socket from './client.js';
 // START SETUP CODE
 
 let referenceOpen = false;
-let graphRange;
 export let graphArray = [];
 
 let clickDetectEventExists = false;
@@ -27,6 +26,7 @@ let lightMode = false;
 /** The max messages setting option. */
 let maxMessagesSetting = settings[1];
 let dataFrequency = 2.5;
+let graphRange = 30;
 
 // Variables for the log section
 let logAutoScroll = true;
@@ -48,7 +48,7 @@ function createPage() {
     document.getElementById('dashRow2-Column1').classList.remove('box');
     createContentSpace();
 
-    console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%;');
+    console.log(`%cUse 'Shift + R' to access a reference image for the interface!`, 'background: rgba(44, 212, 27, 0.3); border-radius: 2px; width: 100%; padding: 2px;');
 
     createSettingsBox(document.getElementById('dashRow1-Column2'));
     
@@ -209,7 +209,7 @@ export default function showOverlay(functionToCreateContent) {
     functionToCreateContent(overlayContentContainer);
     setTimeout(() => {
         window.addEventListener('click', readForClick);
-    }, 5)
+    }, 500)
 
 }
 
@@ -460,6 +460,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 }
 
                 break;
+
             case "Max Log Messages":
                 let numberInput = document.getElementById("Max Log MessagesInput");
                 let newValue = numberInput.value;
@@ -467,6 +468,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
                 removeMessagesWhenBeyondMax();
                 break;
+
             case "Data Transmission Frequency (seconds)":
                 let freqInput = document.getElementById('Data Transmission Frequency (seconds)Input');
                 let newFreq = freqInput.value;
@@ -474,7 +476,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 setting.value = newFreq;
                 
                 if (newFreq < 1) {
-                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will dreastically reduce performance and accuracy.', false, false, true);
+                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will drastically reduce performance and accuracy.', false, false, true);
                     socket.emit('dataFreq', 1);
                     break;
 
@@ -483,6 +485,27 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     pushChatToLog(getTime(), msgString);
                 }
                 socket.emit('dataFreq', newFreq);
+                break;
+            
+            case "Graph Range (seconds)":
+                let rangeInput = document.getElementById('Graph Range (seconds)Input');
+                let newRange = rangeInput.value;
+
+
+                if (newRange < 1) {
+                    pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', false, false, true);
+
+                    newRange = 10;
+                }
+
+                setting.value = newRange;
+
+                // Grabs each graph and sets it's domain (x-axis) to a length of 30
+                // The x-axis represents seconds
+                graphArray.forEach((graph, i) => {
+                    graph.changeDomain(newRange);
+                });
+
                 break;
         }
     }
