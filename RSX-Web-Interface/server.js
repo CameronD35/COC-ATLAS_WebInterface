@@ -11,9 +11,16 @@ const {createServer} = require('node:http');
 const {join} = require('node:path');
 const {Server} = require('socket.io');
 
+// Used for checking avialable connections
 const net = require('net');
-const { create } = require('node:domain');
+
+// Used for creating/reading files
 const { lstat } = require('node:fs');
+
+// Used for user input
+const readLine = require('node:readline/promises');
+const { stdin, stdout } = require('node:process');
+const { spawn } = require('node:child_process');
 
 // Initializing express.js app and socket.io server
 const app = express(serverPort);
@@ -141,6 +148,30 @@ function checkCommPortAvailability(portNumber, nanoIP){
     });
 }
 
+async function promptForCommand() {
+
+    const programCommand = readLine.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+
+    // https://betterstack.com/community/questions/how-to-change-color-of-console-output-node-js/
+    const red = '\x1b[31m';
+    const blue = '\x1b[34m';
+    const purple = '\x1b[35m';
+    const reset = '\x1b[0m';
+    const strikethrough = '\x1b[9m';
+    const command = await programCommand.question(`\n\n${purple}TYPE 'Q' TO${reset}${red} QUIT ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n\n\n`);
+
+    interpretCommand(command);
+}
+
+function interpretCommand(cmd) {
+    if (cmd.toLowerCase() == 'q') {
+        process.exit(0)
+    }
+}
+
 
 setInterval( () => {
     
@@ -169,4 +200,9 @@ setInterval( () => {
             }
         }   
     )}
-, 2500)
+, 2500);
+
+promptForCommand();
+
+
+
