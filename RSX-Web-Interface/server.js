@@ -28,27 +28,6 @@ const server = createServer(app);
 const io = new Server(server);
 
 
-// const app2 = express();
-// const server2 = createServer(app2);
-// const io2 = createServer(server2);
-
-// server2.listen('3001', '192.168.1.10', () => {
-//     console.log('test');
-// });
-
-// app2.get('/', (req, res) => {
-//     console.log('hi');
-// });
-
-// io2.on('connection', (socket) => {
-//     console.log('working');
-
-//     socket.on('disconnect', () => {
-//         io.emit('logMessage', 'User connected');
-//         console.log('jon disconnected');
-//     });
-// })
-
 // Serving the static files (in the /static directory) to the client (browser)
 app.use(express.static('static'));
 
@@ -70,7 +49,7 @@ io.on('connection', (socket) => {
 
 
     io.emit('clientID', clients);
-    console.log(`\u001b[1m${clientID}\u001b[0m connected`)
+    console.log(`\x1b[1m${clientID}\x1b[0m connected`)
     io.emit('logMessage', `'${clientID}' connected`, false, true, false);
     io.emit('reqStaticData');
     // On disconnect, send message
@@ -78,20 +57,20 @@ io.on('connection', (socket) => {
         io.emit('logMessage', `'${clientID}' disconnnected`, true, false, false);
 
 
-        console.log(`\u001b[1m${clientID}\u001b[0m disconnected`);
+        console.log(`\x1b[1m${clientID}\x1b[0m disconnected`);
     });
 
     
     
     // Response when any of the initialization processes are toggled on
     socket.on('ActivateInit', (sys) => {
-        console.log(`Beginning \u001b[1m${sys}\u001b[0m Sequence.`);
+        console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
         io.emit('executeFile', `${sys}.py`);
     });
 
     // Response when any of the initialization processes are toggled off
     socket.on('DeactivateInit', (sys) => {
-        console.log(`Concluding \u001b[1m${sys}\u001b[0m Sequence.`);
+        console.log(`Concluding \x1b[1m${sys}\x1b[0m Sequence.`);
         io.emit('terminateFile', `${sys}.py`);
     });
 
@@ -113,7 +92,9 @@ io.on('connection', (socket) => {
 
 // Opens server listener on port serverPort (localhost:serverPort)
 server.listen(serverPort, () => {
-    console.log(`server running at http://${IP}:${serverPort}`);
+    const green = '\x1b[32m';
+    const reset = '\x1b[0m';
+    console.log(`server running at ${green}http://${IP}:${serverPort}${reset}\n\n`);
 });
 
 
@@ -161,7 +142,7 @@ async function promptForCommand() {
     const purple = '\x1b[35m';
     const reset = '\x1b[0m';
     const strikethrough = '\x1b[9m';
-    const command = await programCommand.question(`\n\n${purple}TYPE 'Q' TO${reset}${red} QUIT ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n\n\n`);
+    const command = await programCommand.question(`\n\n${purple}TYPE 'Q' TO${reset}${red} QUIT ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n`);
 
     interpretCommand(command);
 }
