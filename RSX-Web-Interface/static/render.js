@@ -43,7 +43,10 @@ function createPage() {
     let parentContainer = document.querySelector('.boxContainer');
     createBoxStructure(parentContainer);
 
-    addTextToBoxes(['dashColumn4-Row1', 'dashColumn4-Row2', 'dashRow2-Column2'], ['Real-Time Data', 'Features', 'Log']);
+    const titles = ['Real-Time Data', 'Features', 'Log'];
+    const tooltipMessages = [null, null, 'Download a copy of this sessions log.']
+
+    addTextToBoxes(['dashColumn4-Row1', 'dashColumn4-Row2', 'dashRow2-Column2'], titles, tooltipMessages);
 
     document.getElementById('dashRow2-Column1').classList.remove('box');
     createContentSpace();
@@ -851,7 +854,7 @@ function createConnectionStatusSection(dataTitles, container=document.getElement
 }
 
 // Adds all the titles to their respective boxes, reference their input for which box you will be working on.
-function addTextToBoxes(boxesArray, titlesArray){
+function addTextToBoxes(boxesArray, titlesArray, tooltipMessageArray){
 
     for(let i = 0; i <= titlesArray.length; i++){
         
@@ -860,7 +863,7 @@ function addTextToBoxes(boxesArray, titlesArray){
 
         if(currentSection && currentTitle){
             let titleContainer = createHTMLChildElement(currentSection, 'div', 'boxTitleContainer', null , `${currentTitle.substring(0, 3)}TextContainer`);
-            let titleElem = createHTMLChildElement(titleContainer, 'div', 'boxTitle', currentTitle, `${currentTitle.substring(0, 3)}Text`);
+            let titleElem = createHTMLChildElement(titleContainer, 'div', 'boxTitle', currentTitle, `${currentTitle.substring(0, 3)}Text`, null, tooltipMessageArray[i]);
         }
     }
 

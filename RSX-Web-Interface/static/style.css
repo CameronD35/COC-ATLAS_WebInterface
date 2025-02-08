@@ -21,6 +21,11 @@ span{
     --tertiaryColor: rgb(24, 24, 24);
     --quadraryColor: rgb(0, 0, 0);
 
+    --mainColor-semiTransparent: rgba(255, 255, 255, 0.7);
+    --secondaryColor-semiTransparent: rgba(31, 31, 31, 0.7);
+    --tertiaryColor-semiTransparent: rgba(24, 24, 24, 0.7);
+    --quadraryColor-semiTransparent: rgba(0, 0, 0, 0.7);
+
     --mainColor-transparent: rgba(255, 255, 255, 0.4);
     --secondaryColor-transparent: rgba(31, 31, 31, 0.4);
     --tertiaryColor-transparent: rgba(24, 24, 24, 0.4);
@@ -29,6 +34,10 @@ span{
     --webInterfaceGreen: #2cd41b;
     --webInterfaceRed: #db0f0f;
     --webInterfaceOrange: #ff7f00;
+
+    --slightBlur: blur(3px);
+    --moderateBlur: blur(5px);
+    --intenseBlur: blur(7px);
 }
 
 /* BACKGROUND */
@@ -121,7 +130,7 @@ body{
     align-items: center;
     border-radius: 10px;
     border: 2px solid var(--mainColor);
-    backdrop-filter: blur(7px);
+    backdrop-filter: var(--intenseBlur);
 }
 
 .portErrorText{
@@ -140,6 +149,26 @@ body{
     display: flex;
     align-items: top;
     justify-content: center;
+}
+
+.tooltip {
+    background-color: var(--tertiaryColor-transparent);
+    width: fit-content;
+    min-width: 8vw;
+    height: fit-content;
+    backdrop-filter: var(--moderateBlur);
+    position: absolute;
+    z-index: 2;
+    top: 110%;
+    border-radius: 5px;
+    border: 2px solid var(--mainColor-transparent);
+    display: flex;
+    padding: 7px;
+}
+
+.tooltipText {
+    font-weight: 300;
+    font-size: 14px;
 }
 
 .boxContainer{
@@ -460,7 +489,7 @@ input:focus{
     background-color: var(--tertiaryColor-transparent);
     border-radius: 2px;
     border: var(--mainColor) solid 1px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: var(--moderateBlur);
     display: flex;
     align-items: center;
     justify-content: center;
@@ -493,7 +522,7 @@ input:focus{
     cursor: default;
     background-color: var(--tertiaryColor-transparent);
     padding: 10px;
-    backdrop-filter: blur(5px);
+    backdrop-filter: var(--moderateBlur);
     border-radius: 5px;
     box-shadow: 0 0 5px var(--quadrary-transparent);
     transition-duration: 0.4s;
