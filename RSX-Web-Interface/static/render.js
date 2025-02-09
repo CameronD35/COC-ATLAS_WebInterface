@@ -44,7 +44,7 @@ function createPage() {
     createBoxStructure(parentContainer);
 
     const titles = ['Real-Time Data', 'Features', 'Log'];
-    const tooltipMessages = [null, null, 'Download a copy of this sessions log.']
+    const tooltipMessages = [null, null, null]
 
     addTextToBoxes(['dashColumn4-Row1', 'dashColumn4-Row2', 'dashRow2-Column2'], titles, tooltipMessages);
 
@@ -753,6 +753,23 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
 function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let titleContainer = document.getElementById('LogTextContainer');
+
+    let titleText = document.getElementById('LogText');
+
+    let downloadButtonForm = createHTMLChildElement(titleText, 'form', 'downloadContainer', null, null, null, `Download a copy of this session's log.`);
+
+    downloadButtonForm.action = '/downloadLog';
+    downloadButtonForm.method = 'get';
+    downloadButtonForm.target = '_blank';
+
+    let downloadButton = createHTMLChildElement(downloadButtonForm, 'button', 'downloadButton');
+
+    downloadButton.type = 'submit';
+
+    let downloadImg = createHTMLChildElement(downloadButton, 'img', 'downloadImg');
+
+    downloadImg.src = './Image-Assets/download.webp';
+
     let timeContainer = createHTMLChildElement(titleContainer, 'div', 'timeContainer');
     let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText');
 

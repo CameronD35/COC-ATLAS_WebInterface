@@ -39,6 +39,35 @@ app.get('/', (req, res) => {
     res.sendFile(join(__dirname, 'index.html'));
 });
 
+app.get('/downloadLog', (req, res) => {
+
+    const date = new Date(Date.now())
+
+    const calendarDate = date.toDateString().substring(4).replaceAll(' ', '-');
+    const currentTime = date.toTimeString().substring(0, 8).replaceAll(':', '-');
+
+    const fullDate = calendarDate + '_' + currentTime;
+
+    const fileName = 'ATLASLOG_' + fullDate + '.txt';
+
+    //console.log(fileName);
+
+    res.download('./output/log.txt', fileName, (err) => {
+
+        if (err) {
+
+            io.emit('logMessage', `Error retriving log.txt file: ${err}`, true, false, true);
+
+        } else {
+
+            io.emit('logMessage', 'Retrieved file successfully!', false, true, false);
+
+        }
+
+    });
+
+})
+
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
@@ -86,7 +115,7 @@ io.on('connection', (socket) => {
 
     // Response when any of the initialization processes are toggled off
     socket.on('DeactivateInit', (sys) => {
-        const msg = `Beginning ${sys} Sequence.`
+        const msg = `Terminating ${sys} Sequence.`
         //console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
         io.emit('terminateFile', `${sys}.py`);
 
@@ -140,7 +169,16 @@ async function writeToLog(msg, tag) {
         tagStr = ` (${tag})`;
     }
 
-    await fs.writeFile(logFile, `[${time}] [${runtime}]${tagStr}: ${msg}\n`, {flag: 'a'});
+    try {
+
+        await fs.writeFile(logFile, `[${time}] [${runtime}]${tagStr}: ${msg}\n`, {flag: 'a'});
+
+    } catch (err) {
+
+        console.error(err);
+
+    }
+    
 }
 
 async function initializeFiles() {

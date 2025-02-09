@@ -164,6 +164,7 @@ body{
     border: 2px solid var(--mainColor-transparent);
     display: flex;
     padding: 7px;
+    pointer-events: none;
 }
 
 .tooltipText {
@@ -853,6 +854,33 @@ input:focus{
     justify-content: space-between;
     align-items: center;
     position: relative;
+}
+
+.downloadButton {
+    border: unset;
+    background-color: unset;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 5px 5px 5px 10px;
+}
+
+.downloadImg { 
+    width: 15px;
+    height: 15px;
+    cursor: pointer;
+}
+
+.downloadImg:hover {
+    width: 20px;
+    height: 20px;
+}
+
+#LogText {
+    display: flex;
+
+    justify-content: start;
+    align-items: center;
 }
 
 .timeContainer{

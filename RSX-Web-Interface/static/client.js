@@ -134,10 +134,17 @@ document.addEventListener('DOMContentLoaded', () => {
     // Update IP address as shown in the top section
     document.getElementById('IP ComputerDataPoint').textContent = nanoIP;
 
+
+    // Adds responsive trait to 3D Render
     let scene = createScene(document.getElementById('modelRender'), [document.getElementById('modelRender').getBoundingClientRect().width, document.getElementById('modelRender').getBoundingClientRect().height]);
     scene.create();
     window.addEventListener('resize', scene.resizeScene);
+
+    // Listens for download button click and requests log file from server
+    document.getElementById('downloadContainer').addEventListener('click', () => {
+    })
     
+    // TESTING: Generates random numbers for graph
     setInterval(() => {
         graphArray.forEach((item, i) => {
             updateElement(null, Math.round(Math.random()*10), null, item);
