@@ -493,21 +493,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
             case "Graph Range (seconds)":
                 let rangeInput = document.getElementById('Graph Range (seconds)Input');
                 let newRange = rangeInput.value;
-
-
-                if (newRange < 1) {
-                    pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', false, false, true);
-
-                    newRange = 10;
-                }
-
                 setting.value = newRange;
 
-                // Grabs each graph and sets it's domain (x-axis) to a length of 30
-                // The x-axis represents seconds
-                graphArray.forEach((graph, i) => {
-                    graph.changeDomain(newRange);
-                });
+
+                changeGraphRange(newRange);
 
                 break;
         }
@@ -560,6 +549,19 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 }
 
+function changeGraphRange(newRange) {
+    if (newRange < 10) {
+        pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', false, false, true);
+
+        newRange = 10;
+    }
+
+    // Grabs each graph and sets it's domain (x-axis) to a length of 30
+    // The x-axis represents seconds
+    graphArray.forEach((graph, i) => {
+        graph.changeDomain(newRange);
+    });
+}
 
 /* Remove the message elements when the count goes beyond the max. */
 function removeMessagesWhenBeyondMax()
@@ -666,6 +668,8 @@ function createRealTimeGraphs(){
     graph2.create();
 
     graphArray.push(graph1, graph2);
+
+    changeGraphRange(graphRange);
 }
 
 window.addEventListener('resize', () => {resizeElements();});

@@ -15,17 +15,19 @@ const {Server} = require('socket.io');
 const net = require('net');
 
 // Used for creating/reading files
-const { lstat } = require('node:fs');
+const { lstat, writeFile, write } = require('node:fs');
 
 // Used for user input
 const readLine = require('node:readline/promises');
 const { stdin, stdout } = require('node:process');
 const { spawn } = require('node:child_process');
+const fs = require('node:fs/promises');
 
 // Initializing express.js app and socket.io server
 const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
+
 
 
 // Serving the static files (in the /static directory) to the client (browser)
@@ -47,56 +49,104 @@ io.on('connection', (socket) => {
         clients.push(clientID);
     }
 
+    const connectMsg = `${clientID} connected`;
 
+    // Update list of clients (excluding duplicates)
     io.emit('clientID', clients);
-    console.log(`\x1b[1m${clientID}\x1b[0m connected`)
+
+
+    //console.log(connectMsg);
+    writeToLog(connectMsg, 'C');
+
+
     io.emit('logMessage', `'${clientID}' connected`, false, true, false);
+
+    // request static data such as IP, OS, and Name
     io.emit('reqStaticData');
     // On disconnect, send message
     socket.on('disconnect', () => {
-        io.emit('logMessage', `'${clientID}' disconnnected`, true, false, false);
+        const msg = `'${clientID}' disconnnected`;
+        io.emit('logMessage', msg, true, false, false);
 
+        writeToLog(msg, '!!');
 
-        console.log(`\x1b[1m${clientID}\x1b[0m disconnected`);
+        //console.log(msg);
     });
 
     
     
     // Response when any of the initialization processes are toggled on
     socket.on('ActivateInit', (sys) => {
-        console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
+        const msg = `Beginning ${sys} Sequence.`
+        //console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
         io.emit('executeFile', `${sys}.py`);
+
+        writeToLog(msg);
     });
 
     // Response when any of the initialization processes are toggled off
     socket.on('DeactivateInit', (sys) => {
-        console.log(`Concluding \x1b[1m${sys}\x1b[0m Sequence.`);
+        const msg = `Beginning ${sys} Sequence.`
+        //console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
         io.emit('terminateFile', `${sys}.py`);
+
+        writeToLog(msg, '!');
     });
 
     // gets data from JON python script and posts it to all clients with handlers
     socket.on('data', (data) => {
         let formattedData = JSON.parse(data);
+
+        const msg = `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`;
+
         console.log(formattedData);
-        io.emit('logMessage', `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`, false, false, false);
+        io.emit('logMessage', msg, false, false, false);
         io.emit('interpretData', formattedData);
+
+        writeToLog(msg, '!');
     });
 
     // takes data from interface regarding data frequency and sends it over to JON python script
     socket.on('dataFreq', (freq) => {
+        const msg = `Changing frequency to ${freq} seconds.`
         io.emit('changeFreq', freq);
+
+        writeToLog(msg);
     });
+
+    // writeToLog has two arguments: 'msg' and 'type'
+    //socket.on('writeLog', writeToLog);
 
 });
 
 
-// Opens server listener on port serverPort (localhost:serverPort)
+// Opens server listener on port serverPort (IP:serverPort)
 server.listen(serverPort, () => {
     const green = '\x1b[32m';
     const reset = '\x1b[0m';
     console.log(`server running at ${green}http://${IP}:${serverPort}${reset}\n\n`);
+    initializeFiles();
 });
 
+async function writeToLog(msg, tag) {
+    const logFile = './output/log.txt';
+    const time = new Date(Date.now()).toTimeString().substring(0, 8);
+    const runtime = process.uptime().toFixed(3);
+
+    // This is done so that an undefined type does not get thrown into the written string
+    let tagStr = '';
+
+    if (tag) {
+        tagStr = ` (${tag})`;
+    }
+
+    await fs.writeFile(logFile, `[${time}] [${runtime}]${tagStr}: ${msg}\n`, {flag: 'a'});
+}
+
+async function initializeFiles() {
+    const logFile = './output/log.txt';
+    await fs.writeFile(logFile, `FORMAT >> [Real World Time] [Runtime] (tags): msg\nTYPES >> !!: Err, !: Warning, C: Connection, D: Data\n\n`);
+}
 
 
 function checkCommPortAvailability(portNumber, nanoIP){
@@ -108,9 +158,10 @@ function checkCommPortAvailability(portNumber, nanoIP){
             // This error code indicates that the port is in use by some other application
             if (err.code == 'EADDRINUSE'){
                 resolve(false);
-            // Other errors
+            // This error indicates that the port is not available 
             } else if (err.code == 'EADDRNOTAVAIL'){
                 resolve(true);
+            // Other errors
             } else {
                 reject(err)
             }
@@ -129,8 +180,12 @@ function checkCommPortAvailability(portNumber, nanoIP){
     });
 }
 
+// Propmts for a command in the terminal
+// Q kills the server
+// TODO: Close any tabs in the browser that may be open
 async function promptForCommand() {
 
+    // interface for interacting with terminal
     const programCommand = readLine.createInterface({
         input: process.stdin,
         output: process.stdout
@@ -147,8 +202,11 @@ async function promptForCommand() {
     interpretCommand(command);
 }
 
-function interpretCommand(cmd) {
+// Only supports the letter 'q' as of now
+// Case-insensitive
+async function interpretCommand(cmd) {
     if (cmd.toLowerCase() == 'q') {
+        await writeToLog('SERVER KILLED', '!!');
         process.exit(0)
     }
 }
@@ -160,12 +218,9 @@ setInterval( () => {
 
     checkCommPortAvailability(serverPort, nanoIP)
     .then((isAvailable) => {
-        
-        // let endTime = performance.now();
-
-        // let timeElapsed = endTime - startTime;
 
         //console.log(isAvailable)
+
             if (isAvailable) {
                 //console.log(`Port ${serverPort} is open.`);
 
@@ -185,5 +240,4 @@ setInterval( () => {
 
 promptForCommand();
 
-
-
+// astrophysics, heliophysics, earth science - NASA Decadel

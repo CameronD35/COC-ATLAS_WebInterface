@@ -1,3 +1,4 @@
+import socket from "../client.js";
 import createHTMLChildElement from "./createElement.js";
 import settings from './settings.js';
 import SettingsOption from "./settingsOption.js";
@@ -34,7 +35,6 @@ export default function pushChatToLog(time, msg, error, connect, warning, logCon
 
     checkContainerPosition();
 
-    // These are options for different message types
     if (error){
 
         singleChatBox.classList.add('errorMsg');
@@ -44,11 +44,14 @@ export default function pushChatToLog(time, msg, error, connect, warning, logCon
         singleChatBox.classList.add('connectMsg');
 
     } else if (warning){
+
         singleChatBox.classList.add('warningMsg');
+
     }
 
     // Remove old messages if needed.
     removeMessagesWhenBeyondMax();
+    //writeMessageToLogFile(msg, type);
 }
 
 /** Remove the message elements when the count goes beyond the max. */
@@ -105,4 +108,8 @@ export function checkContainerPosition(){
         bottomLogShadowContainer.style.opacity = 0;
 
     }
+}
+
+function writeMessageToLogFile(msg, type) {
+    socket.emit('writeLog', msg);
 }
