@@ -1,4 +1,5 @@
 import * as d3 from "https://cdn.jsdelivr.net/npm/d3@7/+esm";
+import createHTMLChildElement from "./createElement.js";
 
 // Random dataset of x and y values --TESTING--
 let randomData = [];
@@ -99,7 +100,7 @@ export default class Graph {
 
             this.currentVal = newY;
 
-            console.log(this.currentVal);
+            //console.log(this.currentVal);
 
             // Pushes the global values to the dataset
             this.dataset.push({x: this.timeElapsed, y: this.currentVal});
@@ -260,6 +261,10 @@ export default class Graph {
 
     // creates circles at each of the data points using this graph's data
     createCircles(color){
+
+        // let group = this.svg.selectAll('g')
+        // .attr('class', 'point')
+
         let circle = this.svg.selectAll("circle")
         .data(this.filteredData)
         .join("circle")
@@ -267,9 +272,76 @@ export default class Graph {
         .attr("cx", (d) => {return this.xScale(d.x)})
         .attr("cy", (d) => {return this.yScale(d.y)})
         .attr("fill", color)
-        .attr('fill-opacity', '0.8');
+        .attr('fill-opacity', '0.8')
+        .attr('data-x', (d) => {return d.x})
+        .attr('data-y', (d) => {return d.y});
+
+        let allCircles = circle._groups[0];
+
+        // this grabs the x and y values for the circle and assigns a tooltip to
+        allCircles.forEach((cir, i) => {
+
+            //console.log(cir)
+            const x = cir.getAttribute('data-x');
+            const y = cir.getAttribute('data-y');
+            //console.log(`(${x}, ${y})`);
+            this.addTooltip = this.addTooltip.bind(this);
+            this.addTooltip(this.svg._groups[0][0], cir, `(${x}, ${y})`);
+        })
+
+        //console.log(circle)
 
         return circle;
+    }
+
+    addTooltip(elem, cir, tooltip) { 
+        
+        const children = cir.children;
+
+        const cx = cir.getAttribute('cx');
+        const cy = cir.getAttribute('cy');
+
+        //console.log(elem);
+
+        // since there is no other point we add children to the circle
+        // we can simply see if their are children or not and return if so
+        // this prevents us from adding duplicate tooltips
+        if (children.length >= 1) {
+
+            return;
+        }
+
+        // const tooltipElem = document.createElement('g');
+        // tooltipElem.setAttribute('width', '50');
+        // tooltipElem.setAttribute('height', '50');
+        // tooltipElem.style.opacity = 1;
+        // tooltipElem.classList.add('tooltipSVG');
+
+        
+
+        //elem.appendChild(tooltipElem);
+
+
+        const tooltipText = document.createElement('text');
+        tooltipText.textContent = tooltip;
+
+        tooltipText.setAttribute('x', cx);
+        tooltipText.setAttribute('y', cy);
+
+        tooltipText.classList.add('tooltipTextSVG');
+
+        elem.appendChild(tooltipText);
+
+
+        elem.addEventListener('mouseover', () => {
+            //tooltipElem.style.opacity = 1;
+        });
+
+        elem.addEventListener('mouseleave', () => {
+            //tooltipElem.style.opacity = 1;
+        });
+
+        return;// tooltipElem;
     }
 
     // creates the x-axis using this.xScale

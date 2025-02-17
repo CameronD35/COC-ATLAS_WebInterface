@@ -54,6 +54,7 @@ export default function createHTMLChildElement(parent, tag, classes, text, id, t
 
         tooltipElem.appendChild(tooltipText);
 
+
         elem.addEventListener('mouseover', () => {
             tooltipElem.style.opacity = 1;
         });

@@ -29,7 +29,7 @@ let dataFrequency = 2.5;
 let graphRange = 30;
 
 // Variables for the log section
-let logAutoScroll = true;
+//let logAutoScroll = true;
 
 createPage();
 resizeElements();
@@ -105,6 +105,8 @@ function createPage() {
     createRealTimeGraphs();
     createLogSection();
     createConnectionStatusSection(['Connected to ', 'Clients: ']);
+
+    changeGraphRange(graphRange);
 
 }
 
@@ -669,7 +671,6 @@ function createRealTimeGraphs(){
 
     graphArray.push(graph1, graph2);
 
-    changeGraphRange(graphRange);
 }
 
 window.addEventListener('resize', () => {resizeElements();});
@@ -779,6 +780,7 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
 
     let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
+
     let chatContainer = createHTMLChildElement(chatOverheadContainer, 'div', 'chatContainer');
 
 
@@ -793,61 +795,104 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
     let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
 
-    createMessageSetting('Auto-Scroll', true);
-    detectClickOnMessageSettings();
+    let autoScroll = createMessageSetting('Auto-Scroll', true, 'data-autoscroll');
+    let connectionMsgs = createMessageSetting('Connection Messages', true, 'data-connectmsg');
 
-    chatContainer.addEventListener('scroll', () => {
-        checkContainerPosition();
-    })
+    detectClickOnMessageSettings(messageSettingsButtonContainer);
 
-    function detectClickOnMessageSettings(){
+    chatContainer.addEventListener('scroll', checkContainerPosition);
 
-        messageSettingsButtonContainer.addEventListener('click', (event) => {
-        
-            if(messageSettings.style.transform != 'scaleY(1)'){
-        
-                messageSettingsButtonContainer.style.transform = 'translateY(0)';
-                messageSettings.style.transform = 'scaleY(1)';
-                messageSettingsArrow.style.transform = 'rotate(180deg)';
-        
-            } else {
-        
-                messageSettingsButtonContainer.style.transform = 'translateY(70%)';
-                messageSettings.style.transform = 'scaleY(0)';
-                messageSettingsArrow.style.transform = 'rotate(0deg)';
-        
-            }
 
-        });
-    }
+    chatContainer.addEventListener('wheel', checkContainerPosition);
 
-    function createMessageSetting(settingTitle, setDefaultToTrue){
-        let singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
+}
 
-        let settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
-        settingInput.type = 'checkbox';
-        if (setDefaultToTrue){ settingInput.checked = 'true'}
-        let settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+function detectClickOnMessageSettings(container){
 
-        setupMessageSetting(singleMessageSetting, true, () => {logAutoScroll = !logAutoScroll; console.log(logAutoScroll)}, () => {logAutoScroll = !logAutoScroll});
-    }
+    const messageSettings = document.getElementById('messageSettings');
+    const messageSettingsArrow = document.getElementById('messageSettingsArrow');
 
-    function setupMessageSetting(element, isToggle, settingOnFunction, settingOffFunction){
-        element.addEventListener('input', () => {
+    console.log(messageSettings);
+
+    container.addEventListener('click', (evt) => {
     
-            if(isToggle){
-                settingOnFunction();
-                return;
-            }
+        // Spins the arrow and opens the message settings section
+        if(messageSettings.style.transform != 'scaleY(1)'){
     
-            if(element.checked){
-                settingOnFunction();
-            } else {
-                settingOffFunction();
-            }
-        });
+            container.style.transform = 'translateY(0)';
+            messageSettings.style.transform = 'scaleY(1)';
+            messageSettingsArrow.style.transform = 'rotate(180deg)';
+        
+        // Spins the arrow back and closes the message settings section
+        } else {
+    
+            container.style.transform = 'translateY(70%)';
+            messageSettings.style.transform = 'scaleY(0)';
+            messageSettingsArrow.style.transform = 'rotate(0deg)';
+    
+        }
+
+    });
+}
+
+function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute){
+
+    const messageSettings = document.getElementById('messageSettings');
+
+    const singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
+
+    const settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
+    settingInput.type = 'checkbox';
+    const settingLabel = createHTMLChildElement(singleMessageSetting, 'label', 'singleMessageSettingLabel', settingTitle, `${settingTitle.substring(0,3)}SettingLabel`);
+
+    // sets a "data-" attribute to the setting itself rather than using global variables
+    singleMessageSetting.setAttribute(dataAttribute, `${setDefaultToTrue}`);
+    
+    if (setDefaultToTrue){
+        settingInput.checked = true; 
+    } else {
+        settingInput.checked = false; 
     }
 
+    setupMessageSetting(singleMessageSetting, dataAttribute);
+}
+
+function setupMessageSetting(element, dataAttribute){
+
+    let input;
+
+    for(const child of element.children) {
+        // since we pass in the setting container for the element variable, to access the checkbox (a child element) we have to loop through the container
+        // to access it
+
+        console.log(child.tagName.toLowerCase());
+
+        if (child.tagName.toLowerCase() == 'input') {
+            input = child;
+            break;
+        }
+
+    }
+
+    console.log(input);
+
+    element.addEventListener('input', () => {
+
+        const isActiviated = element.getAttribute(dataAttribute) === 'true';
+
+        //console.log(input);
+
+        if (isActiviated) {
+            input.checked = false;
+            element.setAttribute(dataAttribute, 'false');
+        } else {
+            input.checked = true;
+            element.setAttribute(dataAttribute, 'true');
+        }
+
+
+
+    });
 }
 
 

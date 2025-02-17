@@ -33,7 +33,7 @@ export default function pushChatToLog(time, msg, error, connect, warning, logCon
     let topShadow = document.getElementById('topLogShadowContainer');
     let bottomShadow = document.getElementById('bottomLogShadowContainer');
 
-    checkContainerPosition();
+    checkContainerPosition(null);
 
     if (error){
 
@@ -76,36 +76,69 @@ function removeMessagesWhenBeyondMax()
     }
 }
 
-export function checkContainerPosition(){
-    let logAutoScroll = document.getElementById('AutSettingInput').checked;
+export function checkContainerPosition(evt){
+
+    let isWheelEvent = null;
+    if (evt) {
+        console.log(evt.type);
+        isWheelEvent = evt.type === 'wheel';
+    }
+
+
+    const logAutoScroll = document.getElementById('AutSetting').getAttribute('data-autoscroll') == 'true';
+    //console.log(logAutoScroll);
+    const chatOverheadContainer = document.getElementById('chatOverheadContainer');
+
+    // height of the element, including that which is cut off and invisible
+    const scrollHeight = chatOverheadContainer.scrollHeight;
+
+    // height of the element that is visible plus it's padding
+    const clientHeight = chatOverheadContainer.clientHeight;
+     
+    // distance the message box is scrolled downwards (0 if auto-scroll enabled)
+    const scrollTop = chatOverheadContainer.scrollTop;
+
+    // Since there is no scrollBottom property we take:
+    // (distance scrolled downwards) - (complete height of element) + (height of visible element) 
+    const scrollBottom = scrollTop - scrollHeight + clientHeight;
 
     // If the user has auto-scroll on, it will bring the user to the most recent message when added, otherwise it will do nothing.
-    if(logAutoScroll){
+    // The reason we don't want auto-scroll when the 'wheel' event is calling this is because doing so would prevent scolling completely
+    if(logAutoScroll && !isWheelEvent){
         chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
     }
+
+    const topShadowStyle = topLogShadowContainer.style;
 
     // This sequence of if/else statements shows a shadow on the top if the enterity of the first message added is not located within the message container
     // It also shows a shadow on the bottom if the enterity of the last message added is not located in the message container
 
-    if(chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight && chatOverheadContainer.scrollTop != 0){
+    if(scrollHeight > clientHeight && scrollTop != 0){
 
-        topLogShadowContainer.style.opacity = 1;
+        topShadowStyle.opacity = 1;
 
     } else {
 
-        topLogShadowContainer.style.opacity = 0;
+        topShadowStyle.opacity = 0;
 
     }
 
-    if ((chatOverheadContainer.scrollHeight > chatOverheadContainer.clientHeight) && (chatOverheadContainer.scrollTop != (chatOverheadContainer.scrollHeight - chatOverheadContainer.clientHeight))){
+    const bottomShadowStyle = bottomLogShadowContainer.style;
 
-        if(!logAutoScroll){
-            bottomLogShadowContainer.style.opacity = 1;
-        }
+    // This is super messy third condition does the following:
+    // Since the only ways we won't be at the bottom of the message log is when scrolling manually or off of auto-scroll
+    // we say one of those things has to happen for this shadow to appear
+
+    // And yes, this is all for a simple shadow lol
+    if ((scrollHeight > clientHeight) && (scrollBottom < -5) && (isWheelEvent || !logAutoScroll)){
+
+        console.log(scrollBottom);
+
+        bottomShadowStyle.opacity = 1;
 
     } else {
 
-        bottomLogShadowContainer.style.opacity = 0;
+        bottomShadowStyle.opacity = 0;
 
     }
 }

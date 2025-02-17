@@ -41,6 +41,7 @@ app.get('/', (req, res) => {
 
 app.get('/downloadLog', (req, res) => {
 
+    // Getting a time format that will be used for the log file's name
     const date = new Date(Date.now())
 
     const calendarDate = date.toDateString().substring(4).replaceAll(' ', '-');
@@ -52,6 +53,7 @@ app.get('/downloadLog', (req, res) => {
 
     //console.log(fileName);
 
+    // download the file, but output an error to the interface log if something goes awry
     res.download('./output/log.txt', fileName, (err) => {
 
         if (err) {
