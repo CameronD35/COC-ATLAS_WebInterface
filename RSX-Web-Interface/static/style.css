@@ -932,6 +932,12 @@ circle:hover {
     align-items: center;
     transition-duration: 0;
     background-color: var(--secondaryColor);
+    transform: scaleY(1);
+    transform-origin: bottom;
+
+    animation-name: showMessages;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
 }
 
 .singleChat:nth-child(odd):not(.connectMsg):not(.errorMsg):not(.warningMsg){
@@ -971,6 +977,12 @@ circle:hover {
 
 .warningMsg{
     background-color: rgba(209, 212, 27, 0.3);
+}
+
+.hiddenMsg {
+    animation-name: hideMessages;
+    animation-duration: 0.2s;
+    animation-fill-mode: forwards;
 }
 
 .messageBox{
@@ -1056,7 +1068,7 @@ circle:hover {
     transform-origin: bottom;
     transform: scaleY(0);
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     padding: 10px;
     color: white;
@@ -1078,6 +1090,27 @@ circle:hover {
     color: var(--mainColor);
 }
 
+@keyframes hideMessages {
+    0% {
+        transform: scaleY(1);
+    }
+
+    100% {
+        transform: scaleY(0);
+        display: none;
+    }
+}
+
+@keyframes showMessages {
+    0% {
+        transform: scaleY(0);
+    }
+
+    100% {
+        transform: scaleY(1);
+        display: flex;
+    }
+}
 
 /* CONNECTION STATUS */
 

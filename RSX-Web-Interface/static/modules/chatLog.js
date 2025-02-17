@@ -105,7 +105,10 @@ export function checkContainerPosition(evt){
     // If the user has auto-scroll on, it will bring the user to the most recent message when added, otherwise it will do nothing.
     // The reason we don't want auto-scroll when the 'wheel' event is calling this is because doing so would prevent scolling completely
     if(logAutoScroll && !isWheelEvent){
-        chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
+
+        setTimeout(() => {
+            chatOverheadContainer.scrollTop = chatOverheadContainer.scrollHeight;
+        }, 200)
     }
 
     const topShadowStyle = topLogShadowContainer.style;

@@ -796,7 +796,7 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
     let messageSettings = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettings');
 
     let autoScroll = createMessageSetting('Auto-Scroll', true, 'data-autoscroll');
-    let connectionMsgs = createMessageSetting('Connection Messages', true, 'data-connectmsg');
+    let connectionMsgs = createMessageSetting('Connection Messages', true, 'data-connectmsg', hideMessages);
 
     detectClickOnMessageSettings(messageSettingsButtonContainer);
 
@@ -835,7 +835,7 @@ function detectClickOnMessageSettings(container){
     });
 }
 
-function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute){
+function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute, activateFunction=null){
 
     const messageSettings = document.getElementById('messageSettings');
 
@@ -854,10 +854,30 @@ function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute){
         settingInput.checked = false; 
     }
 
-    setupMessageSetting(singleMessageSetting, dataAttribute);
+    setupMessageSetting(singleMessageSetting, dataAttribute, activateFunction);
 }
 
-function setupMessageSetting(element, dataAttribute){
+function hideMessages(condition, messageHTMLClass) {
+
+    const messages = document.querySelectorAll(`.${messageHTMLClass}`);
+
+    if (condition) {
+
+        messages.forEach((msg, i) => {
+            msg.classList.add('hiddenMsg')
+        });
+
+    } else {
+
+        messages.forEach((msg, i) => {
+            msg.classList.remove('hiddenMsg')
+        });
+
+    }
+
+}
+
+function setupMessageSetting(element, dataAttribute, activateFunction=null){
 
     let input;
 
@@ -878,11 +898,11 @@ function setupMessageSetting(element, dataAttribute){
 
     element.addEventListener('input', () => {
 
-        const isActiviated = element.getAttribute(dataAttribute) === 'true';
+        const isActivated = (element.getAttribute(dataAttribute) === 'true');
 
         //console.log(input);
 
-        if (isActiviated) {
+        if (isActivated) {
             input.checked = false;
             element.setAttribute(dataAttribute, 'false');
         } else {
@@ -890,7 +910,7 @@ function setupMessageSetting(element, dataAttribute){
             element.setAttribute(dataAttribute, 'true');
         }
 
-
+        activateFunction(isActivated, 'connectMsg');
 
     });
 }
