@@ -159,6 +159,7 @@ server.listen(serverPort, () => {
     initializeFiles();
 });
 
+// Writes a message to the log with the format specificed in the ./output/log.txt file
 async function writeToLog(msg, tag) {
     const logFile = './output/log.txt';
     const time = new Date(Date.now()).toTimeString().substring(0, 8);
@@ -183,13 +184,15 @@ async function writeToLog(msg, tag) {
     
 }
 
+// Adds FORMAT and TYPE lines to the ./output/log.txt file
 async function initializeFiles() {
     const logFile = './output/log.txt';
     await fs.writeFile(logFile, `FORMAT >> [Real World Time] [Runtime] (tags): msg\nTYPES >> !!: Err, !: Warning, C: Connection, D: Data\n\n`);
 }
 
-
-function checkCommPortAvailability(portNumber, nanoIP){
+// checks if the IP:PORT is avaialble
+// a successful connection here indicates it is open and unoccupied
+function checkCommPortAvailability(portNumber, IP){
     // Promise that returns if the port is occupied or not
     return new Promise((resolve, reject) => {
         const testServer = net.createServer();
@@ -220,16 +223,17 @@ function checkCommPortAvailability(portNumber, nanoIP){
     });
 }
 
+// interface for interacting with terminal
+const programCommand = readLine.createInterface({
+    input: process.stdin,
+    output: process.stdout
+});
+
+
 // Propmts for a command in the terminal
 // Q kills the server
-// TODO: Close any tabs in the browser that may be open
+// C displays the current client(s) connected
 async function promptForCommand() {
-
-    // interface for interacting with terminal
-    const programCommand = readLine.createInterface({
-        input: process.stdin,
-        output: process.stdout
-    });
 
     // https://betterstack.com/community/questions/how-to-change-color-of-console-output-node-js/
     const red = '\x1b[31m';
@@ -239,19 +243,54 @@ async function promptForCommand() {
     const strikethrough = '\x1b[9m';
     const command = await programCommand.question(`\n\n${purple}TYPE 'Q' TO${reset}${red} QUIT ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n`);
 
+
     interpretCommand(command);
 }
 
-// Only supports the letter 'q' as of now
 // Case-insensitive
 async function interpretCommand(cmd) {
-    if (cmd.toLowerCase() == 'q') {
-        await writeToLog('SERVER KILLED', '!!');
-        process.exit(0)
+    let command = cmd.toLowerCase();
+
+    switch (command) {
+
+        case 'q':
+
+            try {
+
+                const response = await io.timeout(10000).emitWithAck('serverKilled');
+
+                console.log(response);
+
+            } catch (err) {
+
+                console.log(err);
+
+            }
+
+            await writeToLog('SERVER KILLED', '!!');
+            process.exit(0);
+        
+        case 'c':
+
+            const clientStr = clients.join(', ');
+
+            if (clientStr.length <= 1) {
+                console.log('No active clients.');
+                break;
+            }
+
+            console.log('Activate clients: ', clients.join(', '), '.\n\n');
+            break;
+
     }
+
+    // This makes sure that the user is repeatedly asked for a command
+    promptForCommand();
 }
 
+promptForCommand();
 
+// Checks the IP:PORT for availibility periodically
 setInterval( () => {
     
     let startTime = performance.now();
@@ -277,7 +316,3 @@ setInterval( () => {
         }   
     )}
 , 2500);
-
-promptForCommand();
-
-// astrophysics, heliophysics, earth science - NASA Decadel

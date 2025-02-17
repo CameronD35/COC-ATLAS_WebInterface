@@ -33,8 +33,6 @@ socket.on('logMessage', (msg, isError, isConnect) => {
 // measures and displays the time taken to contact the server; updates connection status section
 socket.on('commConnection', (isConnected, IP, portNumber) => {
 
-
-
     //console.log(timeElapsed);
     updateElement('ConConnectionStatusData0', `PORT:${portNumber}`, 'var(--mainColor)');
 
@@ -49,10 +47,14 @@ socket.on('commConnection', (isConnected, IP, portNumber) => {
 
         const errorClosed = overlay.getAttribute('data-portErr');
         const overlayOccupied = overlay.getAttribute('data-occupied');
+        
+
         // Show an overlay identifying a lack of connection (only happens once)
-        if (errorClosed == 'false' && overlayOccupied == 'false'){
-            showOverlay(createPortMessage);
-        }
+        // if (errorClosed == 'false' && overlayOccupied == 'false'){
+        //     showOverlay(createPortMessage);
+        // }
+
+        // ^^ I REMOVED THE ABOVE FEATURE BECAUSE ITS ANNOYING ^^
     }
 
 
@@ -80,7 +82,17 @@ socket.on('interpretData', (data) => {
 
         element.textContent = data.msg[i];
     });
-})
+});
+
+socket.on('serverKilled', (callback) => {
+    // await promptForDownloads();
+    // window.close();
+
+    console.log('test');
+    callback({
+        msg: "lets go"
+    });
+});
 
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -151,6 +163,14 @@ document.addEventListener('DOMContentLoaded', () => {
         });
     }, 1000);
 });
+
+async function promptForDownloads() {
+    showOverlay();
+}
+
+function createDownloadPrompt() {
+    
+}
 
 function updateClientDisplay(clientArray) {
 
