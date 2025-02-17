@@ -2,6 +2,13 @@
 
 A web interface built to support and simplify the testing process.
 
+## TODO
+- Integrate database for easy access to new and old data
+  - Will allow the downloading of any data stored on a per-session basis
+- Integrate other sensors to our external device to give more life and application to the interface
+  - This simply requires progress in our project
+- Make the graph dropdowns switch datasets and colors 
+
 ## Features
 - A dynamic chat log built for errors, connections, warnings, and standard messages
   - For performance purposes, the max amount of log messages displayed on the interface is 50. However, it can be customized in the interface settings 
@@ -39,3 +46,9 @@ When you open it, you'll see the first line contains instructions on the format:
 - The tags are any of the following:
   - ``` !!: Err, !: Warning, C: Connection, D: Data ```
 - The msg is the message (I know, it should be more clear)
+
+### Bonus Features 
+###### Cool stuff that isn't quite necessary.
+
+- Click ``` Shift + R ``` to open up the reference image used to design the interface
+- Open the settings and click ` Light Mode ` to access light mode (that is, if you don't appreciate your eyeballs)
