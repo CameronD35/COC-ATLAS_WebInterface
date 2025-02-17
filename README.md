@@ -1,6 +1,8 @@
 # COC ATLAS Web Interface
 
-### This interface includes:
+A web interface built to support and simplify the testing process.
+
+## Features
 - A dynamic chat log built for errors, connections, warnings, and standard messages
   - For performance purposes, the max amount of log messages displayed on the interface is 50. However, it can be customized in the interface settings 
   - While the messages are visually displayed using the client-side, the server contains the log for the entire session
@@ -18,6 +20,22 @@
   - For our project, we are currently in the midst of determining if this is a helpful or realistic feature
 - A 3D render that accepts rotation in the [Quaternion](https://en.wikipedia.org/wiki/Quaternion) format
 
-<br></br>
 
 ## Navigating the Interface
+
+### Downloding Log Files
+
+Downloading log files is a very simple process. All you need to do is navigate to the log section and click on the download button.
+
+  ![downloadLog](https://github.com/user-attachments/assets/975a75bb-37f7-48e1-9c69-6b1456194f66)
+
+In response, a file will be downloaded to the default location of the computer. It should be titled with the current date and time.
+
+When you open it, you'll see the first line contains instructions on the format:
+  
+``` [Real World Time] [Runtime] (tags): msg ```
+- The Real World Time is the time (in your time zone) that the message was logged.
+- The runtime is the time the server has been for at the time of the log
+- The tags are any of the following:
+  - ``` !!: Err, !: Warning, C: Connection, D: Data ```
+- The msg is the message (I know, it should be more clear)
