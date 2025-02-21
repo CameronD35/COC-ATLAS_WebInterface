@@ -4,6 +4,7 @@
     "description": "Test SocketIO App",
     "type": "commonjs",
     "dependencies": {
+        "dotenv": "^16.4.7",
         "express": "^4.21.2",
         "socket.io": "^4.8.1"
     }

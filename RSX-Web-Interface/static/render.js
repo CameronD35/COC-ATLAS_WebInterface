@@ -697,6 +697,10 @@ function resizeElements(){
 function createFeaturesSection(sectionTitlesAndOptions, container=document.getElementById('contentContainer3')){
     let featuresContainer = createHTMLChildElement(container, 'div', 'featuresContainer');
 
+    // Creates the seperate sections of the features section
+    // subsectionTitle is the category name (such as "initialization")
+    // featureSubsection houses the entire subsection
+    // optionsSection is the place where checkboxes, inputs, or models are placed
     for(let i = 0; i < sectionTitlesAndOptions.length; i++){
         let titleAbbreviation = sectionTitlesAndOptions[i].title.substring(0,3);
         let featureSubsection = createHTMLChildElement(featuresContainer, 'div', 'featureSubsection', null, `${titleAbbreviation}FeatureSubsection`);

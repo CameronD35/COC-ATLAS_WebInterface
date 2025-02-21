@@ -151,6 +151,15 @@ body{
     justify-content: center;
 }
 
+.databaseMsg {
+    position: absolute;
+    background-color: var(--secondaryColor);
+    padding: 0 10px;
+    font-family: 'JetBrains Mono';
+    color: var(--mainColor);
+    top: 0.4vh;
+}
+
 .tooltip {
     background-color: var(--tertiaryColor-transparent);
     width: fit-content;

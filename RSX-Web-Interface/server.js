@@ -1,10 +1,3 @@
-const serverPort = 3000;
-//const commPort = 42069;
-//const IP = '192.168.1.10';
-const IP = '127.0.0.1';
-const nanoIP = '192.168.1.20';
-let clients = []
-
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
 const {createServer} = require('node:http');
@@ -28,7 +21,14 @@ const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
 
+// Configuring dotenv module
+require('dotenv').config()
 
+const serverPort = 3000;
+//const IP = '192.168.1.10';
+const IP = '127.0.0.1';
+const nanoIP = process.env.NANOIP;
+let clients = []
 
 // Serving the static files (in the /static directory) to the client (browser)
 app.use(express.static('static'));

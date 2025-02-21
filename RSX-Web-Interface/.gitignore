@@ -2,3 +2,5 @@
 
 /output/*
 !README.md
+
+.env
