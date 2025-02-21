@@ -21,8 +21,6 @@ const { lstat, writeFile, write } = require('node:fs');
 
 // Used for user input
 const readLine = require('node:readline/promises');
-const { stdin, stdout } = require('node:process');
-const { spawn } = require('node:child_process');
 const fs = require('node:fs/promises');
 
 // Initializing express.js app and socket.io server
