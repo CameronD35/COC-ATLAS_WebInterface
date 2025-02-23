@@ -105,21 +105,8 @@ io.on('connection', (socket) => {
     
     
     // Response when any of the initialization processes are toggled on
-    socket.on('ActivateInit', (sys) => {
-        const msg = `Beginning ${sys} Sequence.`
-        //console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
-        io.emit('executeFile', `${sys}.py`);
-
-        writeToLog(msg);
-    });
-
-    // Response when any of the initialization processes are toggled off
-    socket.on('DeactivateInit', (sys) => {
-        const msg = `Terminating ${sys} Sequence.`
-        //console.log(`Beginning \x1b[1m${sys}\x1b[0m Sequence.`);
-        io.emit('terminateFile', `${sys}.py`);
-
-        writeToLog(msg, '!');
+    socket.on('interfaceCommand', (cmd) => {
+        emitCommand(cmd);
     });
 
     // gets data from JON python script and posts it to all clients with handlers
@@ -222,52 +209,57 @@ function checkCommPortAvailability(portNumber, IP){
 }
 
 // interface for interacting with terminal
-const programCommand = readLine.createInterface({
-    input: process.stdin,
-    output: process.stdout
-});
+let programCommand = createInput();
+
+function createInput() {
+    return readLine.createInterface({
+        input: process.stdin,
+        output: process.stdout
+    });
+}
 
 
-// Propmts for a command in the terminal
-// Q kills the server
-// C displays the current client(s) connected
-async function promptForCommand() {
-
+async function beginPrompts(){
     // https://betterstack.com/community/questions/how-to-change-color-of-console-output-node-js/
     const red = '\x1b[31m';
     const blue = '\x1b[34m';
     const purple = '\x1b[35m';
     const reset = '\x1b[0m';
     const strikethrough = '\x1b[9m';
-    const command = await programCommand.question(`\n\n${purple}TYPE 'Q' TO${reset}${red} QUIT ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n`);
+    const prompt = `\n\n${purple}TYPE 'Q' AT ANY POINT TO${reset}${red} KILL SERVER ${reset}${purple}USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n${purple}USE 'X' TO CANCEL COMMAND${reset}\n`;
 
+    promptForCommand(prompt);
+}
 
+// Propmts for a command in the terminal
+// Q kills the server
+// C displays the current client(s) connected
+async function promptForCommand(prompt) {
+    const command = await programCommand.question(prompt)
     interpretCommand(command);
+
+    return command;
 }
 
 // Case-insensitive
 async function interpretCommand(cmd) {
+
+    //let depthOrder = 1;
     let command = cmd.toLowerCase();
+
+    // quits program if command == 'q'
+    checkForQuitOrExit(command);
 
     switch (command) {
 
-        case 'q':
+        // provides a guide to all possible commands
+        case 'h':
 
-            try {
+            console.log('no help for you');
 
-                const response = await io.timeout(10000).emitWithAck('serverKilled');
+            break;
 
-                console.log(response);
-
-            } catch (err) {
-
-                console.log(err);
-
-            }
-
-            await writeToLog('SERVER KILLED', '!!');
-            process.exit(0);
-        
+        // returns all active clients
         case 'c':
 
             const clientStr = clients.join(', ');
@@ -277,16 +269,123 @@ async function interpretCommand(cmd) {
                 break;
             }
 
-            console.log('Activate clients: ', clients.join(', '), '.\n\n');
+            console.log('Active clients:', clients.join(', ') + '.\n\n');
+            break;
+        
+        // download the log file
+        case 'd':
+            // https://developer.mozilla.org/en-US/docs/Web/API/Fetch_API/Using_Fetch
+            // https://stackoverflow.com/questions/11944932/how-to-download-a-file-with-node-js-without-using-third-party-libraries
+            let url;
+            const destination = await programCommand.question('Please enter a valid path to download to: ');
+
+            checkForQuitOrExit(destination);
+
+            const file = await programCommand.question(`Which file would you like ('d' for data, 'l' for log):`);
+            `http://${IP}:${serverPort}/downloadLog`;
+
+                const response = fetch(url)
+                .then((res) => {
+                    console.log('hi')
+                })
+                .catch((err) => {
+                    console.log('bye');
+                });
+            
+            break;
+        // used to move a motor -> specifiy motor -> specify degree of rotation
+        case 'm':
+
+            //depthOrder++;
+
+            let motorNum = await programCommand.question('Choose motor number: ');
+            
+            // quits program if command == 'q'
+            checkForQuitOrExit(motorNum);
+
+            // TODO: Remove this variable and replace with dynamic alternative
+            let numOfMotors = 3;
+
+            // response will be a string first
+            motorNum = parseInt(motorNum, 10);
+            
+            // For you trolls that put letters, you've been caught with the NaN statement >:]
+            if (isNaN(motorNum)) {
+                console.log("\nNah, that ain't working =):-)");
+                break;
+            }
+
+            // The standard will be that there are no motors with an id of or less than 0
+            // TODO: Make the number of motors dynamic
+            if (motorNum == NaN || motorNum <= 0 || motorNum > numOfMotors) {
+                console.log('Invalid motor ID. Redo command.');
+                break;
+            }
+
+            let degOfRotation = await programCommand.question('Specify degree of rotation (p for preset values): ');
+
+            // quits program if command == 'q'
+            checkForQuitOrExit(degOfRotation);
+
+            if (degOfRotation.toLowerCase() == 'p') {
+
+                const chainedCommand = `m${motorNum},p`
+                emitCommand(chainedCommand);
+                break;
+
+            } else if (isNaN(degOfRotation)) {
+
+                console.log("\nNahhh, you really thought that slide? ب_ب");
+                break;
+
+            } else {
+
+                // This prevents degree amounts from being too high
+                const reducedDegrees = degOfRotation % 180;
+
+                const chainedCommand = `m${motorNum},${reducedDegrees}`
+                emitCommand(chainedCommand);
+                break;
+
+            }
+
+
+
+            degOfRotation = parseInt(degOfRotation);
+
+
+
+
+
+            //const response = await emitCommand(action);
+
             break;
 
     }
 
     // This makes sure that the user is repeatedly asked for a command
-    promptForCommand();
+    // Returns to original prompt
+    beginPrompts();
 }
 
-promptForCommand();
+async function emitCommand(cmd) {
+    const msg = `Running command: ${cmd}`;
+    writeToLog(msg);
+
+    io.emit('command', cmd);
+}
+
+function checkForQuitOrExit(val) {
+    if (val == 'q') {
+
+        console.log('\nCleaning up.\n')
+
+        process.exit(0);
+
+    }
+}
+
+beginPrompts();
 
 // Checks the IP:PORT for availibility periodically
 setInterval( () => {
