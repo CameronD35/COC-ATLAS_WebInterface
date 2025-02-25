@@ -32,6 +32,9 @@ const io = new Server(server);
 // Client instance for postgresql
 const { Client } = require('pg');
 
+// ./databaseManager.js
+const { createTableQuery } = require('./databaseManager.js');
+
 // https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
 
 // Initialize a new pgClient for connecting to the 'rsx25_test' database
@@ -160,10 +163,20 @@ server.listen(serverPort, () => {
     console.log(`server running at ${green}http://${IP}:${serverPort}${reset}\n\n`);
     initializeFiles();
 
+    // https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
     // connect to the database
     pgClient.connect()
     .then(() => {console.log('Connected To PostgreSQL')})
+    .then(() => {
+        const query = createTableQuery();
+
+        pgClient.query(query)
+        .then(() => {console.log('created query')})
+        .catch((err) => {console.error('bruh', err.stack)});
+    })
     .catch((err) => {console.error('Connection error', err.stack)});
+
+
 });
 
 // Writes a message to the log with the format specificed in the ./output/log.txt file
@@ -248,7 +261,7 @@ async function beginPrompts(){
     const purple = '\x1b[35m';
     const reset = '\x1b[0m';
     const strikethrough = '\x1b[9m';
-    const prompt = `\n\n${purple}TYPE 'Q' AT ANY POINT TO${reset}${red} KILL SERVER ${reset}${purple}USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n${purple}USE 'X' TO CANCEL COMMAND${reset}\n`;
+    const prompt = `\n\n${purple}TYPE 'Q' AT ANY POINT TO${reset}${red} KILL SERVER ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n${purple}USE 'X' TO CANCEL COMMAND${reset}\n`;
 
     promptForCommand(prompt);
 }
