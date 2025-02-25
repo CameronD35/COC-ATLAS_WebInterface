@@ -3,4 +3,8 @@
 /output/*
 !README.md
 
+# There's just no passwords for y'all
+# You know what time it is
 .env
+
+.vscode

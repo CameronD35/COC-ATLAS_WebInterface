@@ -1,4 +1,5 @@
 // Configuring dotenv module
+// Y'all ain't getting my passwords
 require('dotenv').config()
 
 const serverPort = 3000;
@@ -27,6 +28,22 @@ const fs = require('node:fs/promises');
 const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
+
+// Client instance for postgresql
+const { Client } = require('pg');
+
+// https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
+
+// Initialize a new pgClient for connecting to the 'rsx25_test' database
+// TODO: change 'rsx25_test' to 'rsx25' when deployment-ready
+const pgClient = new Client({
+    user: process.env.PGUSERNAME,
+    host: 'localhost',
+    database: 'rsx25_test',
+    // I'm being serious, you ain't getting these passwords
+    password: process.env.PGPASSWORD,
+    port: 5432
+});
 
 // Serving the static files (in the /static directory) to the client (browser)
 app.use(express.static('static'));
@@ -142,6 +159,11 @@ server.listen(serverPort, () => {
     const reset = '\x1b[0m';
     console.log(`server running at ${green}http://${IP}:${serverPort}${reset}\n\n`);
     initializeFiles();
+
+    // connect to the database
+    pgClient.connect()
+    .then(() => {console.log('Connected To PostgreSQL')})
+    .catch((err) => {console.error('Connection error', err.stack)});
 });
 
 // Writes a message to the log with the format specificed in the ./output/log.txt file
@@ -386,6 +408,8 @@ function checkForQuitOrExit(val) {
 }
 
 beginPrompts();
+
+
 
 // Checks the IP:PORT for availibility periodically
 setInterval( () => {
