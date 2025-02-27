@@ -684,8 +684,43 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
     }
 }
 
-function createDownloadDataPrompt() {
+function createDownloadDataPrompt(container=document.getElementById('overlayContentContainer')) {
 
+    // Ngl I was lazy, so dd stands for dataDownload
+
+    let ddContainer = createHTMLChildElement(container, 'div', 'ddContainer', null, 'ddContainer');
+    let ddTitle = createHTMLChildElement(ddContainer, 'span', 'ddTitle', 'Download Data', 'ddTitle');
+
+    // let closeSettingsContainer = createHTMLChildElement(settingsControlContainer, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
+    // let closeButton = createHTMLChildElement(closeSettingsContainer, 'span', 'closeSettingsButton', 'Close', 'closeSettingsButton');
+
+    let ddContentContainer = createHTMLChildElement(ddContainer, 'div', 'ddContentContainer', null, 'ddContentContainer');
+
+    let ddSetSelectContainer = createHTMLChildElement(ddContentContainer, 'div', 'ddSetSelectContainer', null, 'ddSetSelectContainer');
+
+    // TODO: make these containers that have input boxes in them
+    let ddIDSelect = createHTMLChildElement(ddSetSelectContainer, 'div', 'ddIDSelect', `ID: 5`, 'ddIDSelect');
+    let ddDateSelect = createHTMLChildElement(ddSetSelectContainer, 'div', 'ddDateSelect', `Date: 2/17/25`, 'ddDateSelect');
+
+    let ddManagementContainer = createHTMLChildElement(ddContentContainer, 'div', 'ddManagementContainer', null, 'ddManagementContainer');
+
+    let ddOptions = createHTMLChildElement(ddManagementContainer, 'div', 'ddOptions', 'opp1 | opp2 | opp3', 'ddOptions');
+
+    let downloadButtonForm = createHTMLChildElement(ddManagementContainer, 'form', 'downloadContainer', null, null, null, `Download a copy of the data from ${/*ddIDSelect.value*/23} Session #${/*ddIDSelect.value*/5}.`);
+
+    // downloadButtonForm.action = '/downloadLog';
+    // downloadButtonForm.method = 'get';
+    // downloadButtonForm.target = '_blank';
+
+    let downloadButton = createHTMLChildElement(downloadButtonForm, 'button', 'ddDownloadButton', 'Download');
+
+    downloadButton.type = 'submit';
+
+    let downloadImg = createHTMLChildElement(downloadButton, 'img', 'downloadImg');
+
+    downloadImg.src = './Image-Assets/download.webp';
+
+    let inputContainer = createHTMLChildElement(ddContentContainer, 'div', 'ddInputContainer', null, 'ddInputContainer');
 }
  
 function createRealTimeGraphs(){
