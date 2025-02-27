@@ -587,8 +587,30 @@ function removeMessagesWhenBeyondMax()
     }
 }
 
-function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows){
+function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows) {
+
     let realTimeContainer = createHTMLChildElement(container, 'div', 'realTimeContainer');
+
+    let titleText = document.getElementById('ReaText');
+
+    let downloadButtonForm = createHTMLChildElement(titleText, 'div', 'downloadContainer', null, null, null, `Download a copy of any session's data.`);
+
+    // downloadButtonForm.action = '/downloadLog';
+    // downloadButtonForm.method = 'get';
+    // downloadButtonForm.target = '_blank';
+
+    let downloadButton = createHTMLChildElement(downloadButtonForm, 'button', 'downloadButton');
+
+    //downloadButton.type = 'submit';
+
+    let downloadImg = createHTMLChildElement(downloadButton, 'img', 'downloadImg');
+
+    downloadImg.src = './Image-Assets/download.webp';
+
+    downloadButton.addEventListener('click', () => {
+            showOverlay(createDownloadDataPrompt);
+    });
+    
 
     let graphicalDataSection = createHTMLChildElement(realTimeContainer, 'div', 'graphicalDataSection');
 
@@ -662,7 +684,10 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
     }
 }
 
+function createDownloadDataPrompt() {
 
+}
+ 
 function createRealTimeGraphs(){
     let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph1', [5,4]);
     let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph2', [5,4]);

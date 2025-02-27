@@ -6,7 +6,7 @@ const serverPort = 3000;
 //const IP = '192.168.1.10';
 const IP = '127.0.0.1';
 const nanoIP = process.env.NANOIP;
-let clients = []
+let clients = [];
 
 // Grabbing necessary modules (express.js and socket.io)
 const express = require('express');
@@ -33,7 +33,7 @@ const io = new Server(server);
 const { Client } = require('pg');
 
 // ./databaseManager.js
-const { createTableQuery } = require('./databaseManager.js');
+const { createTableQuery, createInsertQuery } = require('./databaseManager.js');
 
 // https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
 
@@ -448,5 +448,21 @@ setInterval( () => {
                 io.emit('commConnection', true, nanoIP, serverPort);
             }
         }   
-    )}
+    )
+
+    const runtime = process.uptime().toFixed(3);
+
+    const insertQuery = createInsertQuery({temp: Math.random()*50, pres: Math.random()*50, sesh_runtime: runtime});
+
+    pgClient.query(insertQuery)
+    .then(() => {
+        //console.log(`query ${insertQuery} successful`);
+    })
+    .catch((err) => {
+        console.error(`Query: ${insertQuery} unsuccessful, ${err}`);
+    });
+
+}
 , 2500);
+
+module.exports = {pgClient}
