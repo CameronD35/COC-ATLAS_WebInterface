@@ -631,7 +631,17 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
 
         console.log(pointsFormattedForDropdown);
 
-        let dataDropdown = new Dropdown(currentDataInfo, i, pointsFormattedForDropdown, currentDataInfo);
+        // Creates the dropdown but returns the menu when interacting with it
+        let dataDropdownMenu = new Dropdown(currentDataInfo, i, pointsFormattedForDropdown, currentDataInfo);
+
+        dataDropdownMenu.addEventListener('click', () => {
+
+            const graphNumber = dataDropdownMenu.id.slice(-1);
+
+            console.log(graphNumber)
+
+            socket.emit('grabNewData', '')
+        })
 
         //dataDropdown.attachToExternalTitle(dataTitle);
     }

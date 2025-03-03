@@ -40,4 +40,12 @@ function createInsertQuery(valueObj) {
     return query;
 }
 
-module.exports = {createTableQuery, createInsertQuery};
+function createSearchQuery(table, timeframe, sessionID) {
+    let lowerTimeLimit;
+
+    let query = `SELECT temp, pres, cldpt, sesh_runtime FROM test WHERE temp > 30 LIMIT 3`;
+
+    return query;
+}
+
+module.exports = {createTableQuery, createInsertQuery, createSearchQuery};

@@ -18,11 +18,12 @@ const {Server} = require('socket.io');
 const net = require('net');
 
 // Used for creating/reading files
-const { lstat, writeFile, write } = require('node:fs');
+const { lstat, writeFile, write, createReadStream } = require('node:fs');
 
 // Used for user input
 const readLine = require('node:readline/promises');
 const fs = require('node:fs/promises');
+
 
 // Initializing express.js app and socket.io server
 const app = express(serverPort);
@@ -30,16 +31,16 @@ const server = createServer(app);
 const io = new Server(server);
 
 // Client instance for postgresql
-const { Client } = require('pg');
+const { Client, Pool } = require('pg');
 
 // ./databaseManager.js
-const { createTableQuery, createInsertQuery } = require('./databaseManager.js');
+const pgManager = require('./databaseManager.js');
 
 // https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
 
 // Initialize a new pgClient for connecting to the 'rsx25_test' database
 // TODO: change 'rsx25_test' to 'rsx25' when deployment-ready
-const pgClient = new Client({
+const pgPool = new Pool({
     user: process.env.PGUSERNAME,
     host: 'localhost',
     database: 'rsx25_test',
@@ -91,7 +92,11 @@ app.get('/downloadLog', (req, res) => {
 // Sends message to server when a client connects or disconnects
 
 io.on('connection', (socket) => {
+    // gets the name of the client
     const clientID = socket.handshake.auth.token;
+
+    // // creates 
+    // createTableQuery();
 
     // this indicates that a new client has connected
     if (!clients.includes(clientID)) {
@@ -112,6 +117,7 @@ io.on('connection', (socket) => {
 
     // request static data such as IP, OS, and Name
     io.emit('reqStaticData');
+
     // On disconnect, send message
     socket.on('disconnect', () => {
         const msg = `'${clientID}' disconnnected`;
@@ -129,7 +135,9 @@ io.on('connection', (socket) => {
         emitCommand(cmd);
     });
 
+
     // gets data from JON python script and posts it to all clients with handlers
+    // Additionally, it grabs the data and pushes it to the database
     socket.on('data', (data) => {
         let formattedData = JSON.parse(data);
 
@@ -138,6 +146,15 @@ io.on('connection', (socket) => {
         console.log(formattedData);
         io.emit('logMessage', msg, false, false, false);
         io.emit('interpretData', formattedData);
+
+        const runtime = process.uptime().toFixed(3);
+
+        const insertQuery = pgManager.createInsertQuery({
+            temp: formattedData.temp,
+            pres: formattedData.pres,
+            cpu: formattedData.cpupercent,
+            sesh_runtime: runtime,
+        });
 
         writeToLog(msg, '!');
     });
@@ -151,7 +168,7 @@ io.on('connection', (socket) => {
     });
 
     // writeToLog has two arguments: 'msg' and 'type'
-    //socket.on('writeLog', writeToLog);
+    // socket.on('writeLog', writeToLog);
 
 });
 
@@ -165,12 +182,12 @@ server.listen(serverPort, () => {
 
     // https://www.w3resource.com/PostgreSQL/snippets/postgresql-node-setup.php
     // connect to the database
-    pgClient.connect()
+    pgPool.connect()
     .then(() => {console.log('Connected To PostgreSQL')})
     .then(() => {
-        const query = createTableQuery();
+        const query = pgManager.createTableQuery();
 
-        pgClient.query(query)
+        pgPool.query(query)
         .then(() => {console.log('created query')})
         .catch((err) => {console.error('bruh', err.stack)});
     })
@@ -261,7 +278,9 @@ async function beginPrompts(){
     const purple = '\x1b[35m';
     const reset = '\x1b[0m';
     const strikethrough = '\x1b[9m';
-    const prompt = `\n\n${purple}TYPE 'Q' AT ANY POINT TO${reset}${red} KILL SERVER ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n${purple}USE 'X' TO CANCEL COMMAND${reset}\n`;
+
+    // Provides info on killing/quitting server
+    const prompt = `\n\n${purple}TYPE 'Q' AT ANY POINT TO${reset}${red} KILL SERVER ${reset}${purple}OR USE ${reset}${blue}${strikethrough}WEB INTERFACE${reset}\n${purple}`;
 
     promptForCommand(prompt);
 }
@@ -420,9 +439,42 @@ function checkForQuitOrExit(val) {
     }
 }
 
+// this pushes all of desired data to the data.json file
+// works by reading file, parsing the JSON format, adding values to object, then writing new object to data.json
+async function pushDataToJSONFile(dataObj) {
+
+    // https://nodejs.org/en/learn/manipulating-files/reading-files-with-nodejs
+    const filePath = './data.json';
+
+    const readStream = createReadStream(filePath, {encoding: 'utf8'})
+
+
+    try {
+
+        for await (const chunk of readStream) {
+            console.log(chunk);
+        }
+
+        // let json = await fs.readFile(jsonFilePath, {encoding: 'utf8'});
+
+        // json = JSON.parse(json);
+
+        // for (key in dataObj) {
+        //     // json[key] would be something like "temp"
+        //     // dataObj[key] would be the "temp" value, like "53"
+        //     json[key].push(dataObj[key])
+        // }
+
+        // const stringified = JSON.stringify(json);
+
+        // await fs.writeFile(jsonFilePath, stringified);
+
+    } catch (err) {
+        console.log(err)
+    }
+}
+
 beginPrompts();
-
-
 
 // Checks the IP:PORT for availibility periodically
 setInterval( () => {
@@ -452,17 +504,30 @@ setInterval( () => {
 
     const runtime = process.uptime().toFixed(3);
 
-    const insertQuery = createInsertQuery({temp: Math.random()*50, pres: Math.random()*50, sesh_runtime: runtime});
+    //const insertQuery = pgManager.createInsertQuery({temp: Math.random()*50, pres: Math.random()*50, sesh_runtime: runtime});
 
-    pgClient.query(insertQuery)
-    .then(() => {
+    const selectQuery = pgManager.createSearchQuery();
+
+    pgPool.query(selectQuery)
+    .then((res) => {
         //console.log(`query ${insertQuery} successful`);
+
+        let data = res.rows;
+
+        let graphDataFormat = [];
+
+        data.forEach((point, i) => {
+            graphDataFormat.push({
+                x: point.sesh_runtime,
+                y: point.temp
+            });
+        });
+
+        console.log(graphDataFormat);
     })
     .catch((err) => {
-        console.error(`Query: ${insertQuery} unsuccessful, ${err}`);
+        console.error(`Query: ${selectQuery} unsuccessful, ${err}`);
     });
 
 }
 , 2500);
-
-module.exports = {pgClient}

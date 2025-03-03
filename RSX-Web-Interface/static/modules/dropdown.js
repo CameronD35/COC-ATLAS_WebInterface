@@ -11,6 +11,7 @@ export default class Dropdown {
 
         this.dropdownContainer = this.createDropdown(this.container, this.num);
 
+        // this.contentContainer is defined in this.createDropdown()
         this.dropdownContent = this.createDropdownContent(this.contentContainer, this.items, this.num);
 
         window.addEventListener('click', (evt) => {
@@ -28,6 +29,9 @@ export default class Dropdown {
             }
 
         });
+
+        // this.menu is defined in this.createDropdown()
+        return this.menu;
 
     }
 
@@ -74,6 +78,7 @@ export default class Dropdown {
 
                 this.currentSelection = title;
 
+                // Changes the title in the dropdown itself
                 if (this.externalTitle) {
                     this.externalTitle.textContent = title;
                 }

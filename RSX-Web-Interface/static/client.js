@@ -157,11 +157,11 @@ document.addEventListener('DOMContentLoaded', () => {
     })
     
     // TESTING: Generates random numbers for graph
-    setInterval(() => {
-        graphArray.forEach((item, i) => {
-            updateElement(null, Math.round(Math.random()*10), null, item);
-        });
-    }, 1000);
+    // setInterval(() => {
+    //     graphArray.forEach((item, i) => {
+    //         updateElement(null, Math.round(Math.random()*10), null, item);
+    //     });
+    // }, 1000);
 });
 
 async function promptForDownloads() {
