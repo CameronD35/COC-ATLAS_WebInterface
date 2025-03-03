@@ -174,7 +174,7 @@ io.on('connection', (socket) => {
 
 
 // Opens server listener on port serverPort (IP:serverPort)
-server.listen(serverPort, () => {
+server.listen(serverPort, async () => {
     const green = '\x1b[32m';
     const reset = '\x1b[0m';
     console.log(`server running at ${green}http://${IP}:${serverPort}${reset}\n\n`);
@@ -193,6 +193,17 @@ server.listen(serverPort, () => {
     })
     .catch((err) => {console.error('Connection error', err.stack)});
 
+    const client = await pgPool.connect();
+
+    await client.query('LISTEN virtual')
+    .then((res) => {
+        console.log('initialized listener');
+    });
+
+    client.on('notification', (noti) => {
+        console.log('Notification:', noti);
+
+    });
 
 });
 
@@ -504,29 +515,29 @@ setInterval( () => {
 
     const runtime = process.uptime().toFixed(3);
 
-    //const insertQuery = pgManager.createInsertQuery({temp: Math.random()*50, pres: Math.random()*50, sesh_runtime: runtime});
+    const insertQuery = pgManager.createInsertQuery({temp: Math.random()*50, pres: Math.random()*50, sesh_runtime: runtime});
 
-    const selectQuery = pgManager.createSearchQuery();
+    //const selectQuery = pgManager.createSearchQuery();
 
-    pgPool.query(selectQuery)
+    pgPool.query(insertQuery)
     .then((res) => {
         //console.log(`query ${insertQuery} successful`);
+        
+        //let data = res.rows;
 
-        let data = res.rows;
+        // let graphDataFormat = [];
 
-        let graphDataFormat = [];
+        // data.forEach((point, i) => {
+        //     graphDataFormat.push({
+        //         x: point.sesh_runtime,
+        //         y: point.temp
+        //     });
+        // });
 
-        data.forEach((point, i) => {
-            graphDataFormat.push({
-                x: point.sesh_runtime,
-                y: point.temp
-            });
-        });
-
-        console.log(graphDataFormat);
+        //console.log(graphDataFormat);
     })
     .catch((err) => {
-        console.error(`Query: ${selectQuery} unsuccessful, ${err}`);
+        console.error(`Query: ${insertQuery} unsuccessful, ${err}`);
     });
 
 }
