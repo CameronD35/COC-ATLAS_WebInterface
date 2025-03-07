@@ -13,6 +13,8 @@ export default class Graph {
     constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id, [xAxisTicks, yAxisTicks]) {
 
         this.id = id;
+        this.graphNum = id.slice(-1);
+        //console.log(this.graphNum);
         this.timeElapsed = 0;  
         this.currentVal = 0;
         this.startTime = Date.now();
@@ -41,7 +43,7 @@ export default class Graph {
         this.width = width;
         this.height = height;
         this.container = document.querySelector(container);
-
+        this.container.setAttribute('data-currset', 'select');
 
         // Defines the initial x-scale for the object
         this.xScale = d3.scaleLinear(d3.extent(this.dataset, (d) => { return d.x}), [this.margin.left, width - this.margin.right]);
@@ -114,7 +116,7 @@ export default class Graph {
 
         // Sets the low bound for the domain, based off (higherDomainBound - domainLength)
         // If the domain Length results in a zero or negative lowerDomainBound, then it will to the full domain;
-        // I fthe difference in higherDomainBound - domainLength is < 10, then the lowerDomainBound will = 10;
+        // If the difference in higherDomainBound - domainLength is < 10, then the lowerDomainBound will = 10;
         this.lowerDomainBound = (() => {
             if ((this.higherDomainBound - this.domainLength) <= 1) {
 
@@ -131,7 +133,7 @@ export default class Graph {
             }
         })()
 
-        this.filteredData = this.dataset.filter((d) => { if (d.x >= this.lowerDomainBound) { return d.x}})
+        this.filteredData = this.dataset.filter((d) => { if (d.x >= this.lowerDomainBound) {return d.x}})
 
 
         // Re-definies the x and y scales for this object
@@ -141,11 +143,13 @@ export default class Graph {
 
         // Creates a new line generator
         let lineGen = d3.line()
+        .defined((d) => d.y !== null)
         .x((d) => this.xScale(d.x))
-        .y((d) => this.yScale(d.y))
+        .y((d) => this.yScale(d.y));
 
         // Creates a new area generator
         let areaGen = d3.area()
+        .defined((d) => d.y !== null)
         .x((d) => this.xScale(d.x))
         .y0(this.yScale(d3.min(this.filteredData, (e) => {return e.y})))
         .y1((d) => this.yScale(d.y));
@@ -190,6 +194,8 @@ export default class Graph {
         // Adds circles to all the new data points
         this.circles = this.createCircles("var(--mainColor)");
         this.circles.transition().duration(250);
+
+        d3.selectAll('text').raise();
     }
 
     // function for changing the data points that are displayed on the graph
@@ -221,11 +227,12 @@ export default class Graph {
 
     // creates a line of specified color using this graph's data
     createLine(){
-        
+            
         //line generator
         let lineGen = d3.line()
+        .defined((d) => d.y !== null)
         .x((d) => this.xScale(d.x))
-        .y((d) => this.yScale(d.y))
+        .y((d) => this.yScale(d.y));
 
         // line path generator
         let lineSVG = this.svg.append("path")
@@ -243,6 +250,7 @@ export default class Graph {
     // creates an area of specified color using this graph's data
     createArea(){
         let areaGen = d3.area()
+        .defined((d) => d.y !== null)
         .x((d) => this.xScale(d.x))
         .y0(this.yScale(d3.min(this.dataset, (e) => {return e.y})))
         .y1((d) => this.yScale(d.y));
@@ -284,9 +292,14 @@ export default class Graph {
             //console.log(cir)
             const x = cir.getAttribute('data-x');
             const y = cir.getAttribute('data-y');
-            //console.log(`(${x}, ${y})`);
-            this.addTooltip = this.addTooltip.bind(this);
-            this.addTooltip(this.svg._groups[0][0], cir, `(${x}, ${y})`);
+
+            if (y == null) {
+                cir.parentNode.removeChild(cir);
+            }
+
+            // //console.log(`(${x}, ${y})`);
+            // this.addTooltip = this.addTooltip.bind(this);
+            // this.addTooltip(this.svg._groups[0][0], cir, `(${x}, ${y})`);
         })
 
         //console.log(circle)
@@ -415,5 +428,16 @@ export default class Graph {
 
         
         
+    }
+
+    // getSetTitle() {
+    //     const container = this.container
+    //     console.log(container);
+    //     return currset;
+    // }
+
+    setTitle(newTitle) {
+        d3.select('svg').attr('data-currset', newTitle);
+        //console.log('555')
     }
 }

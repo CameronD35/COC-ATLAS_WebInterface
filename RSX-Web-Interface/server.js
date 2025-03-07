@@ -450,41 +450,6 @@ function checkForQuitOrExit(val) {
     }
 }
 
-// this pushes all of desired data to the data.json file
-// works by reading file, parsing the JSON format, adding values to object, then writing new object to data.json
-async function pushDataToJSONFile(dataObj) {
-
-    // https://nodejs.org/en/learn/manipulating-files/reading-files-with-nodejs
-    const filePath = './data.json';
-
-    const readStream = createReadStream(filePath, {encoding: 'utf8'})
-
-
-    try {
-
-        for await (const chunk of readStream) {
-            console.log(chunk);
-        }
-
-        // let json = await fs.readFile(jsonFilePath, {encoding: 'utf8'});
-
-        // json = JSON.parse(json);
-
-        // for (key in dataObj) {
-        //     // json[key] would be something like "temp"
-        //     // dataObj[key] would be the "temp" value, like "53"
-        //     json[key].push(dataObj[key])
-        // }
-
-        // const stringified = JSON.stringify(json);
-
-        // await fs.writeFile(jsonFilePath, stringified);
-
-    } catch (err) {
-        console.log(err)
-    }
-}
-
 beginPrompts();
 
 // Checks the IP:PORT for availibility periodically

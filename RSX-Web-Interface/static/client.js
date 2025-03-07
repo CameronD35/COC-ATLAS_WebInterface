@@ -1,12 +1,22 @@
 // THIS FILE MANAGES ANY DYNAMIC ELEMENTS ON THE PAGE (BESIDES THE GRAPHS)
 // MORE IMPORTANLY, IT MANAGES COMMUNICATIONS WITH THE SERVER
 
+// modules from ./modules
 import pushChatToLog from "./modules/chatLog.js";
 import getTime from "./modules/getTime.js";
 import showOverlay, {graphArray} from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
 import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js";
+
+// holds 100 data points for the graphs
+let data = {
+    'temperature': [53, null, 69, 43, 67, 100],
+    'pressure': [3, 7, 4],
+    'cloud points': [234, 768, 1057],
+    'cpu usage': [23.2, 45.4, 34.6],
+    'time': [3, 5, 7, 8, 8.5, 10]
+};
 
 // Global io variable. It's initialization sends message to server that a client has connected.
 const socket = io({
@@ -84,6 +94,8 @@ socket.on('interpretData', (data) => {
     });
 });
 
+// TODO: Add a warning on the interface before killing the server
+// use promises?
 socket.on('serverKilled', (callback) => {
     // await promptForDownloads();
     // window.close();
@@ -226,5 +238,99 @@ function updateTime(){
         timeText.textContent = currentTime;
     }, 1000)
 }
+
+// pushes the incoming data to the 'data' variable
+// limits the amount of entries to entryLimit
+function pushToData(dataObj, targetObj, entryLimit) {
+
+    const keysList = Object.keys(targetObj);
+
+    const targetLength = keysList.length;
+
+    const firstEntryID = keysList[0];
+
+    const lastEntryID = keysList[targetLength - 1];
+
+    //console.log(`INFO\n${keysList}\n${targetLength}\n${firstEntryID}\n${lastEntryID}\n`)
+
+    if (targetLength >= entryLimit) {
+        console.log('1738, I say hey wassup hello');
+    }
+}
+
+function updateGraphs(dataObj) {
+    
+
+    graphArray.forEach((elem, i) => { 
+
+        const graphNum = i + 1;
+
+        if(graphNum != 3){
+            //console.log(currSet)
+            const elemContainer = elem.container;
+            const currSet = elemContainer.getAttribute('data-currset');
+            const dropdownSet = document.getElementById(`dropdownMenu${graphNum}`).getAttribute('data-currset');
+
+            if (currSet != dropdownSet) {
+                //console.log(currSet, dropdownSet, graphNum);
+                elemContainer.setAttribute('data-currset', dropdownSet);
+                //console.log(dataObj[currSet]);
+                if (dataObj[dropdownSet] != null) {
+                    //console.log('th3io7erty3bg2er82')
+                    elem.dataset = formatDataForGraphs(dataObj, dropdownSet);
+                    //console.log(elem.dataset);
+                    changeGraphColor(dropdownSet, graphNum);
+                    elem.update();
+                }
+            }
+        }
+    });
+}
+
+function changeGraphColor(dataset, graphNum) {
+    const graphMainColorCSS = `--graphMainColor${graphNum}`
+    switch (dataset) {
+        case 'temperature':
+            document.documentElement.style.setProperty(graphMainColorCSS, 'var(--webInterfaceRed)')
+            break;
+        case 'pressure':
+            document.documentElement.style.setProperty(graphMainColorCSS, 'var(--webInterfaceOrange)')
+            break;
+        case 'cloud points':
+            document.documentElement.style.setProperty(graphMainColorCSS, 'var(--mainColor)')
+            break;
+        case 'cpu usage':
+            document.documentElement.style.setProperty(graphMainColorCSS, 'var(--webInterfaceGreen)')
+            break;
+    }
+
+}
+
+function formatDataForGraphs(dataObj, target) {
+
+    const targetArr = dataObj[target];
+
+    const timeArr = dataObj['time'];
+
+    let formattedArr = []
+
+    targetArr.forEach((elem, i) => {
+        //console.log('ou2y3g823oeyf')
+        formattedArr.push({
+            x: timeArr[i],
+            y: elem
+        });
+    });
+
+    //console.log(formattedArr);
+
+    return formattedArr;
+}
+
+pushToData(null, data, 2);
+setInterval(() => {
+    updateGraphs(data);
+}, 100)
+updateGraphs(data);
 
 updateElement('dataValue1', 34);

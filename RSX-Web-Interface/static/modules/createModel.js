@@ -83,8 +83,8 @@ class SceneManager{
 
             //addArrowToScene();
         }, 
-        (xhr) => {console.log((xhr.loaded/xhr.total * 100) + '% Loaded')},
-        (err) => {console.log('error', err)});
+        (xhr) => {/*console.log((xhr.loaded/xhr.total * 100) + '% Loaded')*/},
+        (err) => {/*console.log('error', err)*/});
 
 
 
@@ -100,7 +100,7 @@ class SceneManager{
         arrow = new THREE.ArrowHelper(new THREE.Vector3(0, 0, 1), origin, 2, 0x00ff00);
         this.scene.add(arrow);
 
-        console.log(this);
+        //console.log(this);
 
         this.createAxisLabels()
 
@@ -121,7 +121,7 @@ class SceneManager{
 
     centerModel(precisionAmount){
         const geometry = findType(this.model, 'Mesh');
-        console.log(geometry);
+        //console.log(geometry);
 
         geometry.center();
     }

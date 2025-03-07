@@ -629,7 +629,7 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
             pointsFormattedForDropdown[point] = 'std';
         });
 
-        console.log(pointsFormattedForDropdown);
+        //console.log(pointsFormattedForDropdown);
 
         // Creates the dropdown but returns the menu when interacting with it
         let dataDropdownMenu = new Dropdown(currentDataInfo, i, pointsFormattedForDropdown, currentDataInfo);
@@ -638,9 +638,9 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
 
             const graphNumber = dataDropdownMenu.id.slice(-1);
 
-            console.log(graphNumber)
+            //console.log(graphNumber)
 
-            socket.emit('grabNewData', '')
+            socket.emit('grabNewData', '');
         })
 
         //dataDropdown.attachToExternalTitle(dataTitle);
@@ -734,8 +734,8 @@ function createDownloadDataPrompt(container=document.getElementById('overlayCont
 }
  
 function createRealTimeGraphs(){
-    let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph1', [5,4]);
-    let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--mainColor)'], 'graph2', [5,4]);
+    let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor1)'], 'graph1', [5,4]);
+    let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor2)'], 'graph2', [5,4]);
     graph1.create();
     graph2.create();
 
@@ -886,7 +886,7 @@ function detectClickOnMessageSettings(container){
     const messageSettings = document.getElementById('messageSettings');
     const messageSettingsArrow = document.getElementById('messageSettingsArrow');
 
-    console.log(messageSettings);
+    //console.log(messageSettings);
 
     container.addEventListener('click', (evt) => {
     
@@ -959,7 +959,7 @@ function setupMessageSetting(element, dataAttribute, activateFunction=null){
         // since we pass in the setting container for the element variable, to access the checkbox (a child element) we have to loop through the container
         // to access it
 
-        console.log(child.tagName.toLowerCase());
+        //console.log(child.tagName.toLowerCase());
 
         if (child.tagName.toLowerCase() == 'input') {
             input = child;
@@ -968,7 +968,7 @@ function setupMessageSetting(element, dataAttribute, activateFunction=null){
 
     }
 
-    console.log(input);
+    //console.log(input);
 
     element.addEventListener('input', () => {
 

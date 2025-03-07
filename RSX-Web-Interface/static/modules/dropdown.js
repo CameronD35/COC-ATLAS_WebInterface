@@ -6,8 +6,7 @@ export default class Dropdown {
         this.container = container;
         this.num = num;
         this.items = items;
-        this.curentSelection = 'Select';
-        this.externalTitle;
+        this.currentSelection = 'Select';
 
         this.dropdownContainer = this.createDropdown(this.container, this.num);
 
@@ -48,6 +47,7 @@ export default class Dropdown {
     
         this.menu = createHTMLChildElement(dropdownContainer, 'div', 'dropdownMenu', null, `dropdownMenu${num}`);
         this.menu.setAttribute('data-open', 'false');
+        this.menu.setAttribute('data-currSet', 'select');
     
         this.contentContainer = createHTMLChildElement(this.menu, 'div', 'dropdownContent', null, `dropdownContent${num}`);
 
@@ -73,6 +73,8 @@ export default class Dropdown {
                 let title = evt.target.textContent;
     
                 this.title.textContent = title;
+
+                this.menu.setAttribute('data-currSet', title.toLowerCase());
     
                 this.dropdownHandler(evt);
 
@@ -101,26 +103,30 @@ export default class Dropdown {
     
     
         if (isOpen == 'false'){
+            // animation
             this.menu.style.pointerEvents = 'all';
             this.menu.style.animation = "showDropdown 0.4s ease-in-out 0s 1 normal forwards";
             this.menu.setAttribute('data-open', 'true');
     
             this.arrow.style.transform = 'rotate(180deg)';
-    
+            
+            // checks to see which option was selected based off the nodes in the content container
             this.contentContainer.childNodes.forEach((child, i) => {
-    
+
                 const titlesMatch = (child.textContent == this.title.textContent)
                 const classes = child.classList
     
                 if (titlesMatch && classes.contains('dropdownOption')) {
     
                     child.classList.add('dropdownCurrentOption');
+                    this.currentSelection
     
                 } else if (!titlesMatch && classes.contains('dropdownCurrentOption')) {
     
                     child.classList.remove('dropdownCurrentOption');
     
                 }
+
             });
     
         } else {

@@ -38,6 +38,9 @@ span{
     --slightBlur: blur(3px);
     --moderateBlur: blur(5px);
     --intenseBlur: blur(7px);
+
+    --graphMainColor1: white;
+    --graphMainColor2: white;
 }
 
 /* BACKGROUND */
