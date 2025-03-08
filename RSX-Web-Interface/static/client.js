@@ -8,13 +8,13 @@ import showOverlay, {graphArray} from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
 import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js";
-
+let time = 15;
 // holds 100 data points for the graphs
 let data = {
     'temperature': [53, null, 69, 43, 67, 100],
-    'pressure': [3, 7, 4],
-    'cloud points': [234, 768, 1057],
-    'cpu usage': [23.2, 45.4, 34.6],
+    'pressure': [3, 7, 4, 9, 10, 20],
+    'cloud points': [234, 768, 1057, 2047, 1047, 56],
+    'cpu usage': [23.2, 45.4, 34.6, 7.8, 9.4, 0.3],
     'time': [3, 5, 7, 8, 8.5, 10]
 };
 
@@ -239,23 +239,39 @@ function updateTime(){
     }, 1000)
 }
 
-// pushes the incoming data to the 'data' variable
-// limits the amount of entries to entryLimit
-function pushToData(dataObj, targetObj, entryLimit) {
+// pushes newData (the incoming data) to the dataObj
+// limits the amount of entries in dataObj to entryLimit
+function pushToData(newData, dataObj, entryLimit) {
 
-    const keysList = Object.keys(targetObj);
+    // grabs the name of keys in targetObj
+    const keysList = Object.keys(dataObj);
 
-    const targetLength = keysList.length;
+    // the length should be constant across the dataObj
+    const dataObjLength = dataObj['time'].length;
 
-    const firstEntryID = keysList[0];
+    const atOrOverLimit = (dataObjLength >= entryLimit);
 
-    const lastEntryID = keysList[targetLength - 1];
 
+    keysList.forEach((key, i) => {
+        // corresponding datapoint
+        // ex: dataObj = {x: 3, y: 5} and key = y, then dataPoint = 5
+        const dataPoint = newData[key];
+
+        //console.log(dataObj[key], atOrOverLimit)
+        // removes the first element from the list
+        if (atOrOverLimit) {
+            //console.log('1738, I say hey wassup hello');
+            //console.log(dataObj[key])
+            dataObj[key].splice(0, 1);
+        }
+
+        dataObj[key].push(dataPoint);
+    });
+
+    updateGraphs(dataObj);
+
+    //console.log('end', dataObj);
     //console.log(`INFO\n${keysList}\n${targetLength}\n${firstEntryID}\n${lastEntryID}\n`)
-
-    if (targetLength >= entryLimit) {
-        console.log('1738, I say hey wassup hello');
-    }
 }
 
 function updateGraphs(dataObj) {
@@ -265,24 +281,24 @@ function updateGraphs(dataObj) {
 
         const graphNum = i + 1;
 
-        if(graphNum != 3){
+        if (graphNum != 3) {
             //console.log(currSet)
             const elemContainer = elem.container;
             const currSet = elemContainer.getAttribute('data-currset');
             const dropdownSet = document.getElementById(`dropdownMenu${graphNum}`).getAttribute('data-currset');
+            
+            //console.log(currSet, dropdownSet, graphNum);
+            elemContainer.setAttribute('data-currset', dropdownSet);
+            //console.log(dataObj[currSet]);
+            if (dataObj[dropdownSet] != null) {
+                //console.log('th3io7erty3bg2er82')
+                elem.dataset = formatDataForGraphs(dataObj, dropdownSet);
+                //console.log(elem.dataset);
+                changeGraphColor(dropdownSet, graphNum);
+            }  
 
-            if (currSet != dropdownSet) {
-                //console.log(currSet, dropdownSet, graphNum);
-                elemContainer.setAttribute('data-currset', dropdownSet);
-                //console.log(dataObj[currSet]);
-                if (dataObj[dropdownSet] != null) {
-                    //console.log('th3io7erty3bg2er82')
-                    elem.dataset = formatDataForGraphs(dataObj, dropdownSet);
-                    //console.log(elem.dataset);
-                    changeGraphColor(dropdownSet, graphNum);
-                    elem.update();
-                }
-            }
+            elem.update();
+
         }
     });
 }
@@ -303,7 +319,6 @@ function changeGraphColor(dataset, graphNum) {
             document.documentElement.style.setProperty(graphMainColorCSS, 'var(--webInterfaceGreen)')
             break;
     }
-
 }
 
 function formatDataForGraphs(dataObj, target) {
@@ -327,10 +342,18 @@ function formatDataForGraphs(dataObj, target) {
     return formattedArr;
 }
 
-pushToData(null, data, 2);
+//console.log('start', data);
+
 setInterval(() => {
-    updateGraphs(data);
-}, 100)
+    pushToData({
+        'temperature': 64 + Math.random()* 5,
+        'pressure': 5 + Math.random()* 5,
+        'cloud points': 2036 + Math.random()* 5,
+        'cpu usage': 4.7 + Math.random()* 5,
+        'time': ++time
+    }, data, 100)
+}, 1000)
+
 updateGraphs(data);
 
 updateElement('dataValue1', 34);
