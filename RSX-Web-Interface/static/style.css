@@ -1017,9 +1017,16 @@ circle:hover {
     animation-name: showMessages;
     animation-duration: 0.2s;
     animation-fill-mode: forwards;
+
+    margin: 5px;
+    border-radius: 5px;
 }
 
-.singleChat:nth-child(odd):not(.connectMsg):not(.errorMsg):not(.warningMsg){
+.singleChat:last-child {
+    margin-bottom: 0;
+}
+
+.singleChat:nth-child(odd):not(.connectMsg, .errorMsg, .warningMsg, .dataMsg){
     display: flex;
     flex-direction: row;
     align-items: center;
@@ -1056,6 +1063,10 @@ circle:hover {
 
 .warningMsg{
     background-color: rgba(209, 212, 27, 0.3);
+}
+
+.dataMsg {
+    background-color: rgba(27, 153, 212, 0.3);
 }
 
 .hiddenMsg {

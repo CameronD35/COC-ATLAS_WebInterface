@@ -148,7 +148,7 @@ io.on('connection', (socket) => {
         //const msg = `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`;
 
         console.log(formattedData);
-        io.emit('logMessage', data);
+        io.emit('logMessage', data, 'data');
         io.emit('interpretData', formattedData);
 
         const insertQuery = pgManager.createInsertQuery({
