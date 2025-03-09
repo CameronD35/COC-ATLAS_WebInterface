@@ -481,7 +481,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 setting.value = newFreq;
                 
                 if (newFreq < 1) {
-                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will drastically reduce performance and accuracy.', false, false, true);
+                    pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will drastically reduce performance and accuracy.', 'warning');
                     socket.emit('dataFreq', 1);
                     break;
 
@@ -553,7 +553,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 function changeGraphRange(newRange) {
     if (newRange < 10) {
-        pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', false, false, true);
+        pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', 'warning');
 
         newRange = 10;
     }
@@ -734,8 +734,8 @@ function createDownloadDataPrompt(container=document.getElementById('overlayCont
 }
  
 function createRealTimeGraphs(){
-    let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor1)'], 'graph1', [5,4]);
-    let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 30, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor2)'], 'graph2', [5,4]);
+    let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 50, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor1)'], 'graph1', [5,4]);
+    let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 50, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor2)'], 'graph2', [5,4]);
     graph1.create();
     graph2.create();
 

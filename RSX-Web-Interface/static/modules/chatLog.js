@@ -13,7 +13,7 @@ import SettingsOption from "./settingsOption.js";
 
 let maxMessagesSetting = settings[1]
 
-export default function pushChatToLog(time, msg, error, connect, warning, logContainer=document.querySelector('.chatContainer')){
+export default function pushChatToLog(time, msg, type, logContainer=document.querySelector('.chatContainer')){
 
     let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
 
@@ -35,17 +35,24 @@ export default function pushChatToLog(time, msg, error, connect, warning, logCon
 
     checkContainerPosition(null);
 
-    if (error){
 
-        singleChatBox.classList.add('errorMsg');
+    switch (type) {
 
-    } else if (connect){
+        case 'error':
+            singleChatBox.classList.add('errorMsg');
+            break;
+        
+        case 'connect':
+            singleChatBox.classList.add('connectMsg');
+            break;
 
-        singleChatBox.classList.add('connectMsg');
+        case 'warning':
+            singleChatBox.classList.add('warningMsg');
+            break;
 
-    } else if (warning){
-
-        singleChatBox.classList.add('warningMsg');
+        case 'data':
+            singleChatBox.classList.add('dataMsg');
+            break;
 
     }
 

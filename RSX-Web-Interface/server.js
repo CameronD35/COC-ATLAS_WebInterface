@@ -77,11 +77,11 @@ app.get('/downloadLog', (req, res) => {
 
         if (err) {
 
-            io.emit('logMessage', `Error retriving log.txt file: ${err}`, true, false, true);
+            io.emit('logMessage', `Error retriving log.txt file: ${err}`, 'error');
 
         } else {
 
-            io.emit('logMessage', 'Retrieved file successfully!', false, true, false);
+            io.emit('logMessage', 'Retrieved file successfully!', 'connect');
 
         }
 
@@ -113,7 +113,7 @@ io.on('connection', (socket) => {
     writeToLog(connectMsg, 'C');
 
 
-    io.emit('logMessage', `'${clientID}' connected`, false, true, false);
+    io.emit('logMessage', `'${clientID}' connected`, 'connect');
 
     // request static data such as IP, OS, and Name
     io.emit('reqStaticData');
@@ -121,7 +121,7 @@ io.on('connection', (socket) => {
     // On disconnect, send message
     socket.on('disconnect', () => {
         const msg = `'${clientID}' disconnnected`;
-        io.emit('logMessage', msg, true, false, false);
+        io.emit('logMessage', msg, 'error');
 
         writeToLog(msg, '!!');
 
@@ -140,14 +140,16 @@ io.on('connection', (socket) => {
     // Additionally, it grabs the data and pushes it to the database
     socket.on('data', (data) => {
         let formattedData = JSON.parse(data);
+        const runtime = Math.round(process.uptime() * 1000) / 1000;
 
-        const msg = `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`;
+        // Adds current runtime to data for graphs
+        formattedData['time'] = runtime;
+
+        //const msg = `Msg: ${formattedData.msg.join(', ')} Tags: ${formattedData.tags.join(', ')}`;
 
         console.log(formattedData);
-        io.emit('logMessage', msg, false, false, false);
+        io.emit('logMessage', data);
         io.emit('interpretData', formattedData);
-
-        const runtime = process.uptime().toFixed(3);
 
         const insertQuery = pgManager.createInsertQuery({
             temp: formattedData.temp,
@@ -156,7 +158,7 @@ io.on('connection', (socket) => {
             sesh_runtime: runtime,
         });
 
-        writeToLog(msg, '!');
+        writeToLog(data, '!');
     });
 
     // takes data from interface regarding data frequency and sends it over to JON python script
@@ -201,8 +203,7 @@ server.listen(serverPort, async () => {
     });
 
     client.on('notification', (noti) => {
-        console.log('Notification:', noti);
-
+        //
     });
 
 });

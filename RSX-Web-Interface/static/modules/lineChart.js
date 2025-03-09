@@ -11,7 +11,7 @@ let randomData = [];
 export default class Graph {
 
     constructor(width, height, marginObj, container, dataset, [xAxisLabel, yAxisLabel], [graphColorBottom, graphColorTop], id, [xAxisTicks, yAxisTicks]) {
-
+        
         this.id = id;
         this.graphNum = id.slice(-1);
         //console.log(this.graphNum);
@@ -21,6 +21,8 @@ export default class Graph {
 
         this.xTicks = xAxisTicks;
         this.yTicks = yAxisTicks;
+
+        this.formatter = d3.formatPrefix(',.0', 1e-3);
 
         // initializes the dataset for this graph
         this.dataset = dataset? dataset : [];
@@ -114,17 +116,19 @@ export default class Graph {
         // Set the high bound for the domain, based off the highest x value in the dataset
         this.higherDomainBound = d3.max(this.dataset, (d) => { return d.x});
 
+        const minX = d3.min(this.dataset, (d) => { return d.x});
+        const datasetLength = this.higherDomainBound - minX;
+
+        const length = datasetLength - this.domainLength;
+
+        console.log(`${datasetLength} - ${this.domainLength} = ${length}`)
         // Sets the low bound for the domain, based off (higherDomainBound - domainLength)
-        // If the domain Length results in a zero or negative lowerDomainBound, then it will to the full domain;
+        // If the domain Length results in a zero or negative lowerDomainBound, then it will go to the full domain;
         // If the difference in higherDomainBound - domainLength is < 10, then the lowerDomainBound will = 10;
         this.lowerDomainBound = (() => {
-            if ((this.higherDomainBound - this.domainLength) <= 1) {
-
-                return 0;
-
-            } else if ((this.higherDomainBound - this.domainLength) > (this.higherDomainBound - 10)) {
-
-                return this.higherDomainBound - 10;
+            if ((length) <= 0) {
+                
+                return minX;
 
             } else {
 
@@ -133,10 +137,11 @@ export default class Graph {
             }
         })()
 
-        this.filteredData = this.dataset.filter((d) => { if (d.x >= this.lowerDomainBound) {return d.x}})
+        this.filteredData = this.dataset.filter((d) => { if (d.x >= this.lowerDomainBound) {return d.x}});
 
 
         // Re-definies the x and y scales for this object
+        console.log(`(${this.lowerDomainBound}, ${this.higherDomainBound})`)
         this.xScale = d3.scaleLinear([this.lowerDomainBound, this.higherDomainBound], [this.margin.left, this.width - this.margin.right]);
         this.yScale = d3.scaleLinear(d3.extent(this.filteredData, (d) => { return d.y}), [this.height - this.margin.bottom, this.margin.top]);
 
@@ -156,29 +161,25 @@ export default class Graph {
 
         // Calls this objects axes using the objects new scales
         // Ticks: 10 if the highest # is <= 100; else, the tick count = 5
-        this.xAxis.transition().duration(250).call(d3.axisBottom(this.xScale).ticks((() => {
+        this.xAxis.transition()
+        .duration(250)
+        .call(d3.axisBottom(this.xScale)
+        .ticks((() => {
 
-            if(this.xTicks > 1){
-                return this.xTicks
-            } else if (this.higherDomainBound >= 100) {
-                return 5;
-            } else {
-                return 10;
+            if(this.higherDomainBound >= 1000){
+                return 3;
+            } else if (this.xTicks > 1) {
+                return this.xTicks;
             }
 
-        })()));
+        })()).tickFormat(d3.format('~s')));
 
-        this.yAxis.transition().duration(250).call(d3.axisLeft(this.yScale).ticks((() => {
-
-            if(this.yTicks > 1){
-                return this.yTicks
-            } else if (this.higherDomainBound >= 100) {
-                return 5;
-            } else {
-                return 10;
-            }
-            
-        })()));
+        this.yAxis
+        .transition()
+        .duration(250)
+        .call(d3.axisLeft(this.yScale)
+        .ticks(5)
+        .tickFormat((d) => {return d + '%'}));
 
         // Resets the datum used for this object's line path and redraws the line
         // Adds transition to the line

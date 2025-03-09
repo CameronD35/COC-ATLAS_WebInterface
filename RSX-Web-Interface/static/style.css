@@ -634,6 +634,7 @@ input:focus{
 .tick text{
     font-family: 'JetBrains Mono';
     font-weight: 500;
+    font-size: 12px;
 }
 
 circle:hover {

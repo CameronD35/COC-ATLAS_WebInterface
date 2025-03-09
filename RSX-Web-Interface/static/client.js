@@ -10,12 +10,12 @@ import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js";
 let time = 15;
 // holds 100 data points for the graphs
-let data = {
-    'temperature': [53, null, 69, 43, 67, 100],
-    'pressure': [3, 7, 4, 9, 10, 20],
-    'cloud points': [234, 768, 1057, 2047, 1047, 56],
-    'cpu usage': [23.2, 45.4, 34.6, 7.8, 9.4, 0.3],
-    'time': [3, 5, 7, 8, 8.5, 10]
+let dataStorage = {
+    'temperature': [],
+    'pressure': [],
+    'cloud points': [],
+    'cpu usage': [],
+    'time': []
 };
 
 // Global io variable. It's initialization sends message to server that a client has connected.
@@ -32,9 +32,9 @@ export default socket;
 let clientsConnected = []
 
 // socket event that creates message on all clients
-socket.on('logMessage', (msg, isError, isConnect) => {
-    if (isError != null && isConnect != null){
-        pushChatToLog(getTime(), msg, isError, isConnect);
+socket.on('logMessage', (msg, type) => {
+    if (type != null){
+        pushChatToLog(getTime(), msg, type);
     } else {
         pushChatToLog(getTime(), msg);
     }
@@ -78,20 +78,24 @@ socket.on('clientID', (clients) => {
 // Used to grab any values (such as os or ip) and display them
 socket.on('interpretData', (data) => {
     console.log('eoifewbfgfvefyktew');
-    console.log('IM WORKING!!!!!!!')
-    if (typeof data.msg === 'string'){
-        let element = document.getElementById(elementMap[data.tags]);
+    console.log('IM WORKING!!!!!!!');
 
-        element.textContent = data.msg;
+    const ramString = ``;
 
-        return;
-    }
+    const dataKeys = Object.keys(data);
 
-    data.tags.forEach((tag, i) => {
-        let element = document.getElementById(elementMap[tag]);
+    // Uses the elementMap in eleementMap.js to match incoming data to a DOM element
+    dataKeys.forEach((key, i) => {
+        let element = document.getElementById(elementMap[key]);
 
-        element.textContent = data.msg[i];
+        // Some datapoints may not have associated DOM elements
+        if (element != null) {
+            element.textContent = data[key];
+        }
     });
+
+    pushToData(data, dataStorage, 100);
+
 });
 
 // TODO: Add a warning on the interface before killing the server
@@ -176,10 +180,12 @@ document.addEventListener('DOMContentLoaded', () => {
     // }, 1000);
 });
 
+// TODO
 async function promptForDownloads() {
     showOverlay();
 }
 
+// TODO
 function createDownloadPrompt() {
     
 }
@@ -223,9 +229,6 @@ function updateElement(elementID, newValue, color=null, graph=null){
     }
 } 
 
-// function interpretIncomingJSON(){
-    
-// }
 
 // updates time in log section
 function updateTime(){
@@ -253,6 +256,13 @@ function pushToData(newData, dataObj, entryLimit) {
 
 
     keysList.forEach((key, i) => {
+
+
+
+        if (isNaN(newData[key]) && newData[key] != null) {
+            newData[key] = parseFloat(newData[key]);
+        }
+
         // corresponding datapoint
         // ex: dataObj = {x: 3, y: 5} and key = y, then dataPoint = 5
         const dataPoint = newData[key];
@@ -344,16 +354,16 @@ function formatDataForGraphs(dataObj, target) {
 
 //console.log('start', data);
 
-setInterval(() => {
-    pushToData({
-        'temperature': 64 + Math.random()* 5,
-        'pressure': 5 + Math.random()* 5,
-        'cloud points': 2036 + Math.random()* 5,
-        'cpu usage': 4.7 + Math.random()* 5,
-        'time': ++time
-    }, data, 100)
-}, 1000)
+// setInterval(() => {
+//     pushToData({
+//         'temperature': 64 + Math.random()* 5,
+//         'pressure': 5 + Math.random()* 5,
+//         'cloud points': 2036 + Math.random()* 5,
+//         'cpu usage': 4.7 + Math.random()* 5,
+//         'time': ++time
+//     }, dataStorage, 100)
+// }, 1000)
 
-updateGraphs(data);
+// updateGraphs(dataStorage);
 
 updateElement('dataValue1', 34);
