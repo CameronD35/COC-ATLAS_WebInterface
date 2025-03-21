@@ -113,7 +113,6 @@ function createPage() {
 
 // DO NOT DELETE THIS FUNCTION
 // Creates the row and column organization
-
 function createBoxStructure(parent){
     let topRow = createRow(parent, 1, 2, 15, false, [90, 10]);
     let secondRow = createRow(parent, 2, 2, 70, false, [75, 25]);
@@ -123,6 +122,7 @@ function createBoxStructure(parent){
     //console.log(topRow, secondRow);
 }
 
+// DO NOT DELETE THIS FUNCTION
 /** This creates a row with a cusotmizable amount of columns
 * @param {number} rowNumber: The associated value of the row. (ex: if the row is the 3rd row on the page, it should be 3)
 * @param {number} numOfColumns: The number of columns (boxes) that will be inside of this row
@@ -130,8 +130,6 @@ function createBoxStructure(parent){
 * @param {boolean} autoColumnSizing: True for equal sizing of the columns, false for programmer-defined sizing
 * @param {number} array columnWidths: An array containing the widths of all the columns (if autoColumnSizing == false)
 */
-// DO NOT DELETE THIS FUNCTION
-
 function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing, columnWidths, name) {
     
     let boxWidth;
@@ -159,6 +157,8 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
     return row;
 }
 
+
+// DO NOT DELETE THIS FUNCTION
 /** 
 * This creates a column with a cusotmizable amount of rows
 * @param {number} columnNumber: The associated value of the column. (ex: if the column is the 3rd column on the page, it should be 3)
@@ -167,9 +167,6 @@ function createRow(parent, rowNumber, numOfColumns, rowHeight, autoColumnSizing,
 * @param {boolean} autoaRowSizing: True for equal sizing of the rows, false for programmer-defined sizing
 * @param {number} array rowHeights: An array containing the heights of all the rows (if autoRowSizing == false)
 */
-
-// DO NOT DELETE THIS FUNCTION
-
 function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizing, rowHeights, name) {
     
     parent.style.flexDirection = 'row';
@@ -198,6 +195,11 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
     return column;
 }
 
+/** 
+* This creates a column with a cusotmizable amount of rows
+* @param {function} functionToCreateContent: External function this will be called when this function is called. 
+* The function should be a function that creates DOM elements intended to go in the overlay section.
+*/
 export default function showOverlay(functionToCreateContent) {
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
@@ -218,13 +220,13 @@ export default function showOverlay(functionToCreateContent) {
 
 }
 
+
 /** 
 * This function detects if the user clicks inside of the content within the overlay (i.e. settings or reference)
 * If the user did click inside, nothing happens
 * If the user clicked outside it will delete the overlay content by utilizing the hideOverlay function
 * @param {object} event - Pulled from the .addEventListener function. The element of which the user clicked
 */
-
 function readForClick(event) {
     //console.log(event);
     let target = event.target;
@@ -248,12 +250,12 @@ function readForClick(event) {
     }
 }
 
-/* 
+
+/** 
 * Hides the overlay by cleaning--or deleting--the 'overlay' element
 * It also sets the overlay opacity and width to 0
 * The delay is added for a smoother animation
 */
-
 function hideOverlay(){
     let pageContainer = document.querySelector('.hero');
     let overlay = document.getElementById('overlay');
@@ -272,8 +274,10 @@ function hideOverlay(){
     pageContainer.style.filter = '';
 }
 
-// Function that creates the reference accessible by holding down 'Shift' and 'F' simultaneously
-
+/** 
+* Function that creates the reference accessible by holding down 'Shift' and 'F' simultaneously
+* @param {object} container - Conainer for the reference section.
+*/
 function createReference(container){
 
     let pageContainer = document.querySelector('.hero');
@@ -316,6 +320,9 @@ function createReference(container){
 // OPEN THE FUNCTION AND REMOVE SPECIFIED LINES WHEN READY
 // This creates the space for you to make your component (The grey area upon first opening up the template.)
 
+/** 
+* This creates the space for all the components. Excludes the settings box since there isn't really much going in there.
+*/
 function createContentSpace(){
     document.querySelectorAll('.box').forEach((box, i) => {
         if(i === 1){
@@ -329,7 +336,12 @@ function createContentSpace(){
 
 
 // PUT YOUR CODE HERE. FEEL FREE TO ADD, MODIFY, OR REMOVE FUNCTIONS AS NEEDED.
-
+/** 
+* Creates the computer data secion
+* @param {string} container - Container for the computer data section.
+* @param {object} dataTitleAndPoints - {title: x, data: y}. Sets the UI title and provides a prefilled associated value.
+* @param {string} computerName - Sets the UI Computer Name. Should be the computer name of your Linux device.
+*/
 function createComputerDataSection(container, dataTitleAndPoints, computerName){
     let computerDataContainer = createHTMLChildElement(container, 'div', 'computerDataContainer');
     let computerNameSection = createHTMLChildElement(computerDataContainer, 'div', 'computerNameSection', computerName);
@@ -354,10 +366,13 @@ function createComputerDataSection(container, dataTitleAndPoints, computerName){
     }
 }
 
-// Creates the button/icon to open the settings
-function createSettingsBox(parent){
-    parent.classList.add('settings');
-    let settingsButton = createHTMLChildElement(parent, 'img', 'settingsIcon', null, 'settingsIcon');
+/**
+* Creates the button/icon to open the settings
+* @param {string} container - Container for the settings icon.
+*/
+function createSettingsBox(container){
+    container.classList.add('settings');
+    let settingsButton = createHTMLChildElement(container, 'img', 'settingsIcon', null, 'settingsIcon');
     settingsButton.src = './Image-Assets/SettingsIcon.webp';
 
     settingsButton.addEventListener("click", settingsButtonClicked);
@@ -373,6 +388,11 @@ function createSettingsBox(parent){
 }
 
 // Creates the content when the settings icon is clicked
+
+/**
+* Creates the section that contains the settings.
+* @param {string} settingsUIContainer - Container for the settings UI.
+*/
 function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
     
     
@@ -395,6 +415,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 
     /* When the close button on the settings panel is clicked. */
+    /**
+    * Creates the section that contains the settings.
+    * @param {string} event - Not being used for now.
+    */
     function closeSettingsButtonClicked(event)
     {
         // Unhook
@@ -403,7 +427,8 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
     }
 
     /** A callback for when any setting has changed.
-        @param {SettingsOption} setting - The name of the setting that was changed. */
+    *    @param {SettingsOption} setting - The name of the setting that was changed. 
+    */
     function settingChanged(setting) 
     {
 
@@ -480,6 +505,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
                 setting.value = newFreq;
                 
+                // emits 'dataFreq' event which notifiies server and consequently sends new desired time to Jetson Orin Nano (or other Linux-based connected device)
                 if (newFreq < 1) {
                     pushChatToLog(getTime(), 'Setting frequency to 1 second. Any less will drastically reduce performance and accuracy.', 'warning');
                     socket.emit('dataFreq', 1);
@@ -551,6 +577,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
 
 }
 
+/**
+* Changes the graph's domain. I apologize for swapping the words range and domain.
+* @param {object} newRange - The desired new length of the domain. ex: if the dataset has x ∈ [5, 50], and newRange = 30, then the domain is [20, 50]
+*/
 function changeGraphRange(newRange) {
     if (newRange < 10) {
         pushChatToLog(getTime(), 'Setting graph range to 10 seconds. Any less will make graphs futile.', 'warning');
@@ -565,7 +595,9 @@ function changeGraphRange(newRange) {
     });
 }
 
-/* Remove the message elements when the count goes beyond the max. */
+/** 
+* Remove the message elements when the count goes beyond the max. 
+*/
 function removeMessagesWhenBeyondMax()
 {
     let logContainer = document.getElementById("chatContainer");
@@ -587,6 +619,13 @@ function removeMessagesWhenBeyondMax()
     }
 }
 
+/**
+* Creates the section that contains the settings.
+* @param {string} container - Container for the real-time data section.
+* @param {number} numOfGraphs - Number of graphs to be in the real-time data section.
+* @param {string[]} dataPoints - array of possible datapoints (ex: You may be transmitting temperature and pressure data, so those classifications/titles go here)
+* @param {number} numOfRows - Number of rows for the datapoints (ex: if you have 6 points, you might want 2 per row, so you would need 3 rows => numOfRows = 3)
+*/
 function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows) {
 
     let realTimeContainer = createHTMLChildElement(container, 'div', 'realTimeContainer');
@@ -607,6 +646,8 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
 
     downloadImg.src = './Image-Assets/download.webp';
 
+    // when clicked pulls up a box for downloading from database
+    // THIS FEATURE IS ON PAUSE FOR NOW
     downloadButton.addEventListener('click', () => {
             showOverlay(createDownloadDataPrompt);
     });
@@ -615,7 +656,8 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
     let graphicalDataSection = createHTMLChildElement(realTimeContainer, 'div', 'graphicalDataSection');
 
 
-    
+    // Adds dropdown to all of the graphs
+
     for(let i = 1; i <= numOfGraphs; i++){
         let currentGraphSection = createHTMLChildElement(graphicalDataSection, 'div', 'graphSection', null, `graphSection${i}`);
         let currentDataInfo = createHTMLChildElement(currentGraphSection, 'div', 'dataInfo', null, `dataInfo${i}`);
@@ -683,17 +725,13 @@ function createRealTimeDataSection(container, numOfGraphs, dataPoints, numOfRows
         if (rowPlacement == 0){
             rowElement = document.getElementById(`dataRow${updatedRowNumber}`);
         }
-        // if(i/updatedRowNumber > 1){
-        //     console.log('sikrduhgskuhbfgvzsd');
-        //     continue;
-        // }
-
         let currentTableHeader = createHTMLChildElement(rowElement, 'th', 'dataTitle', `${dataPoints[i-1]}:`, `dataTable${i}`);
         let currentTableData = createHTMLChildElement(rowElement, 'td', 'dataValue', 23, `dataValue${i}`);
 
     }
 }
 
+// THIS FEATURE IS ON PAUSE FOR NOW
 function createDownloadDataPrompt(container=document.getElementById('overlayContentContainer')) {
 
     // Ngl I was lazy, so dd stands for dataDownload
@@ -732,7 +770,12 @@ function createDownloadDataPrompt(container=document.getElementById('overlayCont
 
     let inputContainer = createHTMLChildElement(ddContentContainer, 'div', 'ddInputContainer', null, 'ddInputContainer');
 }
- 
+
+/**
+* Creates the graphs for the real-time data section.
+
+* TODO: Make this function more modular.
+*/
 function createRealTimeGraphs(){
     let graph1 = new Graph(350, 200, {top: 10, bottom: 20, left: 50, right: 20}, '#graphSection1', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor1)'], 'graph1', [5,4]);
     let graph2 = new Graph(350, 200, {top: 10, bottom: 20, left: 50, right: 20}, '#graphSection2', null, ['time (s)', null], ['var(--quadraryColor)', 'var(--graphMainColor2)'], 'graph2', [5,4]);
@@ -743,10 +786,18 @@ function createRealTimeGraphs(){
 
 }
 
+// Resize the elements on first render
+// TODO: Move this bruh, it's in the middle of random stuff
 window.addEventListener('resize', () => {resizeElements();});
 
+/**
+* Resizes the graphsbased on their surrounding area
+
+* TODO: Make this more modular. Should be applicable to most--if not all--elements. Only works for graphs now.
+*/
 function resizeElements(){
 
+    // grabs the width and height of the real-time data graph area
     let graphSectionDimensions = document.querySelector('.graphicalDataSection').getBoundingClientRect();
     const graphSectionWidth = graphSectionDimensions.width;
     const graphSectionHeight = graphSectionDimensions.height;
@@ -763,7 +814,14 @@ function resizeElements(){
 
 }
 
-
+/**
+* Resizes the graphsbased on their surrounding area
+* @param {object} sectionTitlesAndOptions - {title: 'x', options: [], type: 'y'}. Object for the different subsections (ex: Initialization). 
+* title: string that sets the UI title
+* options: array of all the features in this subsection (ex: a motor control section may have activate and deactivate)
+* type: the type of input the options will have (ex: the motor will likely have a toggle or checkbox)
+* TODO: Make this more modular. Should be applicable to most--if not all--elements. Only works for graphs as of now.
+*/
 function createFeaturesSection(sectionTitlesAndOptions, container=document.getElementById('contentContainer3')){
     let featuresContainer = createHTMLChildElement(container, 'div', 'featuresContainer');
 
@@ -810,6 +868,7 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
     
         }
 
+        // creates a 3d render if the specified type is 'model'
         if(sectionTitlesAndOptions[i].type === 'model'){
             let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender');
             //let scene = new SceneManager(modelContainer, [300, 300]);
@@ -825,12 +884,18 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
 
 }
 
-function createLogSection(parent=document.getElementById('contentContainer4')){
+/**
+* Creates the log section
+* @param {string} container - Container for the Log Section.
+*/
+function createLogSection(container=document.getElementById('contentContainer4')){
 
+    // Title section
     let titleContainer = document.getElementById('LogTextContainer');
 
     let titleText = document.getElementById('LogText');
 
+    // Download button
     let downloadButtonForm = createHTMLChildElement(titleText, 'form', 'downloadContainer', null, null, null, `Download a copy of this session's log.`);
 
     downloadButtonForm.action = '/downloadLog';
@@ -845,20 +910,23 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
     downloadImg.src = './Image-Assets/download.webp';
 
+    // Time section
     let timeContainer = createHTMLChildElement(titleContainer, 'div', 'timeContainer');
     let timeText = createHTMLChildElement(timeContainer, 'div', 'timeText');
 
+    // Shadows for when messages extend past logbox
+    let topLogShadowContainer = createHTMLChildElement(container, 'div', 'topLogShadowContainer');
+    let bottomLogShadowContainer = createHTMLChildElement(container, 'div', 'bottomLogShadowContainer');
 
-    let topLogShadowContainer = createHTMLChildElement(parent, 'div', 'topLogShadowContainer');
-    let bottomLogShadowContainer = createHTMLChildElement(parent, 'div', 'bottomLogShadowContainer');
-
-
-    let chatOverheadContainer = createHTMLChildElement(parent, 'div', 'chatOverheadContainer');
+    // Contains chatContainer
+    // This was done so that items could be organized more clearly
+    // I should put a better explanation here
+    let chatOverheadContainer = createHTMLChildElement(container, 'div', 'chatOverheadContainer');
 
     let chatContainer = createHTMLChildElement(chatOverheadContainer, 'div', 'chatContainer');
 
-
-    let messageSettingsContainer = createHTMLChildElement(parent, 'div', 'messageSettingsContainer');
+    // Message settings
+    let messageSettingsContainer = createHTMLChildElement(container, 'div', 'messageSettingsContainer');
 
     let messageSettingsButtonContainer = createHTMLChildElement(messageSettingsContainer, 'div', 'messageSettingsButtonContainer');
 
@@ -881,6 +949,10 @@ function createLogSection(parent=document.getElementById('contentContainer4')){
 
 }
 
+/**
+* Reads for a click on the message settings section
+* @param {string} container - Container for the Message Settings Button.
+*/
 function detectClickOnMessageSettings(container){
 
     const messageSettings = document.getElementById('messageSettings');
@@ -909,10 +981,20 @@ function detectClickOnMessageSettings(container){
     });
 }
 
+/**
+* Creates a message setting
+* @param {string} settingTitle - Title for the setting
+* @param {boolean} setDefaultToTrue - boolean for setting the default of the message setting to true (ex: for auto-scroll, it's ideal to have this activated by default)
+* @param {string} dataAttribute - string that matches that of a HTML 'data-' attribute. Refer to 
+https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes
+for more information on data attributes.
+* @param {function} activateFunction - function to run when the setting is activated (ex: if auto-scroll is activated, we would run a function that manages auto-scroll)
+*/
 function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute, activateFunction=null){
 
     const messageSettings = document.getElementById('messageSettings');
 
+    // creates single message
     const singleMessageSetting = createHTMLChildElement(messageSettings, 'div', 'singleMessageSetting', null, `${settingTitle.substring(0,3)}Setting`);
 
     const settingInput = createHTMLChildElement(singleMessageSetting, 'input', 'singleMessageSettingInput', null, `${settingTitle.substring(0,3)}SettingInput`);
@@ -931,10 +1013,19 @@ function createMessageSetting(settingTitle, setDefaultToTrue, dataAttribute, act
     setupMessageSetting(singleMessageSetting, dataAttribute, activateFunction);
 }
 
+/**
+* Hides a set of log messages with a certain HTML class
+* @param {string} condition - TODO: explain this
+* @param {string} messageHTMLClass - HTML class for the messages (ex: to hide connection messages we specify it's class: 'connectMsg')
+*/
 function hideMessages(condition, messageHTMLClass) {
 
     const messages = document.querySelectorAll(`.${messageHTMLClass}`);
 
+    // checks condition parameter and if true will add hiddenMsg HTML class
+    // hiddenMsg class sets scaleY = 0; more details in styles.css file
+
+    // if condition is false will remove hiddenMsg class
     if (condition) {
 
         messages.forEach((msg, i) => {
@@ -951,6 +1042,15 @@ function hideMessages(condition, messageHTMLClass) {
 
 }
 
+/**
+* Creates a message setting
+* @param {string} settingTitle - Title for the setting
+* @param {boolean} setDefaultToTrue - boolean for setting the default of the message setting to true (ex: for auto-scroll, it's ideal to have this activated by default)
+* @param {string} dataAttribute - string that matches that of a HTML 'data-' attribute. Refer to 
+https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_problems/Use_data_attributes
+for more information on data attributes.
+* @param {function} activateFunction - function to run when the setting is activated (ex: if auto-scroll is activated, we would run a function that manages auto-scroll)
+*/
 function setupMessageSetting(element, dataAttribute, activateFunction=null){
 
     let input;
@@ -970,6 +1070,7 @@ function setupMessageSetting(element, dataAttribute, activateFunction=null){
 
     //console.log(input);
 
+    // when the checkbox is clicked, detects if it is checked or unchecked and sets an associated HTML 'data-' attribute to 'false' or 'true' 
     element.addEventListener('input', () => {
 
         const isActivated = (element.getAttribute(dataAttribute) === 'true');
@@ -1013,7 +1114,8 @@ function createConnectionStatusSection(dataTitles, container=document.getElement
     graphArray.push(conStatGraph);
 }
 
-// Adds all the titles to their respective boxes, reference their input for which box you will be working on.
+/** Adds all the titles to their respective boxes, reference their input for which box you will be working on.
+*/
 function addTextToBoxes(boxesArray, titlesArray, tooltipMessageArray){
 
     for(let i = 0; i <= titlesArray.length; i++){
@@ -1033,7 +1135,8 @@ function addTextToBoxes(boxesArray, titlesArray, tooltipMessageArray){
 
 // DO NOT DELETE THESE FUNCTIONS. USE THESE FUNCTIONS TO HELP BUILD YOUR FUNCTIONS IF NEEDED.
 
-// Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function 'run' will run.
+/** Checks if this element with a given attribute (such as id or class) exists. If it does, a specified function 'func' will run.
+*/ 
 function ifElementExists(element, func) {
     if (element) {
         //console.log('work');
@@ -1045,7 +1148,8 @@ function ifElementExists(element, func) {
     }
 }
 
-// This functions deletes all the child DOM elements of the specified 'element'
+/** This functions deletes all the child DOM elements of the specified 'element'
+*/ 
 function cleanElement(element){
     if(element && element.hasChildNodes()){
         element.replaceChildren();
@@ -1054,8 +1158,8 @@ function cleanElement(element){
     }
 }
 
-// Returns any desired value based on some criteria
 /**
+* Returns any desired value based on some criteria.
 * @param {boolean} criteria - Some criteria to determine if the true or false value shall be returned
 * @param {any} trueVal - Any value the author would like to return when criteria is met
 * @param {any} falseVal - Any value the author would like to return when criteria is not met
