@@ -1,3 +1,5 @@
+// hashmap of incoming data titles to their respective DOM elements
+
 let elementMap = {
     "os": "OSComputerDataPoint",
     "name": "computerNameSection",

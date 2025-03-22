@@ -2,17 +2,17 @@ import socket from "../client.js";
 import createHTMLChildElement from "./createElement.js";
 import settings from './settings.js';
 import SettingsOption from "./settingsOption.js";
-// Pushes the a message to the interfaces's log (not to be confused with the console log)
-/**
+
+let maxMessagesSetting = settings[1]
+
+
+/** Pushes the a message to the interfaces's log (not to be confused with the console log)
 * @param {string} time - The current time as collected form the getTime() function
 * @param {string} msg - Any string that will be pushed into a single chat
 * @param {boolean} error - gives the message a certain error color/theme if it is 'true'
 * @param {boolean} connection - gives the message a certain connection color/theme if it is 'true'
 * @param {object} logContainer - DOM element that the message will be pushed to; default is '.chatContainer'
 */
-
-let maxMessagesSetting = settings[1]
-
 export default function pushChatToLog(time, msg, type, logContainer=document.querySelector('.chatContainer')){
 
     let singleChatBox = createHTMLChildElement(logContainer, 'div', 'singleChat');
@@ -83,7 +83,10 @@ function removeMessagesWhenBeyondMax()
     }
 }
 
-export function checkContainerPosition(evt){
+/**
+ * @param {Event} evt - Any event that you may want to trigger this.
+ */
+export function checkContainerPosition(evt=null){
 
     let isWheelEvent = null;
     if (evt) {
