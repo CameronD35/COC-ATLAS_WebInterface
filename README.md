@@ -7,7 +7,7 @@ A web interface built to support and simplify the testing process.
   - Will allow the downloading of any data stored on a per-session basis
 - Integrate other sensors to our external device to give more life and application to the interface
   - This simply requires progress in our project
-- Make the graph dropdowns switch datasets and colors 
+- ~~Make the graph dropdowns switch datasets and colors~~ ✅
 
 ## Features
 - A dynamic chat log built for errors, connections, warnings, and standard messages
