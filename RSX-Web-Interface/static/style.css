@@ -50,6 +50,20 @@ body{
     overflow: hidden;
 }
 
+/* MOUSE TRACKER */
+/* .mouse{
+    background-image: radial-gradient(circle, var(--mainColor-transparent) 20%, rgba(255, 255, 255, 0) 100%);
+    position: fixed;
+    border-radius: 100%;
+    filter: var(--intenseBlur);
+    width: 30px;
+    height: 30px;
+    z-index: 3;
+    transition: unset;
+    mix-blend-mode: hard-light;
+    pointer-events: none;
+} */
+
 
 /* REFERENCE IMAGE */
 
@@ -210,13 +224,45 @@ body{
     flex-direction: column;
     align-items: center;
     overflow: clip;
+    outline: var(--tertiaryColor) solid 4px;
+    transition-timing-function: cubic-bezier(0.215, 0.610, 0.355, 1);
+}
+
+.box:hover:not(.settings){
+    transform: scale(1.01);
+    box-shadow: 0 0 7px rgba(0, 0, 0, 0.7);
+    box-shadow: inset 0 0 7px rgba(0, 0, 0, 0.2);
+    /* outline-offset: 4px; */
+
+    /* outline-color: transparent; */
+
+    /* mask-image: linear-gradient(-75deg, rgba(0,0,0,.6) 30%, #000 50%, rgba(0,0,0,.6) 70%);
+    mask-size: 200%;
+    animation: shine 2s infinite; */
+
+    /* background-clip: padding-box;
+    border: solid $border transparent;
+
+    &:before {
+        content: '';
+        position: absolute;
+        top: 0; right: 0; bottom: 0; left: 0;
+        z-index: -1;
+        margin: 5px;
+        border-radius: inherit; 
+        background: linear-gradient(to right, red, orange);
+    } */
+}
+
+@keyframes ooohShiny {
+    
 }
 
 .boxTitleContainer{
     width: 100%;
     height: 50px;
     align-items: left;
-    background-color: var(--secondaryColor);
+    /* background-color: var(--secondaryColor); */
     justify-content: center;
     padding-left: 10px;
     padding-top: 3px;
@@ -245,7 +291,7 @@ body{
     height: 100%;
     border-radius: 10px;
     padding: 0.25%;
-    outline: var(--tertiaryColor) solid 3px;
+    /* outline: var(--tertiaryColor) solid 3px; */
 }
 
 .dashRow{
@@ -260,13 +306,13 @@ body{
 }
 
 .columnInRow{
-    outline: var(--tertiaryColor) solid 4px;
+    /* outline: var(--tertiaryColor) solid 4px; */
     border-radius: 10px;
     margin: 0.75%;
 }
 
 .rowInColumn{
-    outline: var(--tertiaryColor) solid 4px;
+    /* outline: var(--tertiaryColor) solid 4px; */
     border-radius: 10px;
 }
 
@@ -478,10 +524,6 @@ input:focus{
 
 /* REAL-TIME DATA */
 
-#contentContainer2{
-    background-color: var(--secondaryColor);
-}
-
 .realTimeContainer{
     background-color: unset;
     width: 100%;
@@ -491,7 +533,6 @@ input:focus{
 
 #ReaText {
     display: flex;
-
     justify-content: start;
     align-items: center;
 }
@@ -757,7 +798,7 @@ circle:hover {
 }
 
 .ddDownloadButton {
-
+    display: inline;
 }
 
 /* ENABLE/DISABLE FEATURES */
@@ -993,11 +1034,11 @@ circle:hover {
     display: flex;
     flex-direction: column;
     justify-content: end;
-    background-color: var(--secondaryColor);
+    /* background-color: var(--secondaryColor); */
 }
 
 .chatContainer{
-    background-color: var(--secondaryColor);
+    /* background-color: var(--secondaryColor); */
     height: 100%;
     width: 100%;
     color: white;
@@ -1095,7 +1136,7 @@ circle:hover {
     display: flex;
     flex-direction: column;
     justify-content: end;
-    background-color: var(--secondaryColor);
+    /* background-color: var(--secondaryColor); */
 }
 
 #contentContainer4{

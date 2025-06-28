@@ -461,9 +461,23 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 const currentTertiaryTransparent = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorTransparentCssVar);
                 const currentQuadraryTransparent = getComputedStyle(document.documentElement).getPropertyValue(quadraryColorTransparentCssVar);
 
-                // swap the values
+                // swap primary and quadrary values
                 document.documentElement.style.setProperty(mainColorCssVar, currentQuadrary);
                 document.documentElement.style.setProperty(quadraryColorCssVar, currentMain);
+
+                // swap primary and quadrary transparent values
+                document.documentElement.style.setProperty(mainColorTransparentCssVar, currentQuadraryTransparent);
+                document.documentElement.style.setProperty(quadraryColorTransparentCssVar, currentMainTransparent);
+
+                // swap secondary and tertiary values
+                document.documentElement.style.setProperty(tertiaryColorCssVar, currentSecondary);
+                document.documentElement.style.setProperty(secondaryColorCssVar, currentTertiary);
+
+                // swap secondary and tertiary transparent values
+                document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, currentSecondaryTransparent);
+                document.documentElement.style.setProperty(secondaryColorTransparentCssVar, currentTertiaryTransparent);
+
+
 
 
                 // set values and invert settings icon color
@@ -477,6 +491,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(231, 231, 231, 0.4)');
 
                     document.getElementById('settingsIcon').style.filter = 'invert()';
+                    document.querySelectorAll('.downloadImg').forEach((elem, i) => {
+                        elem.style.filter = 'invert()';
+                    });
+
                 } else {
                     // opaque
                     document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(31, 31, 31)');
@@ -487,6 +505,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, 'rgba(24, 24, 24, 0.4)');
 
                     document.getElementById('settingsIcon').style.filter = '';
+                    document.querySelectorAll('.downloadImg').forEach((elem, i) => {
+                        elem.style.filter = '';
+                    });
+
                 }
 
                 break;
@@ -1196,6 +1218,16 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     }
 // }
 
+// const customPointer = document.querySelector(".mouse");
+
+// window.addEventListener('mousemove', (evt) => {
+//     console.log("X: ", evt.clientX, ", Y: ", evt.clientY);
+
+//     customPointer.style.left = `${evt.clientX - 15}px`;
+//     customPointer.style.top = `${evt.clientY - 15}px`;
+
+// });
+
 let keysActive = {};
 
 // THESE FUNCTIONS HANDLE THE OPENING AND CLOSING OF THE REFERENCE OVERLAY. DON'T CHANGE THESE, BUT THEY MAY BE A HELPFUL REFERENCE FOR THE OTHER COMPONENTS ON THE PAGE. 
@@ -1211,7 +1243,6 @@ let keysActive = {};
 * Lastly it lets the program know the reference is open by utilizing the 'referenceOpen' variable
 
 */
-
 window.addEventListener('keydown', (target) => {
 
     keysActive[target.key] = true;
