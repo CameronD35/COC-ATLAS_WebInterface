@@ -270,6 +270,7 @@ function hideOverlay(){
     setTimeout(() => {
         cleanElement(overlayContentContainer);
     }, 450);
+    
     overlay.setAttribute('data-occupied', 'false');
     pageContainer.style.filter = '';
 }
@@ -1227,6 +1228,48 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     customPointer.style.top = `${evt.clientY - 15}px`;
 
 // });
+
+
+
+document.querySelectorAll('.box').forEach((elem, i) => {
+     
+    elem.debounce = false;
+
+    elem.addEventListener('mousemove', (evt) => {
+
+        if (!elem.debounce) {
+
+            const boxPosition = elem.getBoundingClientRect();
+
+            const xPos = evt.clientX - ((boxPosition.left + boxPosition.right) / 2);
+            const yPos = evt.clientY - ((boxPosition.top + boxPosition.bottom) / 2);
+
+            const xPercent = ((xPos / boxPosition.width) * 2).toFixed(2);
+            const yPercent = ((yPos / boxPosition.height) * 2).toFixed(2);
+
+            elem.style.transform = `scale(1.01) skew(${xPercent * 0.5}deg, ${yPercent * 0.5}deg)`;
+
+            console.log(`${xPercent}, ${yPercent}`);
+
+            elem.debounce = true;
+
+        } else {
+
+            setTimeout(() => {
+
+                elem.debounce = false;
+
+            }, 2);
+
+        }
+
+    });
+
+    elem.addEventListener('mouseleave', () => {
+        elem.style.transform = "";
+    })
+
+})
 
 let keysActive = {};
 
