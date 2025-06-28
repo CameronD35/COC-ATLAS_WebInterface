@@ -1225,9 +1225,12 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     }
 // }
 
+// Adds a custom "pointer" that makes contrasting elements glow in the UI
 const customPointer = document.querySelector(".mouse");
 const pointerWidth = getComputedStyle(customPointer).width.substring(0,2);
 const pointerHeight = getComputedStyle(customPointer).height.substring(0,2);
+
+// debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
 window.debounce = false;
 
 window.addEventListener('mousemove', (evt) => {
@@ -1254,9 +1257,11 @@ window.addEventListener('mousemove', (evt) => {
 });
 
 
-
+// For each box, adds a small animation ttha follos the mouse position
+// The animation adds a skew transformation to the box
 document.querySelectorAll('.box').forEach((elem, i) => {
-     
+    
+    // debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
     elem.debounce = false;
 
     elem.addEventListener('mousemove', (evt) => {
@@ -1265,12 +1270,15 @@ document.querySelectorAll('.box').forEach((elem, i) => {
 
             const boxPosition = elem.getBoundingClientRect();
 
+            // calculates x and y relative to the box's top left corner
             const xPos = evt.clientX - ((boxPosition.left + boxPosition.right) / 2);
             const yPos = evt.clientY - ((boxPosition.top + boxPosition.bottom) / 2);
 
+            // turns the coordinates to a percentage for better future calculation
             const xPercent = ((xPos / boxPosition.width) * 2).toFixed(2);
             const yPercent = ((yPos / boxPosition.height) * 2).toFixed(2);
 
+            // 0.3 is a magic number and reprsents the maximum skew applied to each box
             elem.style.transform = `scale(1.01) skew(${xPercent * 0.3}deg, ${yPercent * 0.3}deg)`;
 
             elem.debounce = true;
