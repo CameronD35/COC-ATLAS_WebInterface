@@ -495,7 +495,11 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.querySelectorAll('.downloadImg').forEach((elem, i) => {
                         elem.style.filter = 'invert()';
                     });
+                    
+                    document.querySelector('.mouse').style.mixBlendMode = 'lighten';
+                    console.log(document.querySelector('.mouse').style);
 
+                    
                 } else {
                     // opaque
                     document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(31, 31, 31)');
@@ -509,6 +513,8 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.querySelectorAll('.downloadImg').forEach((elem, i) => {
                         elem.style.filter = '';
                     });
+
+                    document.querySelector('.mouse').style.mixBlendMode = 'darken';
 
                 }
 
@@ -1219,15 +1225,33 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     }
 // }
 
-// const customPointer = document.querySelector(".mouse");
+const customPointer = document.querySelector(".mouse");
+const pointerWidth = getComputedStyle(customPointer).width.substring(0,2);
+const pointerHeight = getComputedStyle(customPointer).height.substring(0,2);
+window.debounce = false;
 
-// window.addEventListener('mousemove', (evt) => {
-//     console.log("X: ", evt.clientX, ", Y: ", evt.clientY);
+window.addEventListener('mousemove', (evt) => {
 
-//     customPointer.style.left = `${evt.clientX - 15}px`;
-//     customPointer.style.top = `${evt.clientY - 15}px`;
+    if (!window.debounce) {
 
-// });
+        customPointer.style.left = `${evt.clientX - (pointerWidth / 2)}px`;
+        customPointer.style.top = `${evt.clientY - (pointerHeight / 2)}px`;
+
+        window.debounce = true;
+
+    } else {
+
+        setTimeout(() => {
+
+            window.debounce = false;
+
+            console.log("debounce off");
+
+        }, 20);
+
+    }
+
+});
 
 
 
@@ -1247,9 +1271,7 @@ document.querySelectorAll('.box').forEach((elem, i) => {
             const xPercent = ((xPos / boxPosition.width) * 2).toFixed(2);
             const yPercent = ((yPos / boxPosition.height) * 2).toFixed(2);
 
-            elem.style.transform = `scale(1.01) skew(${xPercent * 0.5}deg, ${yPercent * 0.5}deg)`;
-
-            console.log(`${xPercent}, ${yPercent}`);
+            elem.style.transform = `scale(1.01) skew(${xPercent * 0.3}deg, ${yPercent * 0.3}deg)`;
 
             elem.debounce = true;
 
@@ -1259,7 +1281,9 @@ document.querySelectorAll('.box').forEach((elem, i) => {
 
                 elem.debounce = false;
 
-            }, 2);
+                console.log("debounce off");
+
+            }, 20);
 
         }
 

@@ -362,7 +362,7 @@ function formatDataForGraphs(dataObj, target) {
 //         'cpu usage': 4.7 + Math.random()* 5,
 //         'time': ++time
 //     }, dataStorage, 100)
-// }, 1000)
+// }, 1000);
 
 // updateGraphs(dataStorage);
 
