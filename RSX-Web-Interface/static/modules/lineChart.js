@@ -121,7 +121,8 @@ export default class Graph {
 
         const length = datasetLength - this.domainLength;
 
-        console.log(`${datasetLength} - ${this.domainLength} = ${length}`)
+        //console.log(`${datasetLength} - ${this.domainLength} = ${length}`)
+
         // Sets the low bound for the domain, based off (higherDomainBound - domainLength)
         // If the domain Length results in a zero or negative lowerDomainBound, then it will go to the full domain;
         // If the difference in higherDomainBound - domainLength is < 10, then the lowerDomainBound will = 10;
@@ -140,8 +141,9 @@ export default class Graph {
         this.filteredData = this.dataset.filter((d) => { if (d.x >= this.lowerDomainBound) {return d.x}});
 
 
+        //console.log(`(${this.lowerDomainBound}, ${this.higherDomainBound})`);
+
         // Re-definies the x and y scales for this object
-        console.log(`(${this.lowerDomainBound}, ${this.higherDomainBound})`)
         this.xScale = d3.scaleLinear([this.lowerDomainBound, this.higherDomainBound], [this.margin.left, this.width - this.margin.right]);
         this.yScale = d3.scaleLinear(d3.extent(this.filteredData, (d) => { return d.y}), [this.height - this.margin.bottom, this.margin.top]);
 

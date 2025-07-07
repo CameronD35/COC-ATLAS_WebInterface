@@ -30,6 +30,16 @@ const app = express(serverPort);
 const server = createServer(app);
 const io = new Server(server);
 
+// const multer = require("multer");
+// const storage = multer.diskStorage({
+//     destination: (req, file, cb) => {
+//         cb(null, 'uploads/');
+//     }, filename: (req, file, cb) => {
+//         cb(null, file.originalname);
+//     }
+// });
+// const upload = multer({storage: storage});
+
 // Client instance for postgresql
 const { Client, Pool } = require('pg');
 

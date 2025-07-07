@@ -50,6 +50,7 @@ export default function createHTMLChildElement(parent, tag, classes, text, id, t
     }
 
     if (tooltip) {
+
         elem.style.position = 'relative';
 
         const tooltipElem = document.createElement('div');
@@ -68,13 +69,38 @@ export default function createHTMLChildElement(parent, tag, classes, text, id, t
         tooltipElem.appendChild(tooltipText);
 
 
-        elem.addEventListener('mouseover', () => {
+        elem.addEventListener('mouseenter', () => {
             tooltipElem.style.opacity = 1;
         });
 
         elem.addEventListener('mouseleave', () => {
             tooltipElem.style.opacity = 0;
         });
+
+        elem.debounce = false;
+
+        elem.addEventListener('mousemove', (evt) => {
+
+            if (!elem.debounce) {
+
+                tooltipElem.style.left = `${evt.offsetX + 10}px`;
+                tooltipElem.style.top = `${evt.offsetY + 10}px`;
+
+                elem.debounce = true;
+
+            } else {
+
+                setTimeout(() => {
+
+                    elem.debounce = false;
+
+                    //console.log("debounce off");
+
+                }, 20);
+
+            }
+
+        })
 
     }
 

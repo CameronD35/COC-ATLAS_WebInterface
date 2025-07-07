@@ -9,6 +9,8 @@ import pushChatToLog from './modules/chatLog.js';
 import getTime from './modules/getTime.js';
 import { checkContainerPosition } from './modules/chatLog.js';
 import Dropdown from './modules/dropdown.js';
+import DragAndDrop from './modules/dragAndDrop.js';
+import createSwitchToggle from './modules/createToggle.js';
 
 import socket from './client.js';
 
@@ -67,10 +69,6 @@ function createPage() {
         {
             title: 'IP Address',
             data: '0000x6F'
-        },
-        {
-            title: 'Currently Running',
-            data: 'cv.py'
         }
     ], 'Hal-3000')
 
@@ -90,11 +88,8 @@ function createPage() {
         },
     
         {
-            title: 'Controls',
-            options: [
-                'Test Motor',
-            ],
-            type: 'number'
+            title: 'Upload File',
+            type: 'drag_drop'
         },
         {
             title: '3D Render',
@@ -201,14 +196,15 @@ function createColumn(parent, columnNumber, numOfRows, columnWidth, autoRowSizin
 * The function should be a function that creates DOM elements intended to go in the overlay section.
 */
 export default function showOverlay(functionToCreateContent) {
-    let pageContainer = document.querySelector('.hero');
-    let overlay = document.getElementById('overlay');
-    let overlayContentContainer = document.getElementById('overlayContentContainer');
+
+    const pageContainer = document.querySelector('.hero');
+    const overlay = document.getElementById('overlay');
+    const overlayContentContainer = document.getElementById('overlayContentContainer');
     pageContainer.style.filter = 'blur(2px)';
-    overlay.style.width = '100vw';
+    overlay.style.scale = 1;
     setTimeout(() => {
         overlay.style.opacity = 1;
-    }, 50)
+    }, 50);
    
     overlay.setAttribute('data-occupied', 'true');
 
@@ -216,7 +212,7 @@ export default function showOverlay(functionToCreateContent) {
     functionToCreateContent(overlayContentContainer);
     setTimeout(() => {
         window.addEventListener('click', readForClick);
-    }, 500)
+    }, 500);
 
 }
 
@@ -263,7 +259,7 @@ function hideOverlay(){
     window.removeEventListener('click', readForClick);
 
     overlay.style.opacity = 0;
-    overlay.style.width = 0;
+    overlay.style.scale = 0;
 
     console.log('hiding overlay');
 
@@ -384,7 +380,7 @@ function createSettingsBox(container){
     {  
         showOverlay(createSettingsSection);
         //closeButton.addEventListener("click", closeSettingsButtonClicked);
-        document.getElementById('settingsDialog').show();
+        // document.getElementById('settingsDialog').show();
     }
 }
 
@@ -396,17 +392,15 @@ function createSettingsBox(container){
 */
 function createSettingsSection(settingsUIContainer=document.getElementById('overlayContentContainer')){
     
-    
+    const dialog = createHTMLChildElement(settingsUIContainer, 'div', 'settingsSection', null, 'settingsSection');
+    const settingsControlContainer = createHTMLChildElement(dialog, 'div', 'settingsControlContainer', null, 'settingsControlContainer');
+    const settingsTitle = createHTMLChildElement(settingsControlContainer, 'span', 'settingsTitle', 'Settings', 'settingsTitle');
+    const closeSettingsContainer = createHTMLChildElement(settingsControlContainer, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
+    const closeButton = createHTMLChildElement(closeSettingsContainer, 'span', 'closeSettingsButton', 'Close', 'closeSettingsButton');
 
-    let dialog = createHTMLChildElement(settingsUIContainer, 'dialog', 'settingsDialog', null, 'settingsDialog');
-    let settingsControlContainer = createHTMLChildElement(dialog, 'div', 'settingsControlContainer', null, 'settingsControlContainer');
-    let settingsTitle = createHTMLChildElement(settingsControlContainer, 'span', 'settingsTitle', 'Settings', 'settingsTitle');
-    let closeSettingsContainer = createHTMLChildElement(settingsControlContainer, 'div', 'closeSettingsContainer', null, 'closeSettingsContainer');
-    let closeButton = createHTMLChildElement(closeSettingsContainer, 'span', 'closeSettingsButton', 'Close', 'closeSettingsButton');
+    const settingsContentContainer = createHTMLChildElement(dialog, 'div', 'settingsContentContainer', null, 'settingsContentContainer');
 
-    let settingsContentContainer = createHTMLChildElement(dialog, 'div', 'settingsContentContainer', null, 'settingsContentContainer');
-
-    let inputContainer = createHTMLChildElement(settingsContentContainer, 'div', 'inputContainer', null, 'inputContainer');
+    const inputContainer = createHTMLChildElement(settingsContentContainer, 'div', 'inputContainer', null, 'inputContainer');
 
 
     constructSettings();
@@ -425,6 +419,7 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
         // Unhook
         closeButton.removeEventListener("click", closeSettingsButtonClicked);
         hideOverlay();
+
     }
 
     /** A callback for when any setting has changed.
@@ -443,6 +438,11 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 const tertiaryColorCssVar = '--tertiaryColor'; 
                 const quadraryColorCssVar = '--quadraryColor'; 
 
+                const mainColorSemiTransparentCssVar = '--mainColor-semiTransparent'; 
+                const secondaryColorSemiTransparentCssVar = '--secondaryColor-semiTransparent'; 
+                const tertiaryColorSemiTransparentCssVar = '--tertiaryColor-semiTransparent'; 
+                const quadraryColorSemiTransparentCssVar = '--quadraryColor-semiTransparent';
+                
                 const mainColorTransparentCssVar = '--mainColor-transparent'; 
                 const secondaryColorTransparentCssVar = '--secondaryColor-transparent'; 
                 const tertiaryColorTransparentCssVar = '--tertiaryColor-transparent'; 
@@ -457,6 +457,11 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 const currentTertiary = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorCssVar);
                 const currentQuadrary = getComputedStyle(document.documentElement).getPropertyValue(quadraryColorCssVar);
 
+                const currentMainSemiTransparent = getComputedStyle(document.documentElement).getPropertyValue(mainColorSemiTransparentCssVar);
+                const currentSecondarySemiTransparent = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorSemiTransparentCssVar);
+                const currentTertiarySemiTransparent = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorSemiTransparentCssVar);
+                const currentQuadrarySemiTransparent = getComputedStyle(document.documentElement).getPropertyValue(quadraryColorSemiTransparentCssVar);
+
                 const currentMainTransparent = getComputedStyle(document.documentElement).getPropertyValue(mainColorTransparentCssVar);
                 const currentSecondaryTransparent = getComputedStyle(document.documentElement).getPropertyValue(secondaryColorTransparentCssVar);
                 const currentTertiaryTransparent = getComputedStyle(document.documentElement).getPropertyValue(tertiaryColorTransparentCssVar);
@@ -466,19 +471,26 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                 document.documentElement.style.setProperty(mainColorCssVar, currentQuadrary);
                 document.documentElement.style.setProperty(quadraryColorCssVar, currentMain);
 
+                // swap primary and quadrary semi-transparent values
+                document.documentElement.style.setProperty(mainColorSemiTransparentCssVar, currentQuadrarySemiTransparent);
+                document.documentElement.style.setProperty(quadraryColorSemiTransparentCssVar, currentMainSemiTransparent);
+
                 // swap primary and quadrary transparent values
                 document.documentElement.style.setProperty(mainColorTransparentCssVar, currentQuadraryTransparent);
                 document.documentElement.style.setProperty(quadraryColorTransparentCssVar, currentMainTransparent);
+
 
                 // swap secondary and tertiary values
                 document.documentElement.style.setProperty(tertiaryColorCssVar, currentSecondary);
                 document.documentElement.style.setProperty(secondaryColorCssVar, currentTertiary);
 
+                // swap secondary and tertiary semi-transparent values
+                document.documentElement.style.setProperty(tertiaryColorSemiTransparentCssVar, currentSecondarySemiTransparent);
+                document.documentElement.style.setProperty(secondaryColorSemiTransparentCssVar, currentTertiarySemiTransparent);
+                
                 // swap secondary and tertiary transparent values
                 document.documentElement.style.setProperty(tertiaryColorTransparentCssVar, currentSecondaryTransparent);
                 document.documentElement.style.setProperty(secondaryColorTransparentCssVar, currentTertiaryTransparent);
-
-
 
 
                 // set values and invert settings icon color
@@ -486,6 +498,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     // opaque
                     document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(224, 224, 224)');
                     document.documentElement.style.setProperty(tertiaryColorCssVar, 'rgb(231, 231, 231)');
+
+                    // semi-transparent
+                    document.documentElement.style.setProperty(secondaryColorSemiTransparentCssVar, 'rgba(224, 224, 224, 0.7)');
+                    document.documentElement.style.setProperty(tertiaryColorSemiTransparentCssVar, 'rgba(231, 231, 231, 0.7)');
 
                     // transparent
                     document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(224, 224, 224, 0.4)');
@@ -499,11 +515,19 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     document.querySelector('.mouse').style.mixBlendMode = 'lighten';
                     console.log(document.querySelector('.mouse').style);
 
+                    const lightOn = new Event('lightOn')
+
+                    window.dispatchEvent(lightOn);
+
                     
                 } else {
                     // opaque
                     document.documentElement.style.setProperty(secondaryColorCssVar, 'rgb(31, 31, 31)');
                     document.documentElement.style.setProperty(tertiaryColorCssVar, 'rgb(24, 24, 24)');
+
+                    // semi-transparent
+                    document.documentElement.style.setProperty(secondaryColorSemiTransparentCssVar, 'rgba(31, 31, 31, 0.7)');
+                    document.documentElement.style.setProperty(tertiaryColorSemiTransparentCssVar, 'rgba(24, 24, 24, 0.7)');
 
                     // transparent
                     document.documentElement.style.setProperty(secondaryColorTransparentCssVar, 'rgba(31, 31, 31, 0.4)');
@@ -515,6 +539,10 @@ function createSettingsSection(settingsUIContainer=document.getElementById('over
                     });
 
                     document.querySelector('.mouse').style.mixBlendMode = 'darken';
+                    
+                    const lightOff = new Event('lightOff');
+
+                    window.dispatchEvent(lightOff);
 
                 }
 
@@ -851,36 +879,40 @@ function resizeElements(){
 * type: the type of input the options will have (ex: the motor will likely have a toggle or checkbox)
 * TODO: Make this more modular. Should be applicable to most--if not all--elements. Only works for graphs as of now.
 */
-function createFeaturesSection(sectionTitlesAndOptions, container=document.getElementById('contentContainer3')){
+function createFeaturesSection(sectionTitlesAndOptions, container=document.getElementById('contentContainer3')) {
     let featuresContainer = createHTMLChildElement(container, 'div', 'featuresContainer');
 
     // Creates the seperate sections of the features section
     // subsectionTitle is the category name (such as "initialization")
     // featureSubsection houses the entire subsection
     // optionsSection is the place where checkboxes, inputs, or models are placed
-    for(let i = 0; i < sectionTitlesAndOptions.length; i++){
-        let titleAbbreviation = sectionTitlesAndOptions[i].title.substring(0,3);
-        let featureSubsection = createHTMLChildElement(featuresContainer, 'div', 'featureSubsection', null, `${titleAbbreviation}FeatureSubsection`);
-        let subsectionTitle = createHTMLChildElement(featureSubsection, 'span', 'subsectionTitle', sectionTitlesAndOptions[i].title, `${titleAbbreviation}SubsectionTitle`);
+    for (let i = 0; i < sectionTitlesAndOptions.length; i++) {
 
-        let optionsSection = createHTMLChildElement(featureSubsection, 'div', 'optionsSection', null, `optionsSection${i}`);
+        const titleAbbreviation = sectionTitlesAndOptions[i].title.substring(0,3);
+        const featureSubsection = createHTMLChildElement(featuresContainer, 'div', 'featureSubsection', null, `${titleAbbreviation}FeatureSubsection`);
+        const subsectionTitle = createHTMLChildElement(featureSubsection, 'span', 'subsectionTitle', sectionTitlesAndOptions[i].title, `${titleAbbreviation}SubsectionTitle`);
 
-        if(sectionTitlesAndOptions[i].options != null){
-            for(let j = 0; j < sectionTitlesAndOptions[i].options.length; j++){
+        const optionsSection = createHTMLChildElement(featureSubsection, 'div', 'optionsSection', null, `optionsSection${i}`);
+
+        const type = sectionTitlesAndOptions[i].type;
+
+        if (sectionTitlesAndOptions[i].options != null) {
+
+            for (let j = 0; j < sectionTitlesAndOptions[i].options.length; j++) {
+
                 let inputID = `featuresCheackbox${j}`;
-                let inputType = sectionTitlesAndOptions[i].type;
-                let inputIsCheckbox = (inputType == 'checkbox');
+                let inputIsCheckbox = (type == 'checkbox');
     
                 let inputSection = createHTMLChildElement(optionsSection, 'div', 'inputSection', null, `${titleAbbreviation}InputSection${j}`);
     
                 // Makes sure that label is BEFORE input if it is not a checkbox
                 if(!inputIsCheckbox){
-                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${type}Label`, sectionTitlesAndOptions[i].options[j], `features${type}Label${j}`);
                     inputLabel.for = inputID
                 }
     
-                let input = createHTMLChildElement(inputSection, 'input', `features${inputType}`, null, `${titleAbbreviation}Features${inputType}${j}`);
-                input.type = inputType;
+                let input = createHTMLChildElement(inputSection, 'input', `features${type}`, null, `${titleAbbreviation}Features${type}${j}`);
+                input.type = type;
                 
                 // Adds button if the input is NOT a checkbox
                 if(!inputIsCheckbox){
@@ -890,20 +922,37 @@ function createFeaturesSection(sectionTitlesAndOptions, container=document.getEl
     
                 // Makes sure that label is AFTER in put if it is a checkbox
                 if(inputIsCheckbox){
-                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${inputType}Label`, sectionTitlesAndOptions[i].options[j], `features${inputType}Label${j}`);
+                    let inputLabel = createHTMLChildElement(inputSection, 'label', `features${type}Label`, sectionTitlesAndOptions[i].options[j], `features${type}Label${j}`);
                     inputLabel.for = inputID
                 }
+
             }
     
         }
+        
+        switch (type) {
 
-        // creates a 3d render if the specified type is 'model'
-        if(sectionTitlesAndOptions[i].type === 'model'){
-            let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender');
-            //let scene = new SceneManager(modelContainer, [300, 300]);
+            // creates a 3d render if the specified type is 'model'
+            case 'model':
+                let modelContainer = createHTMLChildElement(optionsSection, 'div', 'modelRender');
+                break;
+
+            // creates a file drag & drop if the specified type is 'drag_drop'
+            case 'drag_drop':
+
+                console.log('hello ther');
+                const dragAndDrop = new DragAndDrop(optionsSection);
+                dragAndDrop.create();
+
+                const test = createHTMLChildElement(optionsSection, 'div', 'test');
+
+                createSwitchToggle('test', test, false);
+
+                break;
+                
         }
 
-        if(i == sectionTitlesAndOptions.length - 1){
+        if (i == sectionTitlesAndOptions.length - 1){
             continue;
         }
 
@@ -1080,7 +1129,7 @@ https://developer.mozilla.org/en-US/docs/Learn_web_development/Howto/Solve_HTML_
 for more information on data attributes.
 * @param {function} activateFunction - function to run when the setting is activated (ex: if auto-scroll is activated, we would run a function that manages auto-scroll)
 */
-function setupMessageSetting(element, dataAttribute, activateFunction=null){
+function setupMessageSetting(element, dataAttribute, activateFunction = null){
 
     let input;
 
@@ -1225,83 +1274,83 @@ function returnValueBasedOnCriteria(criteria, trueVal, falseVal){
 //     }
 // }
 
-// Adds a custom "pointer" that makes contrasting elements glow in the UI
-const customPointer = document.querySelector(".mouse");
-const pointerWidth = getComputedStyle(customPointer).width.substring(0,2);
-const pointerHeight = getComputedStyle(customPointer).height.substring(0,2);
+// // Adds a custom "pointer" that makes contrasting elements glow in the UI
+// const customPointer = document.querySelector(".mouse");
+// const pointerWidth = getComputedStyle(customPointer).width.substring(0,2);
+// const pointerHeight = getComputedStyle(customPointer).height.substring(0,2);
 
-// debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
-window.debounce = false;
+// // debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
+// window.debounce = false;
 
-window.addEventListener('mousemove', (evt) => {
+// window.addEventListener('mousemove', (evt) => {
 
-    if (!window.debounce) {
+//     if (!window.debounce) {
 
-        customPointer.style.left = `${evt.clientX - (pointerWidth / 2)}px`;
-        customPointer.style.top = `${evt.clientY - (pointerHeight / 2)}px`;
+//         customPointer.style.left = `${evt.clientX - (pointerWidth / 2)}px`;
+//         customPointer.style.top = `${evt.clientY - (pointerHeight / 2)}px`;
 
-        window.debounce = true;
+//         window.debounce = true;
 
-    } else {
+//     } else {
 
-        setTimeout(() => {
+//         setTimeout(() => {
 
-            window.debounce = false;
+//             window.debounce = false;
 
-            console.log("debounce off");
+//             console.log("debounce off");
 
-        }, 20);
+//         }, 20);
 
-    }
+//     }
 
-});
+// });
 
 
 // For each box, adds a small animation ttha follos the mouse position
 // The animation adds a skew transformation to the box
-document.querySelectorAll('.box').forEach((elem, i) => {
+// document.querySelectorAll('.box').forEach((elem, i) => {
     
-    // debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
-    elem.debounce = false;
+//     // debouncing adds a small delay between event reactions in order to save resources and prevent repetative detections
+//     elem.debounce = false;
 
-    elem.addEventListener('mousemove', (evt) => {
+//     elem.addEventListener('mousemove', (evt) => {
 
-        if (!elem.debounce) {
+//         if (!elem.debounce) {
 
-            const boxPosition = elem.getBoundingClientRect();
+//             const boxPosition = elem.getBoundingClientRect();
 
-            // calculates x and y relative to the box's top left corner
-            const xPos = evt.clientX - ((boxPosition.left + boxPosition.right) / 2);
-            const yPos = evt.clientY - ((boxPosition.top + boxPosition.bottom) / 2);
+//             // calculates x and y relative to the box's top left corner
+//             const xPos = evt.clientX - ((boxPosition.left + boxPosition.right) / 2);
+//             const yPos = evt.clientY - ((boxPosition.top + boxPosition.bottom) / 2);
 
-            // turns the coordinates to a percentage for better future calculation
-            const xPercent = ((xPos / boxPosition.width) * 2).toFixed(2);
-            const yPercent = ((yPos / boxPosition.height) * 2).toFixed(2);
+//             // turns the coordinates to a percentage for better future calculation
+//             const xPercent = ((xPos / boxPosition.width) * 2).toFixed(2);
+//             const yPercent = ((yPos / boxPosition.height) * 2).toFixed(2);
 
-            // 0.3 is a magic number and reprsents the maximum skew applied to each box
-            elem.style.transform = `scale(1.01) skew(${xPercent * 0.3}deg, ${yPercent * 0.3}deg)`;
+//             // 0.3 is a magic number and reprsents the maximum skew applied to each box
+//             elem.style.transform = `scale(1.01) skew(${xPercent * 0.2}deg, ${yPercent * 0.2}deg)`;
 
-            elem.debounce = true;
+//             elem.debounce = true;
 
-        } else {
+//         } else {
 
-            setTimeout(() => {
+//             setTimeout(() => {
 
-                elem.debounce = false;
+//                 elem.debounce = false;
 
-                console.log("debounce off");
+//                 console.log("debounce off");
 
-            }, 20);
+//             }, 20);
 
-        }
+//         }
 
-    });
+//     });
 
-    elem.addEventListener('mouseleave', () => {
-        elem.style.transform = "";
-    })
+//     elem.addEventListener('mouseleave', () => {
+//         elem.style.transform = "";
+//     })
 
-})
+// })
 
 let keysActive = {};
 

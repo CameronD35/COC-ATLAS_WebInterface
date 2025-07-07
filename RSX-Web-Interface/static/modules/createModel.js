@@ -11,7 +11,7 @@ let modelLoaded = false;
 
 class SceneManager{
 
-    constructor(container, [initialWidth, initialHeight]){
+    constructor(container, [initialWidth, initialHeight], backgroundColor = 0x1f1f1f){
         this.container = container;
         this.width = initialWidth;
         this.height = initialHeight;
@@ -22,6 +22,7 @@ class SceneManager{
         this.camera;
         this.renderer;
         this.frameCount;
+        this.backgroundColor = backgroundColor;
 
         this.animate = this.animate.bind(this);
         this.resizeScene = this.resizeScene.bind(this);
@@ -31,7 +32,7 @@ class SceneManager{
         window.addEventListener('resize', this.resizeScene);
 
         // SCENE & CAMERA
-        this.scene.background = new THREE.Color(0x1f1f1f)
+        this.scene.background = new THREE.Color(this.backgroundColor);
         this.camera = new THREE.PerspectiveCamera(35, this.width / this.height, 0.1, 1000);
 
         // LOADER
@@ -128,7 +129,6 @@ class SceneManager{
     
     resizeScene(){
 
-        
         this.containerDimensions = this.container.getBoundingClientRect();
 
 
@@ -137,6 +137,13 @@ class SceneManager{
         this.camera.updateProjectionMatrix();
     
         this.renderer.setSize(this.containerDimensions.width, this.containerDimensions.height);
+
+    }
+
+    changeBackgroundColor(newColor) {
+
+        this.scene.background = new THREE.Color(newColor);
+
     }
 
     applyQuaternion(gyroscopeData){

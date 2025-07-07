@@ -8,6 +8,7 @@ import showOverlay, {graphArray} from "./render.js";
 import createHTMLChildElement from "./modules/createElement.js";
 import elementMap from "./modules/elementMap.js";
 import createScene from "./modules/createModel.js";
+
 let time = 15;
 // holds 100 data points for the graphs
 let dataStorage = {
@@ -166,11 +167,21 @@ document.addEventListener('DOMContentLoaded', () => {
     // Adds responsive trait to 3D Render
     let scene = createScene(document.getElementById('modelRender'), [document.getElementById('modelRender').getBoundingClientRect().width, document.getElementById('modelRender').getBoundingClientRect().height]);
     scene.create();
+
+    window.addEventListener('lightOn', () => {
+        scene.changeBackgroundColor(0xe0e0e0);
+    });
+
+    window.addEventListener('lightOff', () => {
+        scene.changeBackgroundColor(0x1f1f1f);
+    });
+
+
     window.addEventListener('resize', scene.resizeScene);
 
     // Listens for download button click and requests log file from server
     document.getElementById('downloadContainer').addEventListener('click', () => {
-    })
+    });
     
     // TESTING: Generates random numbers for graph
     // setInterval(() => {
